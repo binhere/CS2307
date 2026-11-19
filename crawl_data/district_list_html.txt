@@ -1,0 +1,171 @@
+<div class="list js__ward-list" style="display: block;">
+    <li class="js__option" value="18956" value-type="18956_SG_SG" data-search-type="6">An Đông</li>
+    <li class="js__option" value="25356" value-type="25356_SG_SG" data-search-type="6">An Hội Đông</li>
+    <li class="js__option" value="25100" value-type="25100_SG_SG" data-search-type="6">An Hội Tây</li>
+    <li class="js__option" value="11020" value-type="11020_SG_SG" data-search-type="6">An Khánh</li>
+    <li class="js__option" value="23820" value-type="23820_SG_SG" data-search-type="6">An Lạc</li>
+    <li class="js__option" value="40972" value-type="40972_SG_SG" data-search-type="6">An Long</li>
+    <li class="js__option" value="24332" value-type="24332_SG_SG" data-search-type="6">An Nhơn</li>
+    <li class="js__option" value="27404" value-type="27404_SG_SG" data-search-type="6">An Nhơn Tây</li>
+    <li class="js__option" value="12556" value-type="12556_SG_SG" data-search-type="6">An Phú</li>
+    <li class="js__option" value="22284" value-type="22284_SG_SG" data-search-type="6">An Phú Đông</li>
+    <li class="js__option" value="2060" value-type="2060_SG_SG" data-search-type="6">An Thới Đông</li>
+    <li class="js__option" value="30220" value-type="30220_SG_SG" data-search-type="6">Bà Điểm</li>
+    <li class="js__option" value="34060" value-type="34060_SG_SG" data-search-type="6">Bà Rịa</li>
+    <li class="js__option" value="40716" value-type="40716_SG_SG" data-search-type="6">Bắc Tân Uyên</li>
+    <li class="js__option" value="2572" value-type="2572_SG_SG" data-search-type="6">Bàn Cờ</li>
+    <li class="js__option" value="33292" value-type="33292_SG_SG" data-search-type="6">Bàu Bàng</li>
+    <li class="js__option" value="38412" value-type="38412_SG_SG" data-search-type="6">Bàu Lâm</li>
+    <li class="js__option" value="26636" value-type="26636_SG_SG" data-search-type="6">Bảy Hiền</li>
+    <li class="js__option" value="14348" value-type="14348_SG_SG" data-search-type="6">Bến Cát</li>
+    <li class="js__option" value="7948" value-type="7948_SG_SG" data-search-type="6">Bến Thành</li>
+    <li class="js__option" value="1292" value-type="1292_SG_SG" data-search-type="6">Bình Chánh</li>
+    <li class="js__option" value="39948" value-type="39948_SG_SG" data-search-type="6">Bình Châu</li>
+    <li class="js__option" value="40460" value-type="40460_SG_SG" data-search-type="6">Bình Cơ</li>
+    <li class="js__option" value="3084" value-type="3084_SG_SG" data-search-type="6">Bình Đông</li>
+    <li class="js__option" value="41484" value-type="41484_SG_SG" data-search-type="6">Bình Dương</li>
+    <li class="js__option" value="36364" value-type="36364_SG_SG" data-search-type="6">Bình Giã</li>
+    <li class="js__option" value="11788" value-type="11788_SG_SG" data-search-type="6">Bình Hòa</li>
+    <li class="js__option" value="5644" value-type="5644_SG_SG" data-search-type="6">Bình Hưng</li>
+    <li class="js__option" value="18188" value-type="18188_SG_SG" data-search-type="6">Bình Hưng Hòa</li>
+    <li class="js__option" value="2316" value-type="2316_SG_SG" data-search-type="6">Bình Khánh</li>
+    <li class="js__option" value="26892" value-type="26892_SG_SG" data-search-type="6">Bình Lợi</li>
+    <li class="js__option" value="23052" value-type="23052_SG_SG" data-search-type="6">Bình Lợi Trung</li>
+    <li class="js__option" value="28940" value-type="28940_SG_SG" data-search-type="6">Bình Mỹ</li>
+    <li class="js__option" value="9228" value-type="9228_SG_SG" data-search-type="6">Bình Phú</li>
+    <li class="js__option" value="23564" value-type="23564_SG_SG" data-search-type="6">Bình Quới</li>
+    <li class="js__option" value="4876" value-type="4876_SG_SG" data-search-type="6">Bình Tân</li>
+    <li class="js__option" value="32268" value-type="32268_SG_SG" data-search-type="6">Bình Tây</li>
+    <li class="js__option" value="22796" value-type="22796_SG_SG" data-search-type="6">Bình Thạnh</li>
+    <li class="js__option" value="8716" value-type="8716_SG_SG" data-search-type="6">Bình Thới</li>
+    <li class="js__option" value="19468" value-type="19468_SG_SG" data-search-type="6">Bình Tiên</li>
+    <li class="js__option" value="5132" value-type="5132_SG_SG" data-search-type="6">Bình Trị Đông</li>
+    <li class="js__option" value="10764" value-type="10764_SG_SG" data-search-type="6">Bình Trưng</li>
+    <li class="js__option" value="29196" value-type="29196_SG_SG" data-search-type="6">Cần Giờ</li>
+    <li class="js__option" value="32012" value-type="32012_SG_SG" data-search-type="6">Cát Lái</li>
+    <li class="js__option" value="6412" value-type="6412_SG_SG" data-search-type="6">Cầu Kiệu</li>
+    <li class="js__option" value="7436" value-type="7436_SG_SG" data-search-type="6">Cầu Ông Lãnh</li>
+    <li class="js__option" value="15628" value-type="15628_SG_SG" data-search-type="6">Chánh Hiệp</li>
+    <li class="js__option" value="4108" value-type="4108_SG_SG" data-search-type="6">Chánh Hưng</li>
+    <li class="js__option" value="42252" value-type="42252_SG_SG" data-search-type="6">Chánh Phú Hòa</li>
+    <li class="js__option" value="36876" value-type="36876_SG_SG" data-search-type="6">Châu Đức</li>
+    <li class="js__option" value="35852" value-type="35852_SG_SG" data-search-type="6">Châu Pha</li>
+    <li class="js__option" value="19212" value-type="19212_SG_SG" data-search-type="6">Chợ Lớn</li>
+    <li class="js__option" value="18700" value-type="18700_SG_SG" data-search-type="6">Chợ Quán</li>
+    <li class="js__option" value="17676" value-type="17676_SG_SG" data-search-type="6">Côn Đảo</li>
+    <li class="js__option" value="28428" value-type="28428_SG_SG" data-search-type="6">Củ Chi</li>
+    <li class="js__option" value="38668" value-type="38668_SG_SG" data-search-type="6">Đất Đỏ</li>
+    <li class="js__option" value="14604" value-type="14604_SG_SG" data-search-type="6">Dầu Tiếng</li>
+    <li class="js__option" value="16908" value-type="16908_SG_SG" data-search-type="6">Dĩ An</li>
+    <li class="js__option" value="8204" value-type="8204_SG_SG" data-search-type="6">Diên Hồng</li>
+    <li class="js__option" value="42764" value-type="42764_SG_SG" data-search-type="6">Đông Hòa</li>
+    <li class="js__option" value="21260" value-type="21260_SG_SG" data-search-type="6">Đông Hưng Thuận</li>
+    <li class="js__option" value="29452" value-type="29452_SG_SG" data-search-type="6">Đông Thạnh</li>
+    <li class="js__option" value="25612" value-type="25612_SG_SG" data-search-type="6">Đức Nhuận</li>
+    <li class="js__option" value="22540" value-type="22540_SG_SG" data-search-type="6">Gia Định</li>
+    <li class="js__option" value="24588" value-type="24588_SG_SG" data-search-type="6">Gò Vấp</li>
+    <li class="js__option" value="24076" value-type="24076_SG_SG" data-search-type="6">Hạnh Thông</li>
+    <li class="js__option" value="10252" value-type="10252_SG_SG" data-search-type="6">Hiệp Bình</li>
+    <li class="js__option" value="30732" value-type="30732_SG_SG" data-search-type="6">Hiệp Phước</li>
+    <li class="js__option" value="37644" value-type="37644_SG_SG" data-search-type="6">Hồ Tràm</li>
+    <li class="js__option" value="21004" value-type="21004_SG_SG" data-search-type="6">Hòa Bình</li>
+    <li class="js__option" value="39692" value-type="39692_SG_SG" data-search-type="6">Hòa Hiệp</li>
+    <li class="js__option" value="38156" value-type="38156_SG_SG" data-search-type="6">Hòa Hội</li>
+    <li class="js__option" value="8460" value-type="8460_SG_SG" data-search-type="6">Hòa Hưng</li>
+    <li class="js__option" value="41996" value-type="41996_SG_SG" data-search-type="6">Hòa Lợi</li>
+    <li class="js__option" value="29708" value-type="29708_SG_SG" data-search-type="6">Hóc Môn</li>
+    <li class="js__option" value="27148" value-type="27148_SG_SG" data-search-type="6">Hưng Long</li>
+    <li class="js__option" value="1036" value-type="1036_SG_SG" data-search-type="6">Khánh Hội</li>
+    <li class="js__option" value="36620" value-type="36620_SG_SG" data-search-type="6">Kim Long</li>
+    <li class="js__option" value="12300" value-type="12300_SG_SG" data-search-type="6">Lái Thiêu</li>
+    <li class="js__option" value="10508" value-type="10508_SG_SG" data-search-type="6">Linh Xuân</li>
+    <li class="js__option" value="4364" value-type="4364_SG_SG" data-search-type="6">Long Bình</li>
+    <li class="js__option" value="17932" value-type="17932_SG_SG" data-search-type="6">Long Điền</li>
+    <li class="js__option" value="38924" value-type="38924_SG_SG" data-search-type="6">Long Hải</li>
+    <li class="js__option" value="13068" value-type="13068_SG_SG" data-search-type="6">Long Hòa</li>
+    <li class="js__option" value="34316" value-type="34316_SG_SG" data-search-type="6">Long Hương</li>
+    <li class="js__option" value="13836" value-type="13836_SG_SG" data-search-type="6">Long Nguyên</li>
+    <li class="js__option" value="31500" value-type="31500_SG_SG" data-search-type="6">Long Phước</li>
+    <li class="js__option" value="39436" value-type="39436_SG_SG" data-search-type="6">Long Sơn</li>
+    <li class="js__option" value="31756" value-type="31756_SG_SG" data-search-type="6">Long Trường</li>
+    <li class="js__option" value="20748" value-type="20748_SG_SG" data-search-type="6">Minh Phụng</li>
+    <li class="js__option" value="13324" value-type="13324_SG_SG" data-search-type="6">Minh Thạnh</li>
+    <li class="js__option" value="36108" value-type="36108_SG_SG" data-search-type="6">Ngãi Giao</li>
+    <li class="js__option" value="37388" value-type="37388_SG_SG" data-search-type="6">Nghĩa Thành</li>
+    <li class="js__option" value="1001" value-type="1001_SG_SG" data-search-type="6">Ngọc Hà</li>
+    <li class="js__option" value="30476" value-type="30476_SG_SG" data-search-type="6">Nhà Bè</li>
+    <li class="js__option" value="18444" value-type="18444_SG_SG" data-search-type="6">Nhiêu Lộc</li>
+    <li class="js__option" value="27916" value-type="27916_SG_SG" data-search-type="6">Nhuận Đức</li>
+    <li class="js__option" value="11276" value-type="11276_SG_SG" data-search-type="6">Phú An</li>
+    <li class="js__option" value="3852" value-type="3852_SG_SG" data-search-type="6">Phú Định</li>
+    <li class="js__option" value="5388" value-type="5388_SG_SG" data-search-type="6">Phú Giáo</li>
+    <li class="js__option" value="28684" value-type="28684_SG_SG" data-search-type="6">Phú Hòa Đông</li>
+    <li class="js__option" value="19724" value-type="19724_SG_SG" data-search-type="6">Phú Lâm</li>
+    <li class="js__option" value="17420" value-type="17420_SG_SG" data-search-type="6">Phú Lợi</li>
+    <li class="js__option" value="34828" value-type="34828_SG_SG" data-search-type="6">Phú Mỹ</li>
+    <li class="js__option" value="6156" value-type="6156_SG_SG" data-search-type="6">Phú Nhuận</li>
+    <li class="js__option" value="6924" value-type="6924_SG_SG" data-search-type="6">Phú Thạnh</li>
+    <li class="js__option" value="8972" value-type="8972_SG_SG" data-search-type="6">Phú Thọ</li>
+    <li class="js__option" value="32780" value-type="32780_SG_SG" data-search-type="6">Phú Thọ Hòa</li>
+    <li class="js__option" value="3340" value-type="3340_SG_SG" data-search-type="6">Phú Thuận</li>
+    <li class="js__option" value="39180" value-type="39180_SG_SG" data-search-type="6">Phước Hải</li>
+    <li class="js__option" value="15372" value-type="15372_SG_SG" data-search-type="6">Phước Hòa</li>
+    <li class="js__option" value="31244" value-type="31244_SG_SG" data-search-type="6">Phước Long</li>
+    <li class="js__option" value="33804" value-type="33804_SG_SG" data-search-type="6">Phước Thắng</li>
+    <li class="js__option" value="41228" value-type="41228_SG_SG" data-search-type="6">Phước Thành</li>
+    <li class="js__option" value="12812" value-type="12812_SG_SG" data-search-type="6">Rạch Dừa</li>
+    <li class="js__option" value="7692" value-type="7692_SG_SG" data-search-type="6">Sài Gòn</li>
+    <li class="js__option" value="30988" value-type="30988_SG_SG" data-search-type="6">Tam Bình</li>
+    <li class="js__option" value="34572" value-type="34572_SG_SG" data-search-type="6">Tam Long</li>
+    <li class="js__option" value="33548" value-type="33548_SG_SG" data-search-type="6">Tam Thắng</li>
+    <li class="js__option" value="28172" value-type="28172_SG_SG" data-search-type="6">Tân An Hội</li>
+    <li class="js__option" value="6668" value-type="6668_SG_SG" data-search-type="6">Tân Bình</li>
+    <li class="js__option" value="7180" value-type="7180_SG_SG" data-search-type="6">Tân Định</li>
+    <li class="js__option" value="17164" value-type="17164_SG_SG" data-search-type="6">Tân Đông Hiệp</li>
+    <li class="js__option" value="35596" value-type="35596_SG_SG" data-search-type="6">Tân Hải</li>
+    <li class="js__option" value="41740" value-type="41740_SG_SG" data-search-type="6">Tân Hiệp</li>
+    <li class="js__option" value="26380" value-type="26380_SG_SG" data-search-type="6">Tân Hòa</li>
+    <li class="js__option" value="19980" value-type="19980_SG_SG" data-search-type="6">Tân Hưng</li>
+    <li class="js__option" value="14860" value-type="14860_SG_SG" data-search-type="6">Tân Khánh</li>
+    <li class="js__option" value="3596" value-type="3596_SG_SG" data-search-type="6">Tân Mỹ</li>
+    <li class="js__option" value="16652" value-type="16652_SG_SG" data-search-type="6">Tân Nhựt</li>
+    <li class="js__option" value="33036" value-type="33036_SG_SG" data-search-type="6">Tân Phú</li>
+    <li class="js__option" value="35340" value-type="35340_SG_SG" data-search-type="6">Tân Phước</li>
+    <li class="js__option" value="32524" value-type="32524_SG_SG" data-search-type="6">Tân Sơn</li>
+    <li class="js__option" value="25868" value-type="25868_SG_SG" data-search-type="6">Tân Sơn Hòa</li>
+    <li class="js__option" value="26124" value-type="26124_SG_SG" data-search-type="6">Tân Sơn Nhất</li>
+    <li class="js__option" value="9484" value-type="9484_SG_SG" data-search-type="6">Tân Sơn Nhì</li>
+    <li class="js__option" value="13580" value-type="13580_SG_SG" data-search-type="6">Tân Tạo</li>
+    <li class="js__option" value="35084" value-type="35084_SG_SG" data-search-type="6">Tân Thành</li>
+    <li class="js__option" value="21772" value-type="21772_SG_SG" data-search-type="6">Tân Thới Hiệp</li>
+    <li class="js__option" value="20236" value-type="20236_SG_SG" data-search-type="6">Tân Thuận</li>
+    <li class="js__option" value="15116" value-type="15116_SG_SG" data-search-type="6">Tân Uyên</li>
+    <li class="js__option" value="1804" value-type="1804_SG_SG" data-search-type="6">Tân Vĩnh Lộc</li>
+    <li class="js__option" value="4620" value-type="4620_SG_SG" data-search-type="6">Tăng Nhơn Phú</li>
+    <li class="js__option" value="16140" value-type="16140_SG_SG" data-search-type="6">Tây Nam</li>
+    <li class="js__option" value="9740" value-type="9740_SG_SG" data-search-type="6">Tây Thạnh</li>
+    <li class="js__option" value="27660" value-type="27660_SG_SG" data-search-type="6">Thái Mỹ</li>
+    <li class="js__option" value="268" value-type="268_SG_SG" data-search-type="6">Thạnh An</li>
+    <li class="js__option" value="16396" value-type="16396_SG_SG" data-search-type="6">Thanh An</li>
+    <li class="js__option" value="23308" value-type="23308_SG_SG" data-search-type="6">Thạnh Mỹ Tây</li>
+    <li class="js__option" value="22028" value-type="22028_SG_SG" data-search-type="6">Thới An</li>
+    <li class="js__option" value="15884" value-type="15884_SG_SG" data-search-type="6">Thới Hòa</li>
+    <li class="js__option" value="24844" value-type="24844_SG_SG" data-search-type="6">Thông Tây Hội</li>
+    <li class="js__option" value="12044" value-type="12044_SG_SG" data-search-type="6">Thủ Dầu Một</li>
+    <li class="js__option" value="9996" value-type="9996_SG_SG" data-search-type="6">Thủ Đức</li>
+    <li class="js__option" value="43020" value-type="43020_SG_SG" data-search-type="6">Thuận An</li>
+    <li class="js__option" value="11532" value-type="11532_SG_SG" data-search-type="6">Thuận Giao</li>
+    <li class="js__option" value="5900" value-type="5900_SG_SG" data-search-type="6">Thường Tân</li>
+    <li class="js__option" value="14092" value-type="14092_SG_SG" data-search-type="6">Trừ Văn Thố</li>
+    <li class="js__option" value="21516" value-type="21516_SG_SG" data-search-type="6">Trung Mỹ Tây</li>
+    <li class="js__option" value="780" value-type="780_SG_SG" data-search-type="6">Vĩnh Hội</li>
+    <li class="js__option" value="1548" value-type="1548_SG_SG" data-search-type="6">Vĩnh Lộc</li>
+    <li class="js__option" value="42508" value-type="42508_SG_SG" data-search-type="6">Vĩnh Tân</li>
+    <li class="js__option" value="40204" value-type="40204_SG_SG" data-search-type="6">Vũng Tàu</li>
+    <li class="js__option" value="20492" value-type="20492_SG_SG" data-search-type="6">Vườn Lài</li>
+    <li class="js__option" value="524" value-type="524_SG_SG" data-search-type="6">Xóm Chiếu</li>
+    <li class="js__option" value="2828" value-type="2828_SG_SG" data-search-type="6">Xuân Hòa</li>
+    <li class="js__option" value="37132" value-type="37132_SG_SG" data-search-type="6">Xuân Sơn</li>
+    <li class="js__option" value="29964" value-type="29964_SG_SG" data-search-type="6">Xuân Thới Sơn</li>
+    <li class="js__option" value="37900" value-type="37900_SG_SG" data-search-type="6">Xuyên Mộc</li>
+</div>

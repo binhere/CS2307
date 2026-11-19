@@ -1,0 +1,122 @@
+﻿ward_id:ID(Ward),name:string,normalized_name:string,city_province:string,:LABEL
+ward_huyen_binh_chanh,Huyện Bình Chánh,huyen binh chanh,Hồ Chí Minh,Ward
+ward_phuong_an_dong,Phường An Đông,phuong an dong,Hồ Chí Minh,Ward
+ward_phuong_an_hoi_dong,Phường An Hội Đông,phuong an hoi dong,Hồ Chí Minh,Ward
+ward_phuong_an_hoi_tay,Phường An Hội Tây,phuong an hoi tay,Hồ Chí Minh,Ward
+ward_phuong_an_khanh,Phường An Khánh,phuong an khanh,Hồ Chí Minh,Ward
+ward_phuong_an_lac,Phường An Lạc,phuong an lac,Hồ Chí Minh,Ward
+ward_phuong_an_nhon,Phường An Nhơn,phuong an nhon,Hồ Chí Minh,Ward
+ward_phuong_an_phu,Phường An Phú,phuong an phu,Hồ Chí Minh,Ward
+ward_phuong_an_phu_dong,Phường An Phú Đông,phuong an phu dong,Hồ Chí Minh,Ward
+ward_phuong_ban_co,Phường Bàn Cờ,phuong ban co,Hồ Chí Minh,Ward
+ward_phuong_bay_hien,Phường Bảy Hiền,phuong bay hien,Hồ Chí Minh,Ward
+ward_phuong_ben_thanh,Phường Bến Thành,phuong ben thanh,Hồ Chí Minh,Ward
+ward_phuong_binh_dong,Phường Bình Đông,phuong binh dong,Hồ Chí Minh,Ward
+ward_phuong_binh_duong,Phường Bình Dương,phuong binh duong,Hồ Chí Minh,Ward
+ward_phuong_binh_hoa,Phường Bình Hòa,phuong binh hoa,Hồ Chí Minh,Ward
+ward_phuong_binh_hung_hoa,Phường Bình Hưng Hòa,phuong binh hung hoa,Hồ Chí Minh,Ward
+ward_phuong_binh_loi_trung,Phường Bình Lợi Trung,phuong binh loi trung,Hồ Chí Minh,Ward
+ward_phuong_binh_phu,Phường Bình Phú,phuong binh phu,Hồ Chí Minh,Ward
+ward_phuong_binh_quoi,Phường Bình Quới,phuong binh quoi,Hồ Chí Minh,Ward
+ward_phuong_binh_tan,Phường Bình Tân,phuong binh tan,Hồ Chí Minh,Ward
+ward_phuong_binh_tay,Phường Bình Tây,phuong binh tay,Hồ Chí Minh,Ward
+ward_phuong_binh_thanh,Phường Bình Thạnh,phuong binh thanh,Hồ Chí Minh,Ward
+ward_phuong_binh_thoi,Phường Bình Thới,phuong binh thoi,Hồ Chí Minh,Ward
+ward_phuong_binh_tien,Phường Bình Tiên,phuong binh tien,Hồ Chí Minh,Ward
+ward_phuong_binh_tri_dong,Phường Bình Trị Đông,phuong binh tri dong,Hồ Chí Minh,Ward
+ward_phuong_binh_trung,Phường Bình Trưng,phuong binh trung,Hồ Chí Minh,Ward
+ward_phuong_cat_lai,Phường Cát Lái,phuong cat lai,Hồ Chí Minh,Ward
+ward_phuong_cau_kieu,Phường Cầu Kiệu,phuong cau kieu,Hồ Chí Minh,Ward
+ward_phuong_cau_ong_lanh,Phường Cầu Ông Lãnh,phuong cau ong lanh,Hồ Chí Minh,Ward
+ward_phuong_chanh_hung,Phường Chánh Hưng,phuong chanh hung,Hồ Chí Minh,Ward
+ward_phuong_cho_lon,Phường Chợ Lớn,phuong cho lon,Hồ Chí Minh,Ward
+ward_phuong_cho_quan,Phường Chợ Quán,phuong cho quan,Hồ Chí Minh,Ward
+ward_phuong_di_an,Phường Dĩ An,phuong di an,Hồ Chí Minh,Ward
+ward_phuong_dien_hong,Phường Diên Hồng,phuong dien hong,Hồ Chí Minh,Ward
+ward_phuong_dong_hoa,Phường Đông Hòa,phuong dong hoa,Hồ Chí Minh,Ward
+ward_phuong_dong_hung_thuan,Phường Đông Hưng Thuận,phuong dong hung thuan,Hồ Chí Minh,Ward
+ward_phuong_duc_nhuan,Phường Đức Nhuận,phuong duc nhuan,Hồ Chí Minh,Ward
+ward_phuong_gia_dinh,Phường Gia Định,phuong gia dinh,Hồ Chí Minh,Ward
+ward_phuong_go_vap,Phường Gò Vấp,phuong go vap,Hồ Chí Minh,Ward
+ward_phuong_hanh_thong,Phường Hạnh Thông,phuong hanh thong,Hồ Chí Minh,Ward
+ward_phuong_hiep_binh,Phường Hiệp Bình,phuong hiep binh,Hồ Chí Minh,Ward
+ward_phuong_hoa_binh,Phường Hòa Bình,phuong hoa binh,Hồ Chí Minh,Ward
+ward_phuong_hoa_hung,Phường Hòa Hưng,phuong hoa hung,Hồ Chí Minh,Ward
+ward_phuong_hoa_loi,Phường Hòa Lợi,phuong hoa loi,Hồ Chí Minh,Ward
+ward_phuong_khanh_hoi,Phường Khánh Hội,phuong khanh hoi,Hồ Chí Minh,Ward
+ward_phuong_lai_thieu,Phường Lái Thiêu,phuong lai thieu,Hồ Chí Minh,Ward
+ward_phuong_linh_xuan,Phường Linh Xuân,phuong linh xuan,Hồ Chí Minh,Ward
+ward_phuong_long_binh,Phường Long Bình,phuong long binh,Hồ Chí Minh,Ward
+ward_phuong_long_phuoc,Phường Long Phước,phuong long phuoc,Hồ Chí Minh,Ward
+ward_phuong_long_truong,Phường Long Trường,phuong long truong,Hồ Chí Minh,Ward
+ward_phuong_minh_phung,Phường Minh Phụng,phuong minh phung,Hồ Chí Minh,Ward
+ward_phuong_nhieu_loc,Phường Nhiêu Lộc,phuong nhieu loc,Hồ Chí Minh,Ward
+ward_phuong_phu_dinh,Phường Phú Định,phuong phu dinh,Hồ Chí Minh,Ward
+ward_phuong_phu_lam,Phường Phú Lâm,phuong phu lam,Hồ Chí Minh,Ward
+ward_phuong_phu_loi,Phường Phú Lợi,phuong phu loi,Hồ Chí Minh,Ward
+ward_phuong_phu_nhuan,Phường Phú Nhuận,phuong phu nhuan,Hồ Chí Minh,Ward
+ward_phuong_phu_thanh,Phường Phú Thạnh,phuong phu thanh,Hồ Chí Minh,Ward
+ward_phuong_phu_tho,Phường Phú Thọ,phuong phu tho,Hồ Chí Minh,Ward
+ward_phuong_phu_tho_hoa,Phường Phú Thọ Hòa,phuong phu tho hoa,Hồ Chí Minh,Ward
+ward_phuong_phu_thuan,Phường Phú Thuận,phuong phu thuan,Hồ Chí Minh,Ward
+ward_phuong_phuoc_long,Phường Phước Long,phuong phuoc long,Hồ Chí Minh,Ward
+ward_phuong_phuoc_thang,Phường Phước Thắng,phuong phuoc thang,Hồ Chí Minh,Ward
+ward_phuong_rach_dua,Phường Rạch Dừa,phuong rach dua,Hồ Chí Minh,Ward
+ward_phuong_sai_gon,Phường Sài Gòn,phuong sai gon,Hồ Chí Minh,Ward
+ward_phuong_tam_binh,Phường Tam Bình,phuong tam binh,Hồ Chí Minh,Ward
+ward_phuong_tam_thang,Phường Tam Thắng,phuong tam thang,Hồ Chí Minh,Ward
+ward_phuong_tan_binh,Phường Tân Bình,phuong tan binh,Hồ Chí Minh,Ward
+ward_phuong_tan_dinh,Phường Tân Định,phuong tan dinh,Hồ Chí Minh,Ward
+ward_phuong_tan_dong_hiep,Phường Tân Đông Hiệp,phuong tan dong hiep,Hồ Chí Minh,Ward
+ward_phuong_tan_hiep,Phường Tân Hiệp,phuong tan hiep,Hồ Chí Minh,Ward
+ward_phuong_tan_hoa,Phường Tân Hòa,phuong tan hoa,Hồ Chí Minh,Ward
+ward_phuong_tan_hung,Phường Tân Hưng,phuong tan hung,Hồ Chí Minh,Ward
+ward_phuong_tan_khanh,Phường Tân Khánh,phuong tan khanh,Hồ Chí Minh,Ward
+ward_phuong_tan_my,Phường Tân Mỹ,phuong tan my,Hồ Chí Minh,Ward
+ward_phuong_tan_phu,Phường Tân Phú,phuong tan phu,Hồ Chí Minh,Ward
+ward_phuong_tan_son,Phường Tân Sơn,phuong tan son,Hồ Chí Minh,Ward
+ward_phuong_tan_son_hoa,Phường Tân Sơn Hòa,phuong tan son hoa,Hồ Chí Minh,Ward
+ward_phuong_tan_son_nhat,Phường Tân Sơn Nhất,phuong tan son nhat,Hồ Chí Minh,Ward
+ward_phuong_tan_son_nhi,Phường Tân Sơn Nhì,phuong tan son nhi,Hồ Chí Minh,Ward
+ward_phuong_tan_tao,Phường Tân Tạo,phuong tan tao,Hồ Chí Minh,Ward
+ward_phuong_tan_thoi_hiep,Phường Tân Thới Hiệp,phuong tan thoi hiep,Hồ Chí Minh,Ward
+ward_phuong_tan_thuan,Phường Tân Thuận,phuong tan thuan,Hồ Chí Minh,Ward
+ward_phuong_tang_nhon_phu,Phường Tăng Nhơn Phú,phuong tang nhon phu,Hồ Chí Minh,Ward
+ward_phuong_tay_thanh,Phường Tây Thạnh,phuong tay thanh,Hồ Chí Minh,Ward
+ward_phuong_thanh_my_tay,Phường Thạnh Mỹ Tây,phuong thanh my tay,Hồ Chí Minh,Ward
+ward_phuong_thoi_an,Phường Thới An,phuong thoi an,Hồ Chí Minh,Ward
+ward_phuong_thoi_hoa,Phường Thới Hòa,phuong thoi hoa,Hồ Chí Minh,Ward
+ward_phuong_thong_tay_hoi,Phường Thông Tây Hội,phuong thong tay hoi,Hồ Chí Minh,Ward
+ward_phuong_thu_dau_mot,Phường Thủ Dầu Một,phuong thu dau mot,Hồ Chí Minh,Ward
+ward_phuong_thu_duc,Phường Thủ Đức,phuong thu duc,Hồ Chí Minh,Ward
+ward_phuong_thuan_an,Phường Thuận An,phuong thuan an,Hồ Chí Minh,Ward
+ward_phuong_thuan_giao,Phường Thuận Giao,phuong thuan giao,Hồ Chí Minh,Ward
+ward_phuong_trung_my_tay,Phường Trung Mỹ Tây,phuong trung my tay,Hồ Chí Minh,Ward
+ward_phuong_vinh_hoi,Phường Vĩnh Hội,phuong vinh hoi,Hồ Chí Minh,Ward
+ward_phuong_vinh_tan,Phường Vĩnh Tân,phuong vinh tan,Hồ Chí Minh,Ward
+ward_phuong_vung_tau,Phường Vũng Tàu,phuong vung tau,Hồ Chí Minh,Ward
+ward_phuong_vuon_lai,Phường Vườn Lài,phuong vuon lai,Hồ Chí Minh,Ward
+ward_phuong_xom_chieu,Phường Xóm Chiếu,phuong xom chieu,Hồ Chí Minh,Ward
+ward_phuong_xuan_hoa,Phường Xuân Hòa,phuong xuan hoa,Hồ Chí Minh,Ward
+ward_quan_3,Quận 3,quan 3,Hồ Chí Minh,Ward
+ward_quan_8,Quận 8,quan 8,Hồ Chí Minh,Ward
+ward_quan_9,Quận 9,quan 9,Hồ Chí Minh,Ward
+ward_quan_binh_thanh,Quận Bình Thạnh,quan binh thanh,Hồ Chí Minh,Ward
+ward_quan_tan_binh,Quận Tân Bình,quan tan binh,Hồ Chí Minh,Ward
+ward_thanh_pho_thu_duc,Thành phố Thủ Đức,thanh pho thu duc,Hồ Chí Minh,Ward
+ward_xa_ba_diem,Xã Bà Điểm,xa ba diem,Hồ Chí Minh,Ward
+ward_xa_binh_hung,Xã Bình Hưng,xa binh hung,Hồ Chí Minh,Ward
+ward_xa_binh_khanh,Xã Bình Khánh,xa binh khanh,Hồ Chí Minh,Ward
+ward_xa_cu_chi,Xã Củ Chi,xa cu chi,Hồ Chí Minh,Ward
+ward_xa_dong_thanh,Xã Đông Thạnh,xa dong thanh,Hồ Chí Minh,Ward
+ward_xa_hiep_phuoc,Xã Hiệp Phước,xa hiep phuoc,Hồ Chí Minh,Ward
+ward_xa_hoc_mon,Xã Hóc Môn,xa hoc mon,Hồ Chí Minh,Ward
+ward_xa_long_dien,Xã Long Điền,xa long dien,Hồ Chí Minh,Ward
+ward_xa_nha_be,Xã Nhà Bè,xa nha be,Hồ Chí Minh,Ward
+ward_xa_nhuan_duc,Xã Nhuận Đức,xa nhuan duc,Hồ Chí Minh,Ward
+ward_xa_tan_nhut,Xã Tân Nhựt,xa tan nhut,Hồ Chí Minh,Ward
+ward_xa_tan_vinh_loc,Xã Tân Vĩnh Lộc,xa tan vinh loc,Hồ Chí Minh,Ward
+ward_xa_thai_my,Xã Thái Mỹ,xa thai my,Hồ Chí Minh,Ward
+ward_xa_tru_van_tho,Xã Trừ Văn Thố,xa tru van tho,Hồ Chí Minh,Ward
+ward_xa_vinh_loc,Xã Vĩnh Lộc,xa vinh loc,Hồ Chí Minh,Ward
+ward_xa_xuan_thoi_son,Xã Xuân Thới Sơn,xa xuan thoi son,Hồ Chí Minh,Ward
