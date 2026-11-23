@@ -1,0 +1,1196 @@
+﻿street_id:ID(Street),name:string,normalized_name:string,ward_id:string,city_province:string,:LABEL
+street_005d480ac39d,Đường 26,duong 26,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_007a37b1d72f,Đường Xô Viết Nghệ Tĩnh,duong xo viet nghe tinh,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_00819aea859a,Đường Huy Cận,duong huy can,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_009497f53933,Đường Thạnh Xuân 38,duong thanh xuan 38,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_00d821a9de3f,Đường Phùng Văn Cung,duong phung van cung,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_01047c315c11,Đường Đào Duy Từ,duong dao duy tu,ward_phuong_dien_hong,Hồ Chí Minh,Street
+street_014cc451ce4f,Đường Nguyễn Sỹ Sách,duong nguyen sy sach,ward_phuong_tan_son,Hồ Chí Minh,Street
+street_016067f73054,Đường Quách Điêu,duong quach dieu,ward_xa_vinh_loc,Hồ Chí Minh,Street
+street_020ea70f5dcc,Đường Lê Văn Việt,duong le van viet,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_021d4b7b4718,Đường Tú Mỡ,duong tu mo,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_023687ad05dc,Đường Số 6,duong so 6,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_024443d9a23c,Đường An Bình,duong an binh,ward_phuong_an_dong,Hồ Chí Minh,Street
+street_029ddb0a1506,Khu đô thị Việt - Sing The Oasis,khu do thi viet sing the oasis,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_02d5bb6f8b8d,Đường Phan Xích Long,duong phan xich long,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_030d1f7c2297,Đường Sư Vạn Hạnh,duong su van hanh,ward_phuong_vuon_lai,Hồ Chí Minh,Street
+street_03133d60a1fe,Đường Số 3,duong so 3,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_03a1508837b4,Đường Nữ Dân Công,duong nu dan cong,ward_xa_vinh_loc,Hồ Chí Minh,Street
+street_03af6769c7f3,Đường Số 3,duong so 3,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_03d499b0a046,Đường D2,duong d2,ward_phuong_di_an,Hồ Chí Minh,Street
+street_03e5179d323e,Đường Nguyễn Cửu Vân,duong nguyen cuu van,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_042726ffb233,Đường Dương Bá Trạc,duong duong ba trac,ward_phuong_chanh_hung,Hồ Chí Minh,Street
+street_047a164b7c65,Đường Trung Mỹ Tây 13,duong trung my tay 13,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_047f0bbcc77f,Đường Số 37,duong so 37,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_04aff3b23ed0,Đường Số 13C,duong so 13c,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_05bd29d8e25d,Đường Nguyễn Bá Huân,duong nguyen ba huan,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_05ce4d31017d,Đường Phạm Hùng,duong pham hung,ward_xa_binh_hung,Hồ Chí Minh,Street
+street_05e1b73c02f6,Đường Nguyễn Tất Thành,duong nguyen tat thanh,ward_phuong_xom_chieu,Hồ Chí Minh,Street
+street_05e22f4056c6,Đường Tô Ký,duong to ky,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_05e5088b1389,Đường Cao Lỗ,duong cao lo,ward_phuong_chanh_hung,Hồ Chí Minh,Street
+street_05f2e44fc47d,Đường Số 9,duong so 9,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_0607d5a5c0de,Đường 42,duong 42,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_066d6b2a0e80,Đường Thới An 9,duong thoi an 9,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_06c050bf2308,Đường Đoàn Thị Điểm,duong doan thi diem,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_06e2308faf86,Đường 18,duong 18,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_07358fea7997,Thới An City,thoi an city,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_07841868dc5e,Đường Số 7,duong so 7,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_07b36ec4d2e3,Đường Số 40,duong so 40,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_083008b406f1,Đường Nguyễn Thị Thập,duong nguyen thi thap,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_08453abd92b4,Đường D33,duong d33,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_0859cda337a7,Đường Chuyên Dùng 9,duong chuyen dung 9,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_0905f0e68bfd,Đường Nguyễn Thị Thập,duong nguyen thi thap,ward_phuong_tan_my,Hồ Chí Minh,Street
+street_0975fcf11938,Đường Lê Quý Đôn,duong le quy don,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_0993ea8701fa,Đường Đề Thám,duong de tham,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_09ab2b8f6021,Đường An Phú Đông 33,duong an phu dong 33,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_09db2371706d,Đường Số 9A,duong so 9a,ward_xa_binh_hung,Hồ Chí Minh,Street
+street_09e02992e7ff,Đường Hồng Bàng,duong hong bang,ward_phuong_minh_phung,Hồ Chí Minh,Street
+street_09eaa3cc97bb,Đường Nguyễn Thị Xinh,duong nguyen thi xinh,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_0a23572db78d,Đường Trường Sơn,duong truong son,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_0a29775ab707,Đường Liên khu 4-5,duong lien khu 4 5,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_0a357cd55477,Đường Đinh Bộ Lĩnh,duong dinh bo linh,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_0a45d09311a1,Đường Phú Hòa,duong phu hoa,ward_phuong_tan_hoa,Hồ Chí Minh,Street
+street_0ad1b3f26eba,Đường Vành Đai 4,duong vanh dai 4,ward_phuong_thoi_hoa,Hồ Chí Minh,Street
+street_0ae66af35a5f,Đường Song Hành,duong song hanh,ward_xa_ba_diem,Hồ Chí Minh,Street
+street_0b2d8d666e3d,Đường Hậu Giang,duong hau giang,ward_phuong_tan_son_nhat,Hồ Chí Minh,Street
+street_0b50930c6d83,Đường Chu Văn An,duong chu van an,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_0b5587919342,Đường Phạm Văn Chiêu,duong pham van chieu,ward_phuong_thong_tay_hoi,Hồ Chí Minh,Street
+street_0b6265f82e6d,Đường Phan Văn Đối,duong phan van doi,ward_xa_ba_diem,Hồ Chí Minh,Street
+street_0b8202e34526,Đường Số 19,duong so 19,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_0b8227f1a5a0,Đường Nguyễn Văn Trỗi,duong nguyen van troi,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_0bae8c3a63dd,Đường Thạnh Xuân 33,duong thanh xuan 33,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_0be86d296905,Đường Mai Chí Thọ,duong mai chi tho,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_0c471099fb38,Đường Lê Văn Chí,duong le van chi,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_0cd183843d67,Đường Cách Mạng Tháng Tám,duong cach mang thang tam,ward_phuong_nhieu_loc,Hồ Chí Minh,Street
+street_0cfe21e5567b,Đường 8B,duong 8b,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_0d583601d44a,Đường Số 6,duong so 6,ward_phuong_tam_binh,Hồ Chí Minh,Street
+street_0dc0dcf2c056,Đường Lý Thánh Tông,duong ly thanh tong,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_0dd10ecb267e,Đường 40,duong 40,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_0e100012730f,Đường Thạnh Xuân 23,duong thanh xuan 23,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_0e157d9fa577,Đường Nguyễn Thượng Hiền,duong nguyen thuong hien,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_0e162aa91640,Đường 5A,duong 5a,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_0e347dd95bea,Đường 8,duong 8,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_0e411b0e46ce,Đường N3,duong n3,ward_xa_tru_van_tho,Hồ Chí Minh,Street
+street_0e63544a30ea,Đường Số 3,duong so 3,ward_phuong_thuan_giao,Hồ Chí Minh,Street
+street_0ec970f05d4d,Đường Nguyễn Gia Trí,duong nguyen gia tri,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_0ed2b606394e,Đường Trần Hưng Đạo,duong tran hung dao,ward_phuong_cho_lon,Hồ Chí Minh,Street
+street_0f46a25f6778,Đường Tô Ngọc Vân,duong to ngoc van,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_0f885a3a5082,Đường Lê Quang Định,duong le quang dinh,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_0fa761c5cd78,Đường Nguyễn Thái Bình,duong nguyen thai binh,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_100a9f04acf8,Đường Nguyễn Du,duong nguyen du,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_101c982c9726,Đường Nguyễn Phi Khanh,duong nguyen phi khanh,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_10a5850c191d,Đường Trần Cao Vân,duong tran cao van,ward_phuong_tam_thang,Hồ Chí Minh,Street
+street_10e2aa48066f,Đường Nguyễn Văn Tiết,duong nguyen van tiet,ward_phuong_lai_thieu,Hồ Chí Minh,Street
+street_10eccf077dc1,Đường Hương Lộ 80B,duong huong lo 80b,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_10ffa9a0ad01,Đường Chu Mạnh Trinh,duong chu manh trinh,ward_phuong_tam_thang,Hồ Chí Minh,Street
+street_11dfc729a424,Đường Bờ Bao Tân Thắng,duong bo bao tan thang,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_1229ed6db0fa,Cao ốc Thịnh Vượng,cao oc thinh vuong,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_12415c1acd49,Đường Số 4F,duong so 4f,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_129296c7e489,Đường Nguyễn Thượng Hiền,duong nguyen thuong hien,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_12f0c034245c,Đường Bàu Cát,duong bau cat,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_1324de24cfc8,Đường Tôn Thất Tùng,duong ton that tung,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_1340d6524847,Đường Thới An 13,duong thoi an 13,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_13675b18d5ff,Đường 8,duong 8,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_136957723b38,Đường Trường Chinh,duong truong chinh,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_13afcd059dc1,Đường 12,duong 12,ward_phuong_long_phuoc,Hồ Chí Minh,Street
+street_13c56439c8cd,Đường Hoàng Diệu,duong hoang dieu,ward_phuong_khanh_hoi,Hồ Chí Minh,Street
+street_13ca5466db27,Đường Lý Chính Thắng,duong ly chinh thang,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_13e4beb63fb6,Đường Nguyễn Duy,duong nguyen duy,ward_phuong_chanh_hung,Hồ Chí Minh,Street
+street_13f559fd6368,Đường Bà Hạt,duong ba hat,ward_phuong_vuon_lai,Hồ Chí Minh,Street
+street_140ef79d8d07,Đường Phạm Hữu Lầu,duong pham huu lau,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_1499eb6dab2f,Đường Hương lộ 2,duong huong lo 2,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_14b3cda0f6b2,Đường M4,duong m4,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_14c6df524c49,Đường 30/4,duong 30 4,ward_phuong_phu_loi,Hồ Chí Minh,Street
+street_14f3b7eb95cb,Đường Bình Chuẩn 45,duong binh chuan 45,ward_phuong_thuan_giao,Hồ Chí Minh,Street
+street_150c1b76ea95,Đường Lê Đức Thọ,duong le duc tho,ward_phuong_an_nhon,Hồ Chí Minh,Street
+street_1510b7cadf0b,Đường Số 1,duong so 1,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_15f8c56b0638,Đường Phan Văn Hớn,duong phan van hon,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_15f9aae64ca2,Đường Thạnh Lộc 29,duong thanh loc 29,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_16a8a841ae95,Đường Quốc lộ 1K,duong quoc lo 1k,ward_phuong_dong_hoa,Hồ Chí Minh,Street
+street_16ac38d05a98,Đường Tây Thạnh,duong tay thanh,ward_phuong_tay_thanh,Hồ Chí Minh,Street
+street_16fb9a40c9a9,Đường Vườn Lài,duong vuon lai,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_17200aa5b280,Đường Số 1,duong so 1,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_1725e0fb2573,Đường Thống Nhất,duong thong nhat,ward_phuong_an_hoi_dong,Hồ Chí Minh,Street
+street_175eb37c1057,Đường Bình Chuẩn 67,duong binh chuan 67,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_17626e2cb297,Đường D35,duong d35,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_178352e54f62,Đường Lê Quý Đôn,duong le quy don,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_178cfa1168d7,Đường Đông Thạnh 4,duong dong thanh 4,ward_xa_dong_thanh,Hồ Chí Minh,Street
+street_17acae3c8650,Đường Xóm Chiếu,duong xom chieu,ward_phuong_xom_chieu,Hồ Chí Minh,Street
+street_17b85297045b,Đường Cô Bắc,duong co bac,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_17b9e43bc6e2,Đường Số 22,duong so 22,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_17bc86094c69,Đường Số 160,duong so 160,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_17bdeee9bfc4,Đường Nguyễn Bỉnh Khiêm,duong nguyen binh khiem,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_17c7741d86a2,Đường Nguyễn Trãi,duong nguyen trai,ward_phuong_cau_ong_lanh,Hồ Chí Minh,Street
+street_182a7d4ff5bf,Đường Lý Chiêu Hoàng,duong ly chieu hoang,ward_phuong_binh_phu,Hồ Chí Minh,Street
+street_18367657ad21,Đường D9A,duong d9a,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_1855f0ee939f,Đường Phan Đình Phùng,duong phan dinh phung,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_1863cd7428ac,Đường Bình Giã,duong binh gia,ward_phuong_tam_thang,Hồ Chí Minh,Street
+street_18829adab70a,Đường Ngô Tất Tố,duong ngo tat to,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_188f2c4139f2,Đường Nguyễn Chí Thanh,duong nguyen chi thanh,ward_phuong_an_dong,Hồ Chí Minh,Street
+street_189c3bb7be4c,Đường Phan Văn Trị,duong phan van tri,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_18b1a8fe01b8,Đường Nguyễn Nhữ Lãm,duong nguyen nhu lam,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_1916bdf658cf,Đường Số 4,duong so 4,ward_phuong_an_hoi_dong,Hồ Chí Minh,Street
+street_192454290ffd,Đường Hoàng Văn Thụ,duong hoang van thu,ward_phuong_tan_son_hoa,Hồ Chí Minh,Street
+street_193d5947e073,Đường Số 85,duong so 85,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_19608865b79f,Đường Trần Nhật Duật,duong tran nhat duat,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_196b683689ce,Đường Thới An 12,duong thoi an 12,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_19b0b1a70abc,Đường Số 12,duong so 12,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_19d9b81f6350,Đường Nguyễn Văn Công,duong nguyen van cong,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_19fcf92261ee,Đường 3/2,duong 3 2,ward_phuong_vuon_lai,Hồ Chí Minh,Street
+street_1a4e11fb3ba6,Đường Phan Huy Thực,duong phan huy thuc,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_1a8e5fbecf87,Đường Huỳnh Tấn Phát,duong huynh tan phat,ward_phuong_tan_my,Hồ Chí Minh,Street
+street_1aae8136d2ba,Đường Nguyễn Văn Luông,duong nguyen van luong,ward_phuong_binh_phu,Hồ Chí Minh,Street
+street_1b3cabdceeec,Đường Trịnh Quang Nghị,duong trinh quang nghi,ward_phuong_binh_dong,Hồ Chí Minh,Street
+street_1b69d5c50fde,Đường Đoàn Giỏi,duong doan gioi,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_1b8f7f87c626,Đường Võ Văn Tần,duong vo van tan,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_1bb4f7728bf3,Đường M2,duong m2,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_1c07969f75a7,Đường Số 8,duong so 8,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_1c5d075f7b3c,Đường Số 19,duong so 19,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_1c6600e2c7f2,Đường Xa Lộ Hà Nội,duong xa lo ha noi,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_1cf47c504a0c,Đường Hưng Gia 3,duong hung gia 3,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_1cf949b01193,Phố Phan Đăng Lưu,pho phan dang luu,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_1d19f5bc03f1,Phố Lương Định Của,pho luong dinh cua,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_1d5e234cb2f2,Đường Trần Lựu,duong tran luu,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_1dd0bb7a1e96,Đường Lê Tấn Bê,duong le tan be,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_1dd7c83a03cf,Đường Trần Bá Giao,duong tran ba giao,ward_phuong_an_nhon,Hồ Chí Minh,Street
+street_1df600453f00,Đường Điện Biên Phủ,duong dien bien phu,ward_phuong_ban_co,Hồ Chí Minh,Street
+street_1e0d73d9da33,Đường Phạm Thế Hiển,duong pham the hien,ward_phuong_binh_dong,Hồ Chí Minh,Street
+street_1e39fcdaabc9,Đường NA9,duong na9,ward_phuong_binh_hoa,Hồ Chí Minh,Street
+street_1ec145b28819,Đường Lê Thúc Hoạch,duong le thuc hoach,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_1f06c276704e,Đường Bàu Cát 2,duong bau cat 2,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_1f452c77d845,Đường Hà Huy Giáp,duong ha huy giap,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_1f7478f494ac,Đường Số 19,duong so 19,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_1f8481518b12,Đường Số 40,duong so 40,ward_thanh_pho_thu_duc,Hồ Chí Minh,Street
+street_1ff367051d59,Đường Hàn Hải Nguyên,duong han hai nguyen,ward_phuong_phu_tho,Hồ Chí Minh,Street
+street_202bb2a33833,Đường Số 1,duong so 1,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_202cd343b39e,Đường 16,duong 16,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_204b18aa5b04,Đường Nguyễn Oanh,duong nguyen oanh,ward_phuong_go_vap,Hồ Chí Minh,Street
+street_2052268e3ee9,Đường Văn Chung,duong van chung,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_20555634a7d9,Đường Xuân Hồng,duong xuan hong,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_205a5e107eb7,Đường Số 4,duong so 4,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_207204053720,Đường ĐT 743,duong dt 743,ward_phuong_di_an,Hồ Chí Minh,Street
+street_20829f7a64d6,Đường Số 7,duong so 7,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_20c4aa19e3c7,Victoria Village,victoria village,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_20f99b3ee4d5,Đường Số 4,duong so 4,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_20fa74a32bf8,Đường Ấp Chiến Lược,duong ap chien luoc,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_214482cd1b6d,Đường Chiến Lược,duong chien luoc,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_2157532b858d,Đường Đào Duy Từ,duong dao duy tu,ward_phuong_dong_hoa,Hồ Chí Minh,Street
+street_21675ef4fa29,Đường Trương Định,duong truong dinh,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_21bce005fb81,Đường Số 2,duong so 2,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_21e13e789dd7,Đường 3/2,duong 3 2,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_21fe47b45aa9,Đường Tân Thới Nhất 2,duong tan thoi nhat 2,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_22a240e0b98c,Đường Vĩnh Hội,duong vinh hoi,ward_phuong_vinh_hoi,Hồ Chí Minh,Street
+street_22ce4238de2b,Đường D1,duong d1,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_232ca9a2014b,Đường Nguyễn Thị Sóc,duong nguyen thi soc,ward_xa_ba_diem,Hồ Chí Minh,Street
+street_235fa20b1cda,Đường Cầu Ba Phụ,duong cau ba phu,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_238711382ef1,Đường Nguyễn Bỉnh Khiêm,duong nguyen binh khiem,ward_phuong_sai_gon,Hồ Chí Minh,Street
+street_23acc305408b,Đường Bình Thành,duong binh thanh,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_23c2a5e7ec30,Phố Đông Village,pho dong village,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_23c5a2ab0e65,Đường Phan Anh,duong phan anh,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_23c91534e6fb,Đường An phú 18,duong an phu 18,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_243ed63e9872,Đường Số 1,duong so 1,ward_phuong_phu_loi,Hồ Chí Minh,Street
+street_24660a32b52d,Đường Đô Đốc Long,duong do doc long,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_247d64a649aa,The Global City,the global city,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_251fb56111ad,Đường Phạm Trọng Cầu,duong pham trong cau,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_25211f105317,Đường Trần Thái Tông,duong tran thai tong,ward_phuong_tan_son,Hồ Chí Minh,Street
+street_252449a814e8,Đường Số 19,duong so 19,ward_phuong_thong_tay_hoi,Hồ Chí Minh,Street
+street_258fcd2948f5,Đường Linh Trung,duong linh trung,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_25ffb47dd830,Đường Cửu Long,duong cuu long,ward_phuong_tan_son_hoa,Hồ Chí Minh,Street
+street_2619590240b4,Đường Nguyễn Ngọc Nhựt,duong nguyen ngoc nhut,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_2623113411fb,Đường A5,duong a5,ward_phuong_long_phuoc,Hồ Chí Minh,Street
+street_2633e7c9203c,Đường Mỹ Phước Tân Vạn,duong my phuoc tan van,ward_phuong_dong_hoa,Hồ Chí Minh,Street
+street_265792a20c08,Đường Lê Ngã,duong le nga,ward_phuong_tan_phu,Hồ Chí Minh,Street
+street_2664e198913e,Đường Trần Hưng Đạo,duong tran hung dao,ward_phuong_an_dong,Hồ Chí Minh,Street
+street_26863b2b7273,Đường Số 8,duong so 8,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_2690828c2f28,Đường Âu Cơ,duong au co,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_2707e2dacff6,Đường Tân Thới Nhất 13B,duong tan thoi nhat 13b,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_27d38c365dea,Đường Nguyễn Đình Chiểu,duong nguyen dinh chieu,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_28934559cc1b,Đường Thạnh Xuân 43,duong thanh xuan 43,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_28c879e8fcc4,Đường D5,duong d5,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_2937a341036f,Đường N5,duong n5,ward_phuong_di_an,Hồ Chí Minh,Street
+street_29c5ae00158d,Đường Tân Lập 2,duong tan lap 2,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_29c794a88649,Đường Bình Hòa 13,duong binh hoa 13,ward_phuong_binh_hoa,Hồ Chí Minh,Street
+street_2a988d662b72,Đường Âu Cơ,duong au co,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_2ba1d42dabbd,Đường Nguyễn Đức Cảnh,duong nguyen duc canh,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_2bdf7ec02cfd,Đường Nguyễn Văn Lượng,duong nguyen van luong,ward_phuong_an_hoi_dong,Hồ Chí Minh,Street
+street_2bef6b2feff2,Đường Trần Văn Giàu,duong tran van giau,ward_xa_tan_vinh_loc,Hồ Chí Minh,Street
+street_2c0869e591af,Đường Nguyễn Lương Bằng,duong nguyen luong bang,ward_phuong_tan_my,Hồ Chí Minh,Street
+street_2c1f95ffe854,Phố Phan Đăng Lưu,pho phan dang luu,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_2c26752490ad,Đường Hoàng Hữu Nam,duong hoang huu nam,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_2c6c43ebc4d9,Đường D6,duong d6,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_2d60d05cf9ee,Đường Phan Huy Ích,duong phan huy ich,ward_phuong_tan_son,Hồ Chí Minh,Street
+street_2da1b9356047,Đường Phú Định,duong phu dinh,ward_phuong_phu_dinh,Hồ Chí Minh,Street
+street_2db79612a97f,Đường Điện Biên Phủ,duong dien bien phu,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_2e31be14aea8,Đường Bến Bình Đông,duong ben binh dong,ward_phuong_phu_dinh,Hồ Chí Minh,Street
+street_2e7a1262d298,Đường Nguyễn Tuyển,duong nguyen tuyen,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_2e7f516b3dd3,Đường Số 22,duong so 22,ward_phuong_binh_phu,Hồ Chí Minh,Street
+street_2ea0b018267b,Đường Tân Thới Hiệp 9,duong tan thoi hiep 9,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_2ec197fd734a,Đường Lê Hồng Phong,duong le hong phong,ward_phuong_di_an,Hồ Chí Minh,Street
+street_2ec79e32c9a3,Đường Số 16,duong so 16,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_2fb6334d22b6,Đường Ngô Thời Nhiệm,duong ngo thoi nhiem,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_2fef4e67c556,Đường CC5,duong cc5,ward_phuong_tay_thanh,Hồ Chí Minh,Street
+street_2ff943a328e9,Đường Chế Lan Viên,duong che lan vien,ward_phuong_tay_thanh,Hồ Chí Minh,Street
+street_301499890add,Đường Hoàng Hoa Thám,duong hoang hoa tham,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_305ad8ab1f83,Đường Hồng Bàng,duong hong bang,ward_phuong_binh_tay,Hồ Chí Minh,Street
+street_30e1b2e9bae1,Đường Đoàn Kết,duong doan ket,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_30ed3718d68d,Đường Tân Túc,duong tan tuc,ward_xa_tan_nhut,Hồ Chí Minh,Street
+street_312d119a1d8b,Đường Lã Xuân Oai,duong la xuan oai,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_31446f2b808b,Đường 3/2,duong 3 2,ward_phuong_minh_phung,Hồ Chí Minh,Street
+street_3160865c6023,Đường Số 1A,duong so 1a,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_31cea61f86b4,Đường NA5,duong na5,ward_phuong_binh_hoa,Hồ Chí Minh,Street
+street_32197ecf0199,Đường Hoa Sữa,duong hoa sua,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_3264cb17d75a,Đường Vân Côi,duong van coi,ward_phuong_tan_son_nhat,Hồ Chí Minh,Street
+street_328ccabc7a4b,Đường An Bình,duong an binh,ward_phuong_di_an,Hồ Chí Minh,Street
+street_3290dacb7acb,Đường Đông Hưng Thuận 5,duong dong hung thuan 5,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_32be473883fa,Đường Tam Bình,duong tam binh,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_32d2dfa888a4,Đường Lê Thị Chợ,duong le thi cho,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_331081546571,Đường Số 4,duong so 4,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_33210a4ef5fe,Đường Lê Văn Thọ,duong le van tho,ward_phuong_thong_tay_hoi,Hồ Chí Minh,Street
+street_33c5fc3d86c6,Đường Lê Quang Định,duong le quang dinh,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_33db7dde00a8,Đường Nguyễn Trãi,duong nguyen trai,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_340b97f0f531,Đường N4,duong n4,ward_xa_tru_van_tho,Hồ Chí Minh,Street
+street_3425f44942ca,Đường Lạc Long Quân,duong lac long quan,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_3444f788dc6b,Đường Trần Hưng Đạo,duong tran hung dao,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_34e4f842852d,Đường Dương Văn Dương,duong duong van duong,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_351fbe58738b,Đường Huyền Trân Công Chúa,duong huyen tran cong chua,ward_phuong_tam_thang,Hồ Chí Minh,Street
+street_354a76730846,Đường Thống Nhất,duong thong nhat,ward_phuong_tam_thang,Hồ Chí Minh,Street
+street_356580c8927c,Đường Ngô Tất Tố,duong ngo tat to,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_35698e8feba0,Đường Nguyễn Văn Đậu,duong nguyen van dau,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_35b6c02b9114,Đường Số 9,duong so 9,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_3600b9413878,Đường Bàn Cờ,duong ban co,ward_phuong_ban_co,Hồ Chí Minh,Street
+street_3612d91e006c,Đường Gò Dầu,duong go dau,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_36330ce965c1,Đường Nguyễn Văn Trỗi,duong nguyen van troi,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_36406aa364ed,Đường Tân Quý,duong tan quy,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_364cc4e28e3c,Đường Quốc Lộ 13,duong quoc lo 13,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_36c13895ead5,Đường Số 41,duong so 41,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_3725f42816af,Đường G11,duong g11,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_37315166bf4e,Đường Nhất Chi Mai,duong nhat chi mai,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_3755cf224b60,Đường Bờ Bao,duong bo bao,ward_xa_binh_hung,Hồ Chí Minh,Street
+street_375d7e9ce05e,Đường Trần Phú,duong tran phu,ward_phuong_cho_quan,Hồ Chí Minh,Street
+street_37cb002e389c,Đường Nguyễn Bỉnh Khiêm,duong nguyen binh khiem,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_38464ed2cb20,Đường Tân Thới Hiệp 15,duong tan thoi hiep 15,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_388e4d25681f,Đường Quốc Hương,duong quoc huong,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_38bb48bf2cdf,Đường Lê Văn Sỹ,duong le van sy,ward_phuong_nhieu_loc,Hồ Chí Minh,Street
+street_39c049a9685e,Đường Song Hành,duong song hanh,ward_xa_hoc_mon,Hồ Chí Minh,Street
+street_39d2a88a13e0,Đường Nguyễn Trọng Tuyển,duong nguyen trong tuyen,ward_phuong_tan_son_hoa,Hồ Chí Minh,Street
+street_39daf61d8f1f,Đường Võ Thị Sáu,duong vo thi sau,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_3a328a68875b,Đường Lái Thiêu 45,duong lai thieu 45,ward_phuong_lai_thieu,Hồ Chí Minh,Street
+street_3a42bd07158d,Đường Hiệp Bình,duong hiep binh,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_3a5774c90af0,Đường Nguyễn Thị Tươi,duong nguyen thi tuoi,ward_phuong_tan_dong_hiep,Hồ Chí Minh,Street
+street_3a603f383197,Đường Phú Thọ Hòa,duong phu tho hoa,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_3aa2ff1ae3c7,Đường Nguyễn Văn Săng,duong nguyen van sang,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_3b2402f4579b,Phố Lý Thường Kiệt,pho ly thuong kiet,ward_phuong_dien_hong,Hồ Chí Minh,Street
+street_3b2905a0eeb0,Đường Lâm Văn Bền,duong lam van ben,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_3b42c907a480,Đường CN11,duong cn11,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_3bb3425775a1,Đường Nguyễn Hữu Cảnh,duong nguyen huu canh,ward_quan_binh_thanh,Hồ Chí Minh,Street
+street_3be796edbd75,Đường Thạnh Lộc 44,duong thanh loc 44,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_3c1c88ecfb03,Đường D8,duong d8,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_3c22fc797b87,Đường Nguyễn Súy,duong nguyen suy,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_3ccd50b9d039,Đường Nguyễn Trãi,duong nguyen trai,ward_phuong_cho_quan,Hồ Chí Minh,Street
+street_3d404f331ec7,Đường Võ Nguyên Giáp,duong vo nguyen giap,ward_phuong_hoa_loi,Hồ Chí Minh,Street
+street_3d80fa00a475,Đường Nguyễn Kiệm,duong nguyen kiem,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_3d91a442d00d,Đường 30/4,duong 30 4,ward_phuong_rach_dua,Hồ Chí Minh,Street
+street_3dbb10958c88,Đường Bình Lợi,duong binh loi,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_3ddd8acba04a,Đường Đặng Nhữ Lâm,duong dang nhu lam,ward_xa_nha_be,Hồ Chí Minh,Street
+street_3e0e4967515c,Đường Tân Thới Hiệp 8,duong tan thoi hiep 8,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_3e2449b40c9f,Đường Lý Thái Tông,duong ly thai tong,ward_phuong_tam_thang,Hồ Chí Minh,Street
+street_3e331dfa0f99,Đường Số 9,duong so 9,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_3e33af2ab59a,Đường Lê Văn Quới,duong le van quoi,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_3e54983240d2,Đường Hương lộ 2,duong huong lo 2,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_3e74b6f8e1a3,Đường Trần Thị Trọng,duong tran thi trong,ward_phuong_tan_son,Hồ Chí Minh,Street
+street_3e88fce24bc5,Đường Cộng Hòa,duong cong hoa,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_3e8e8c430d9c,Đường Thạnh Xuân 22,duong thanh xuan 22,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_3ee0a9e3bd8d,Đường Số 5,duong so 5,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_3ee95f57f421,Đường Đỗ Tấn Phong,duong do tan phong,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_3f17684c2724,Đường Số 6,duong so 6,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_3f477e63feda,Đường Nguyễn Thị Đặng,duong nguyen thi dang,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_3fddc9480dbd,Đường Nguyễn Văn Linh,duong nguyen van linh,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_3ff2d0edcb13,Đường Số 8,duong so 8,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_4039bb13a596,Đường Huỳnh Thị Hai,duong huynh thi hai,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_408f36d974f3,Đường 2,duong 2,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_40b8d8cb8ff1,Đường Phạm Văn Nghị,duong pham van nghi,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_4106e3f25c18,Đường Thép Mới,duong thep moi,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_416a4034843c,Đường Cách Mạng Tháng Tám,duong cach mang thang tam,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_4190c5da34ad,Đường 359,duong 359,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_42455717402c,Đường Số 1,duong so 1,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_4293b7ee780b,Đường Thoại Ngọc Hầu,duong thoai ngoc hau,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_42e9a9170b5c,Đường 1A,duong 1a,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_4310075ef577,Đường Tỉnh lộ 43,duong tinh lo 43,ward_phuong_tam_binh,Hồ Chí Minh,Street
+street_431842561b86,Đường Trương Phước Phan,duong truong phuoc phan,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_432a27a4da99,Đường Hoàng Hoa Thám,duong hoang hoa tham,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_4343f3d92280,Đường Hoàng Diệu,duong hoang dieu,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_436972bc1793,Đường Số 3,duong so 3,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_4399a2fcd371,Đường Số 48,duong so 48,ward_phuong_vinh_hoi,Hồ Chí Minh,Street
+street_43a5a1f2bbba,Phố Tạ Quang Bửu,pho ta quang buu,ward_quan_8,Hồ Chí Minh,Street
+street_43db568a193c,Đường Linh Đông,duong linh dong,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_43e16b1f5e4f,Đường Đoàn Thị Kia,duong doan thi kia,ward_phuong_di_an,Hồ Chí Minh,Street
+street_440c9f6c64f5,Đường Số 212,duong so 212,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_440df5d13319,Đường Hồng Hà,duong hong ha,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_44265ad7c9f3,Đường Nguyễn Hữu Tiến,duong nguyen huu tien,ward_phuong_tay_thanh,Hồ Chí Minh,Street
+street_442d6b45fd5f,Đường Tô Hiệu,duong to hieu,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_443b18258731,Đường Nguyễn Trãi,duong nguyen trai,ward_phuong_an_dong,Hồ Chí Minh,Street
+street_44a2d0dae8cf,Đường 7,duong 7,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_44a72dfe4d25,Đường 8,duong 8,ward_phuong_thu_dau_mot,Hồ Chí Minh,Street
+street_44cb6dab523b,Đường Thạnh Xuân 25,duong thanh xuan 25,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_44fe8eca218e,Đường Số 57,duong so 57,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_457ca25074ad,Đường D1,duong d1,ward_phuong_tan_my,Hồ Chí Minh,Street
+street_4597782608b1,Đường Lê Thị Hồng Gấm,duong le thi hong gam,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_45b13de7a625,Đường Hồ Xuân Hương,duong ho xuan huong,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_45cfce406077,Đường Trần Quốc Thảo,duong tran quoc thao,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_45d1db67b1ca,Đường Cầu Kinh,duong cau kinh,ward_phuong_tan_tao,Hồ Chí Minh,Street
+street_461e1720f2ec,Đường Số 60 - TML,duong so 60 tml,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_469127ff6d6e,Đường N3,duong n3,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_469f3b5d734f,Đường Dương Văn Dương,duong duong van duong,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_46ad28d52ad1,Đường Lê Trọng Tấn,duong le trong tan,ward_phuong_di_an,Hồ Chí Minh,Street
+street_46b64187ed5b,Đường Nguyễn Đình Chiểu,duong nguyen dinh chieu,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_473bde49340c,Đường Nguyễn Xuân Khoát,duong nguyen xuan khoat,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_478af158f0b2,Đường Đông Hưng Thuận 22,duong dong hung thuan 22,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_479ef5ef0718,Đường Số 25,duong so 25,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_47b7484957fb,Đường Trịnh Quang Nghị,duong trinh quang nghi,ward_xa_binh_hung,Hồ Chí Minh,Street
+street_47c03d6b7007,Đường Nguyễn Huy Tưởng,duong nguyen huy tuong,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_47e92aea529b,Đường Nguyễn Hồng Đào,duong nguyen hong dao,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_480286253a11,Đường Thạnh Lộc 19,duong thanh loc 19,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_481924c41976,Đường Huỳnh Văn Chính,duong huynh van chinh,ward_phuong_tan_phu,Hồ Chí Minh,Street
+street_48597e41eafc,Đường Đồng Văn Cống,duong dong van cong,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_485d6640d3a8,Đường Nguyễn Cảnh Chân,duong nguyen canh chan,ward_phuong_cau_ong_lanh,Hồ Chí Minh,Street
+street_486842eff503,Đường Số 7,duong so 7,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_48b65949683c,Đường Đông Hưng Thuận 2,duong dong hung thuan 2,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_48f340488716,Đường Quốc Lộ 13,duong quoc lo 13,ward_phuong_lai_thieu,Hồ Chí Minh,Street
+street_492ce394f53f,Đường Gò Cẩm Đệm,duong go cam dem,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_4948c37a009e,Đường Điện Biên Phủ,duong dien bien phu,ward_phuong_vuon_lai,Hồ Chí Minh,Street
+street_497c24120be4,Đường Nguyễn Văn Linh,duong nguyen van linh,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_498c01edfb26,Đường Đỗ Pháp Thuận,duong do phap thuan,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_49d0c6482fdd,Đường Thiên Phước,duong thien phuoc,ward_phuong_phu_tho,Hồ Chí Minh,Street
+street_49f33c3d7f6d,Đường Bến Vân Đồn,duong ben van don,ward_phuong_xom_chieu,Hồ Chí Minh,Street
+street_49ff811bb07e,Đường Phan Đình Giót,duong phan dinh giot,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_4a387f62bff8,Đường Tôn Thất Thuyết,duong ton that thuyet,ward_phuong_tam_thang,Hồ Chí Minh,Street
+street_4a55f9736656,Đường Hòa Hảo,duong hoa hao,ward_phuong_dien_hong,Hồ Chí Minh,Street
+street_4ace28e3aef7,Đường Bạch Đằng,duong bach dang,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_4b46eb8a918b,Đường Nguyễn Thị Định,duong nguyen thi dinh,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_4b4efbe93904,Đường D2A,duong d2a,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_4ba022147efd,Đường D37,duong d37,ward_phuong_binh_hoa,Hồ Chí Minh,Street
+street_4bb434d58f48,Đường Thạnh Lộc 50,duong thanh loc 50,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_4c4ecf11a07b,Đường Tân Sơn Nhì,duong tan son nhi,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_4c74d9512de2,Đường Số 15,duong so 15,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_4c80736a6464,Đường Ngô Chí Quốc,duong ngo chi quoc,ward_phuong_tam_binh,Hồ Chí Minh,Street
+street_4ce028e9767b,Đường Nguyễn Thị Hương,duong nguyen thi huong,ward_xa_nha_be,Hồ Chí Minh,Street
+street_4ce24b60502e,Đường Hoàng Bật Đạt,duong hoang bat dat,ward_phuong_tan_son,Hồ Chí Minh,Street
+street_4d207c07f321,Đường 33,duong 33,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_4d936b144137,Đường Số 6A,duong so 6a,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_4dc58eb35647,Đường Trương Đình Hội,duong truong dinh hoi,ward_phuong_phu_dinh,Hồ Chí Minh,Street
+street_4de66ed8fe7c,Đường Quách Đình Bảo,duong quach dinh bao,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_4e034e25e0bb,Đường Nguyễn Thị Định,duong nguyen thi dinh,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_4e0a666f45c7,Đường Số 10,duong so 10,ward_phuong_tan_my,Hồ Chí Minh,Street
+street_4e0edd273708,Đường Số 9,duong so 9,ward_phuong_thong_tay_hoi,Hồ Chí Minh,Street
+street_4e2897acfff0,Đường T4,duong t4,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_4ebf61ee0b49,Đường Nguyễn Bá Tòng,duong nguyen ba tong,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_4f1ca67ec321,Đường Tân Chánh Hiệp 21,duong tan chanh hiep 21,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_4f50f0ff04a0,Đường Bùi Văn Thêm,duong bui van them,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_4f51958e8459,Đường Bình Hòa 24,duong binh hoa 24,ward_phuong_binh_hoa,Hồ Chí Minh,Street
+street_4f57e0c9f2e1,Đường Vườn Chuối,duong vuon chuoi,ward_phuong_ban_co,Hồ Chí Minh,Street
+street_4fd884e731f4,Đường Văn Cao,duong van cao,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_5020aad69118,Đường Thới An 16,duong thoi an 16,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_502f0ba31898,Đường Số 38,duong so 38,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_5050e72382a1,Đường Nguyễn Thị Sóc,duong nguyen thi soc,ward_xa_xuan_thoi_son,Hồ Chí Minh,Street
+street_506bbebf3226,Đường Nguyễn Ảnh Thủ,duong nguyen anh thu,ward_xa_ba_diem,Hồ Chí Minh,Street
+street_50a0a60b3e1d,Đường Huỳnh Thiện Lộc,duong huynh thien loc,ward_phuong_tan_phu,Hồ Chí Minh,Street
+street_50a45b47dbc0,Đường Trần Thiện Chánh,duong tran thien chanh,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_5103e9e58f82,Đường Lê Lai,duong le lai,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_51074f985fe3,Đường Hoàng Văn Thụ,duong hoang van thu,ward_phuong_tan_son_nhat,Hồ Chí Minh,Street
+street_5117d9957423,Đường Số 3,duong so 3,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_51244ae199cd,Đường Số 18,duong so 18,ward_phuong_thong_tay_hoi,Hồ Chí Minh,Street
+street_513f6fa713f5,Đường Số 6,duong so 6,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_517f1f061b68,Đường Tô Ngọc Vân,duong to ngoc van,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_51888471ffe2,Đường Bến Vân Đồn,duong ben van don,ward_phuong_vinh_hoi,Hồ Chí Minh,Street
+street_51a37e9311ea,Đường Bưng Ông Thoàn,duong bung ong thoan,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_51a953fc47f8,Phố Nguyễn Thiện Thuật,pho nguyen thien thuat,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_51afa566b1ba,Đường Bắc Hải,duong bac hai,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_523af2dc8213,Đường Bàu Cát 3,duong bau cat 3,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_52504a17d37c,Đường Nguyễn Văn Nguyễn,duong nguyen van nguyen,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_5271e8721972,Đường 8,duong 8,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_52b0f7e51ccb,Đường Phạm Qúy Thích,duong pham quy thich,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_52ca05803e3a,Đường Hoài Thanh,duong hoai thanh,ward_phuong_phu_dinh,Hồ Chí Minh,Street
+street_52d98fa9226f,Đường Trần Đình Xu,duong tran dinh xu,ward_phuong_cau_ong_lanh,Hồ Chí Minh,Street
+street_52da08c6fd95,Đường D4,duong d4,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_5328b23bee0b,Đường Số 21A,duong so 21a,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_533fb7eced5f,Đường Số 12,duong so 12,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_5349bc3c896c,Đường Đỗ Bí,duong do bi,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_54266a8d3160,Đường Thành Thái,duong thanh thai,ward_phuong_dien_hong,Hồ Chí Minh,Street
+street_547254ddf611,Đường Lê Hồng Phong,duong le hong phong,ward_phuong_vuon_lai,Hồ Chí Minh,Street
+street_54b5182baebb,Đường Nguyễn Văn Thương,duong nguyen van thuong,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_54c1ea1c3f5d,Đường Trịnh Đình Thảo,duong trinh dinh thao,ward_phuong_tan_phu,Hồ Chí Minh,Street
+street_54f0a5cdfacd,Đường Kha Vạn Cân,duong kha van can,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_55032e8b40b4,Đường Lê Hồng Phong,duong le hong phong,ward_phuong_tam_thang,Hồ Chí Minh,Street
+street_55162a345f3b,Đường Gò Ô Môi,duong go o moi,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_557787fc93f2,Đường Số 9,duong so 9,ward_xa_nha_be,Hồ Chí Minh,Street
+street_557ed554180d,Đường Lê Lợi,duong le loi,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_55f2b4ff0499,Đường Trần Thị Hè,duong tran thi he,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_5618ba97746e,Đường Số 2,duong so 2,ward_phuong_an_hoi_dong,Hồ Chí Minh,Street
+street_566d2febe9cd,Đường Thạnh Lộc 14,duong thanh loc 14,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_568b07ff29f9,Đường Lê Đình Thám,duong le dinh tham,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_57790f867047,Đường Tô Hiến Thành,duong to hien thanh,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_580a01637c26,Đường Tô Ngọc Vân,duong to ngoc van,ward_phuong_tam_binh,Hồ Chí Minh,Street
+street_5824aa90e8af,Oasis City,oasis city,ward_phuong_thoi_hoa,Hồ Chí Minh,Street
+street_58452f091a62,Đường Nguyễn Bình,duong nguyen binh,ward_phuong_tam_thang,Hồ Chí Minh,Street
+street_585015138522,Đường Tân Chánh Hiệp 25,duong tan chanh hiep 25,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_5867d3bcf97a,Đường Số 822,duong so 822,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_5913db838135,Đường Võ Thị Sáu,duong vo thi sau,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_59192695ad10,Đường Số 11,duong so 11,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_59256c3f1722,Đường D1,duong d1,ward_phuong_binh_hoa,Hồ Chí Minh,Street
+street_599b298d229f,Đường Sông Nhuệ,duong song nhue,ward_phuong_tan_son_hoa,Hồ Chí Minh,Street
+street_59a70a78a24b,Đường Sư Vạn Hạnh,duong su van hanh,ward_phuong_an_dong,Hồ Chí Minh,Street
+street_5a0efdc29f4b,Đường Số 51,duong so 51,ward_phuong_an_hoi_tay,Hồ Chí Minh,Street
+street_5a2b705f07fe,Đường Thạnh Lộc 40,duong thanh loc 40,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_5a5cdd5e43e2,Đường Số 27,duong so 27,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_5a6399704456,Đường Lê Cảnh Tuân,duong le canh tuan,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_5a8d85400a7c,Đường D3,duong d3,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_5a9540cdb260,Đường Tây Bắc Lân,duong tay bac lan,ward_xa_ba_diem,Hồ Chí Minh,Street
+street_5ab6f7ef9e93,Đường Đinh Tiên Hoàng,duong dinh tien hoang,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_5afe955569a2,Đường Nguyễn Văn Luông,duong nguyen van luong,ward_phuong_phu_lam,Hồ Chí Minh,Street
+street_5b7cd6142d26,Đường D6,duong d6,ward_phuong_tan_my,Hồ Chí Minh,Street
+street_5c181437020f,Đường Số 23,duong so 23,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_5c49837d7226,Đường Tân Hòa Đông,duong tan hoa dong,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_5c50f5091965,Đường Vĩnh Phú 5,duong vinh phu 5,ward_phuong_binh_hoa,Hồ Chí Minh,Street
+street_5c916de7ef5c,Đường Số 26,duong so 26,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_5c9434ea8fc8,Đường Xa Lộ Hà Nội,duong xa lo ha noi,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_5cf922d63621,Đường Tân Xuân,duong tan xuan,ward_phuong_tan_hoa,Hồ Chí Minh,Street
+street_5d9e5c4ae3c0,Đường Nơ Trang Long,duong no trang long,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_5dc2929976c6,Phố Nguyễn Xí,pho nguyen xi,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_5dc63366070e,Đường Kênh Tân Hóa,duong kenh tan hoa,ward_phuong_tan_phu,Hồ Chí Minh,Street
+street_5e2bfcd369d0,Đường D11,duong d11,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_5e5ff081a61c,Đường Trần Khắc Chân,duong tran khac chan,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_5e6fa4727368,Đường Số 14,duong so 14,ward_phuong_an_hoi_tay,Hồ Chí Minh,Street
+street_5e9e65897960,Đường 20,duong 20,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_5ea77b0a462c,Đường Cù Lao,duong cu lao,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_5efd6c5e1afe,Đường Nguyễn Xiển,duong nguyen xien,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_5f0ddbe7e6b8,Đường Hiệp Thành 6,duong hiep thanh 6,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_5f2b7801eae6,Đường Thống Nhất,duong thong nhat,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_5f5a134442ce,Phố 24,pho 24,ward_xa_binh_hung,Hồ Chí Minh,Street
+street_5f9a8ca75504,Đường Lũy Bán Bích,duong luy ban bich,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_5fd4d01c92ca,Đường Hoàng Hoa Thám,duong hoang hoa tham,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_601dc502708b,Đường Mã Lò,duong ma lo,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_609378ac1c06,Đường Lý Thái Tổ,duong ly thai to,ward_phuong_vuon_lai,Hồ Chí Minh,Street
+street_60a74952c042,Đường Nguyễn Minh Hoàng,duong nguyen minh hoang,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_60efa74124d0,Đường 297,duong 297,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_6145a5f0e98e,Đường Nguyễn Kiệm,duong nguyen kiem,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_6154bd96b179,Đường Lê Đức Thọ,duong le duc tho,ward_phuong_an_hoi_tay,Hồ Chí Minh,Street
+street_616842c28985,Đường Số 1,duong so 1,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_6234b59b6843,Đường Bình Quới,duong binh quoi,ward_phuong_binh_quoi,Hồ Chí Minh,Street
+street_625b087a85a6,Đường Đặng Thùy Trâm,duong dang thuy tram,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_62adbacaeee0,Đường Quốc lộ 1A,duong quoc lo 1a,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_62b15c39fbc2,Đường D19,duong d19,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_6302f6a2d552,Đường Quốc Lộ 13,duong quoc lo 13,ward_phuong_thuan_giao,Hồ Chí Minh,Street
+street_63758fbd2fc4,Đường Cao Thắng,duong cao thang,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_63873e9f123e,Đường Liên Phường,duong lien phuong,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_64047e7a8cf1,Đường Thành Công,duong thanh cong,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_64244489f9ff,Đường Võ Chí Công,duong vo chi cong,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_644cbd461552,Đường Phan Chu Trinh,duong phan chu trinh,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_64b946090cc2,Đường Nguyễn Thị Búp,duong nguyen thi bup,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_64d6fcd8f3f4,Đường Võ Văn Ngân,duong vo van ngan,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_64f40849b052,Đường Bùi Công Trừng,duong bui cong trung,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_65712a0e8e59,Đường Hoàng Trọng Mậu,duong hoang trong mau,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_659b8c6c9253,Đường 18B,duong 18b,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_65b6fe12a8a6,Đường 44,duong 44,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_6652730c8d05,Đường Lê Đại Hành,duong le dai hanh,ward_phuong_phu_tho,Hồ Chí Minh,Street
+street_667bdf0dfea1,Đường 26/3,duong 26 3,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_668aa58d0e3d,Đường Nguyễn Văn Mai,duong nguyen van mai,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_672ea44aa706,Đường Hoàng Văn Thụ,duong hoang van thu,ward_phuong_thu_dau_mot,Hồ Chí Minh,Street
+street_6741ead67c61,Đường Võ Thị Liễu,duong vo thi lieu,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_67bec75bb552,Đường 19A,duong 19a,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_67d9da35d190,Đường Lương Văn Can,duong luong van can,ward_phuong_phu_dinh,Hồ Chí Minh,Street
+street_680e465a71a5,Đường Vườn Lài,duong vuon lai,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_68296f92cc1f,Đường Trịnh Khắc Lập,duong trinh khac lap,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_6831b7ef445b,Đường Số 4,duong so 4,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_687f05fb47db,Đường Đào Trí,duong dao tri,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_68951d5a68cb,Đường Dương Cát Lợi,duong duong cat loi,ward_xa_nha_be,Hồ Chí Minh,Street
+street_68a26d1c1f58,Đường Hoàng Minh Đạo,duong hoang minh dao,ward_phuong_chanh_hung,Hồ Chí Minh,Street
+street_68e38ba41143,Đường Võ Văn Kiệt,duong vo van kiet,ward_phuong_phu_dinh,Hồ Chí Minh,Street
+street_68f0086fac91,Đường Nguyễn Quý Đức,duong nguyen quy duc,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_68f448ca7758,Đường Quang Trung,duong quang trung,ward_phuong_an_hoi_tay,Hồ Chí Minh,Street
+street_68fe40f7dcc5,Đường Nguyễn Hảo Vĩnh,duong nguyen hao vinh,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_694aa7570cd9,Đường Đình Nghi Xuân,duong dinh nghi xuan,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_6957df5ce164,Đường Số 42,duong so 42,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_696ee15562a9,Đường Nguyễn Thượng Hiền,duong nguyen thuong hien,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_6989e1e65b4a,Đường Số 14,duong so 14,ward_phuong_thong_tay_hoi,Hồ Chí Minh,Street
+street_6997ec87e168,Phố Tạ Quang Bửu,pho ta quang buu,ward_phuong_binh_dong,Hồ Chí Minh,Street
+street_69c10da0f810,Đường Lũy Bán Bích,duong luy ban bich,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_6a765a9333fe,Đường 160,duong 160,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_6aa13b96f7f8,Đường Thạnh Lộc 39,duong thanh loc 39,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_6ac030c9a2b3,Đường Lương Minh Nguyệt,duong luong minh nguyet,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_6aeca212c722,Đường Nguyễn Văn Trỗi,duong nguyen van troi,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_6b3bd5cdee55,Đường Lê Văn Khương,duong le van khuong,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_6b4c4f673b7f,Đường Số 25A,duong so 25a,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_6b85bf41b910,Đường Hà Tôn Quyền,duong ha ton quyen,ward_phuong_minh_phung,Hồ Chí Minh,Street
+street_6bf835fde603,Đường Phan Sào Nam,duong phan sao nam,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_6c03375af7ad,Đường Quốc lộ 1K,duong quoc lo 1k,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_6c24c7bd9abe,Đường D2,duong d2,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_6c365dd6aa1a,Đường Hoàng Sa,duong hoang sa,ward_phuong_nhieu_loc,Hồ Chí Minh,Street
+street_6c5ce1366d39,Đường Số 2B,duong so 2b,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_6c739bfc50b3,Đường Nguyễn Cảnh Dị,duong nguyen canh di,ward_phuong_tan_son_nhat,Hồ Chí Minh,Street
+street_6c78d92b0107,Đường Nguyễn Thị Minh Khai,duong nguyen thi minh khai,ward_phuong_sai_gon,Hồ Chí Minh,Street
+street_6c86f3c74a86,Đường Bùi Đình Túy,duong bui dinh tuy,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_6d0675062543,Đường Số 7 Cư xá Đô Thành,duong so 7 cu xa do thanh,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_6d81c17038b9,Đường Gò Dưa,duong go dua,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_6ddf438b482c,Đường D24S,duong d24s,ward_phuong_thoi_hoa,Hồ Chí Minh,Street
+street_6e1176955da9,Đường Trần Thị Năm,duong tran thi nam,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_6e338b444d58,Đường Trần Trọng Cung,duong tran trong cung,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_6eae823c8362,Đường Trần Hưng Đạo,duong tran hung dao,ward_phuong_cho_quan,Hồ Chí Minh,Street
+street_6efdf5e3c5e2,Đường Giác Đạo,duong giac dao,ward_xa_ba_diem,Hồ Chí Minh,Street
+street_6f58603f4c88,Đường 5A,duong 5a,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_6f73b44eee3d,Đường N2,duong n2,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_6fd6ae402a94,Đường D2,duong d2,ward_phuong_dong_hoa,Hồ Chí Minh,Street
+street_6fd746138f81,Đường Liên Khu 2-10,duong lien khu 2 10,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_6fec48c388ad,Đường Thới An 22,duong thoi an 22,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_70727606f6e4,Đường Số 7A,duong so 7a,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_707e70c9caae,Đường Số 14,duong so 14,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_70c7c6e447ef,Đường Trần Minh Quyền,duong tran minh quyen,ward_phuong_vuon_lai,Hồ Chí Minh,Street
+street_714e071d09ea,Đường 1,duong 1,ward_xa_binh_hung,Hồ Chí Minh,Street
+street_716d8b723e3c,Đường Lã Xuân Oai,duong la xuan oai,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_718753042235,Đường Số 65A,duong so 65a,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_71b841c5234d,Đường Gò Xoài,duong go xoai,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_71e831b2a0d0,Đường Nguyễn Thị Huỳnh,duong nguyen thi huynh,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_72646395ef0d,Đường Lê Thị Hồng,duong le thi hong,ward_phuong_go_vap,Hồ Chí Minh,Street
+street_72745faecfa3,Đường Mạch Thị Liễu,duong mach thi lieu,ward_phuong_di_an,Hồ Chí Minh,Street
+street_72826677a27b,Đường D19,duong d19,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_73016e3df962,Đường Xa Lộ Hà Nội,duong xa lo ha noi,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_73723e483c3e,Đường Ngô Đức Kế,duong ngo duc ke,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_739f7c362bb2,Đường Kha Vạn Cân,duong kha van can,ward_phuong_di_an,Hồ Chí Minh,Street
+street_73cdd3a40d9b,Đường Phan Phú Tiên,duong phan phu tien,ward_phuong_cho_lon,Hồ Chí Minh,Street
+street_74129c1f7f07,Đường Tô Vĩnh Diện,duong to vinh dien,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_748983213722,Đường 4,duong 4,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_749d4cd4eeb0,Đường Quang Trung,duong quang trung,ward_phuong_thong_tay_hoi,Hồ Chí Minh,Street
+street_75181eae9761,Đường Liên khu 10-11,duong lien khu 10 11,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_7584cb3864f3,Phố Hai Bà Trưng,pho hai ba trung,ward_phuong_dong_hoa,Hồ Chí Minh,Street
+street_75b23c991987,Đường Nguyễn Công Trứ,duong nguyen cong tru,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_75e546ee87ee,Đường Hoàng Sa,duong hoang sa,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_76036f90b5d8,Đường Số 5,duong so 5,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_7624408faff6,Đường Tân Chánh Hiệp 10,duong tan chanh hiep 10,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_7630bdb6decf,Phố Tôn Đức Thắng,pho ton duc thang,ward_phuong_sai_gon,Hồ Chí Minh,Street
+street_7636486b0537,Đường Hòa Hưng,duong hoa hung,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_766d06891dc1,Đường Nguyễn Thị Minh Khai,duong nguyen thi minh khai,ward_phuong_ban_co,Hồ Chí Minh,Street
+street_76d3f076f92d,Đường D1,duong d1,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_76e42349ca49,Đường Lữ Gia,duong lu gia,ward_phuong_phu_tho,Hồ Chí Minh,Street
+street_772eb086303d,Đường Hồng Hà,duong hong ha,ward_phuong_tan_son_hoa,Hồ Chí Minh,Street
+street_775b89f78d38,Đường 8A,duong 8a,ward_xa_binh_hung,Hồ Chí Minh,Street
+street_7791f3806687,Đường Số 9,duong so 9,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_7793c4dd4f30,Phố Phó Đức Chính,pho pho duc chinh,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_77bb40b5afdf,Đường Lý Đạo Thành,duong ly dao thanh,ward_phuong_phu_dinh,Hồ Chí Minh,Street
+street_77bd8af014ad,Đường Tân Chánh Hiệp 18,duong tan chanh hiep 18,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_77c9e5ad59c5,Đường Xô Viết Nghệ Tĩnh,duong xo viet nghe tinh,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_77cefbe123ab,Đường Lý Tự Trọng,duong ly tu trong,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_77d3656aa66b,Đường Hạ Long,duong ha long,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_780d97cd8814,Đường Lê Trọng Tấn,duong le trong tan,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_7836fb16ac68,Đường Phan Văn Khỏe,duong phan van khoe,ward_phuong_binh_tay,Hồ Chí Minh,Street
+street_784ba17c1b22,Đường An Phú 20,duong an phu 20,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_78778aac721c,Đường Lý Tuệ,duong ly tue,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_788da6909c36,Đường B2,duong b2,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_78fbcb0b3f6e,Đường Nguyễn Văn Kỉnh,duong nguyen van kinh,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_79076e2da26d,Đường 11,duong 11,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_7911a309d235,Đường Bùi Thị Xuân,duong bui thi xuan,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_7972e5d3516e,Đường Huỳnh Văn Bánh,duong huynh van banh,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_79ae740bea7f,Đường Đinh Công Tráng,duong dinh cong trang,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_79dafedd21ac,Đường Miếu Bình Đông,duong mieu binh dong,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_79efe9adc085,Đường Song Hành,duong song hanh,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_7a3bb0b0f514,Đường Trung Mỹ Tây 2A,duong trung my tay 2a,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_7a7ef0dc8a7f,Đường Đông Hưng Thuận 17,duong dong hung thuan 17,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_7aa5e8943524,Đường Số 31,duong so 31,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_7ab6ae3e0757,Đường D20,duong d20,ward_phuong_binh_hoa,Hồ Chí Minh,Street
+street_7ba1f7afbb68,Đường Cộng Hòa,duong cong hoa,ward_phuong_tan_son_nhat,Hồ Chí Minh,Street
+street_7bb468af9049,Đường Thống Nhất,duong thong nhat,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_7c1362a5e0b5,Đường Bưng Ông Thoàn,duong bung ong thoan,ward_thanh_pho_thu_duc,Hồ Chí Minh,Street
+street_7c1ef01a9c59,Đường Nguyễn Văn Quỳ,duong nguyen van quy,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_7c96e3552626,Đường Hồ Văn Huê,duong ho van hue,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_7cc2e0cec463,Đường Võ Văn Kiệt,duong vo van kiet,ward_phuong_binh_phu,Hồ Chí Minh,Street
+street_7d01b2bc4dcf,Đường Số 10,duong so 10,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_7d427f8f0a61,Đường Vũ Tùng,duong vu tung,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_7d65ef6b11b8,Đường Cầu Xéo,duong cau xeo,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_7dca3eca764f,Đường Thạnh Xuân 52,duong thanh xuan 52,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_7de9bd93e402,Đường Tên Lửa,duong ten lua,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_7e35035ed0d8,Đường Hồ Hảo Hớn,duong ho hao hon,ward_phuong_cau_ong_lanh,Hồ Chí Minh,Street
+street_7e5c0ac028b2,Đường Đại Lộ Vòng Cung,duong dai lo vong cung,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_7e7a4de8d22f,Đường Bành Văn Trân,duong banh van tran,ward_phuong_tan_son_nhat,Hồ Chí Minh,Street
+street_7e7d8018462a,Đường Ngô Gia Tự,duong ngo gia tu,ward_phuong_vuon_lai,Hồ Chí Minh,Street
+street_7eb0a037aa79,Đường Số 11,duong so 11,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_7f2ff5541b44,Đường Ung Văn Khiêm,duong ung van khiem,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_7fa46694a01a,An Phú New City,an phu new city,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_7ff798aee5cc,Đường Trung Mỹ Tây 1,duong trung my tay 1,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_8017658dfbf4,Đường Diệp Minh Tuyền,duong diep minh tuyen,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_8079ce1d2c09,Đường Lạc Long Quân,duong lac long quan,ward_phuong_hoa_binh,Hồ Chí Minh,Street
+street_815fb75a04fd,Đường Phạm Văn Chí,duong pham van chi,ward_phuong_binh_tien,Hồ Chí Minh,Street
+street_81b9e79f4b4c,Đường Lê Đức Thọ,duong le duc tho,ward_phuong_go_vap,Hồ Chí Minh,Street
+street_81f83dae6a9a,Đường Lê Thị Hoa,duong le thi hoa,ward_phuong_tam_binh,Hồ Chí Minh,Street
+street_8217f2b0d4b3,Đường Tân Chánh Hiệp 7,duong tan chanh hiep 7,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_822215752b11,Đường Mai Chí Thọ,duong mai chi tho,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_826299bb10c5,Đường 31,duong 31,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_828f671b5c17,Đường Tân Hương,duong tan huong,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_82ac8972c8c1,Đường Số 8,duong so 8,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_82d00ae6cf33,Đường Tam Đảo,duong tam dao,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_8302501cd3ae,Đường Nguyễn Công Hoan,duong nguyen cong hoan,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_83a8227b1b06,Đường Lộ Tẻ,duong lo te,ward_phuong_tan_tao,Hồ Chí Minh,Street
+street_83d885323ff0,Đường Phan Văn Trị,duong phan van tri,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_83eab4d79435,Đường Nguyễn Quang Bích,duong nguyen quang bich,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_84140b9105d5,Đường Số 5,duong so 5,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_84a3785e1f20,Đường Thạnh Lộc 31,duong thanh loc 31,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_851b565110d0,Đường Liên khu 4-5,duong lien khu 4 5,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_852d097de066,Đường Số 4,duong so 4,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_857d5d039626,Đường Thích Quảng Đức,duong thich quang duc,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_857eb826c81c,Đường Nguyễn Hoàng,duong nguyen hoang,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_857f16ba3b16,Đường Tú Xương,duong tu xuong,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_85fe46284e07,Đường Đồ Chiểu,duong do chieu,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_8652b3251620,Đường Số 47,duong so 47,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_865823d0ca2a,Đường Hoàng Hoa Thám,duong hoang hoa tham,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_8692c7458334,Phố Vạn Kiếp,pho van kiep,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_86bc2013db4a,Đường Số 21,duong so 21,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_8727e7256fbb,Đường Tân Mỹ,duong tan my,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_878a15c7cfc2,Đường 6B,duong 6b,ward_xa_tan_vinh_loc,Hồ Chí Minh,Street
+street_88307c65d2df,Đường Sơn Kỳ,duong son ky,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_8877b61f4893,Bcons Polygon,bcons polygon,ward_phuong_di_an,Hồ Chí Minh,Street
+street_888d7dd3c8d8,Đường Đỗ Xuân Hợp,duong do xuan hop,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_88c9d877c133,Đường Vành Đai 3,duong vanh dai 3,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_88cf4f0b8f5c,Đường Đông Hưng Thuận 45,duong dong hung thuan 45,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_88e5023d49e7,Đường Trần Não,duong tran nao,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_88f3fedd9834,Đường Phạm Hữu Lầu,duong pham huu lau,ward_phuong_tan_my,Hồ Chí Minh,Street
+street_8922590961d1,Đường Quốc lộ 1A,duong quoc lo 1a,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_892adf589677,Đường Giang Văn Minh,duong giang van minh,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_895de25d06b0,Đường N5,duong n5,ward_phuong_thuan_giao,Hồ Chí Minh,Street
+street_899b6ed7e563,Đường 18,duong 18,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_89a958dc29db,Đường Hùng Vương,duong hung vuong,ward_phuong_an_dong,Hồ Chí Minh,Street
+street_89bd29bfd102,Đường Nguyễn Đình Chiểu,duong nguyen dinh chieu,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_89c889597f7e,Đường Tôn Thất Thuyết,duong ton that thuyet,ward_phuong_xom_chieu,Hồ Chí Minh,Street
+street_89d6e7a07424,Đường Nguyễn Hữu Trí,duong nguyen huu tri,ward_xa_tan_nhut,Hồ Chí Minh,Street
+street_8a43f1f07317,Đường Trần Quốc Toản,duong tran quoc toan,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_8a572265894a,Đường Số 16,duong so 16,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_8a5bca5edc75,Đường Lê Tự Tài,duong le tu tai,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_8ae3d9a1d8e6,Đường Vĩnh Viễn,duong vinh vien,ward_phuong_vuon_lai,Hồ Chí Minh,Street
+street_8be78b850ca4,Đường 41,duong 41,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_8c17c8256d6d,Đường Tú Xương,duong tu xuong,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_8cd6a2caa7da,Đường D11,duong d11,ward_phuong_binh_hoa,Hồ Chí Minh,Street
+street_8d1b12334ed1,Đường Số 14,duong so 14,ward_phuong_chanh_hung,Hồ Chí Minh,Street
+street_8d4e4fabc0f0,Đường Phạm Viết Chánh,duong pham viet chanh,ward_phuong_cau_ong_lanh,Hồ Chí Minh,Street
+street_8d5806c3c665,Đường D4S,duong d4s,ward_phuong_thoi_hoa,Hồ Chí Minh,Street
+street_8db542f88af7,Đường Số 14,duong so 14,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_8ddd4b73d085,Đường Vũ Huy Tấn,duong vu huy tan,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_8e074759e802,Đường Cô Bắc,duong co bac,ward_phuong_cau_ong_lanh,Hồ Chí Minh,Street
+street_8e245cb8b58a,Đường D25S,duong d25s,ward_phuong_thoi_hoa,Hồ Chí Minh,Street
+street_8e74ca5767d2,Đường Lê Văn Thịnh,duong le van thinh,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_8f0a9371e734,Đường Bà Lê Chân,duong ba le chan,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_8fc1d663124d,Đường Đội Cung,duong doi cung,ward_phuong_phu_tho,Hồ Chí Minh,Street
+street_900e4ffbdd11,Đường GS2,duong gs2,ward_phuong_dong_hoa,Hồ Chí Minh,Street
+street_90663a74d5e7,Đường Phạm Thị Giây,duong pham thi giay,ward_xa_dong_thanh,Hồ Chí Minh,Street
+street_90b4fe6f6ecf,Đường Số 53,duong so 53,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_91d4aa83d67f,Đường Điện Biên Phủ,duong dien bien phu,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_91edb17280f7,Đường Nguyễn Trung Trực,duong nguyen trung truc,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_91f83bd63255,Đường Số 21,duong so 21,ward_xa_nha_be,Hồ Chí Minh,Street
+street_920bc8f4e172,Đường Phan Văn Đáng,duong phan van dang,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_924dfe4b8bbc,Đường Đề Thám,duong de tham,ward_phuong_cau_ong_lanh,Hồ Chí Minh,Street
+street_928fe10fd9d5,Đường Tân Thới Nhất 4,duong tan thoi nhat 4,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_92b5153002f0,Đường C,duong c,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_931897901cd4,Đường Thành Mỹ,duong thanh my,ward_phuong_tan_hoa,Hồ Chí Minh,Street
+street_934abee54129,Đường Số 19,duong so 19,ward_xa_binh_hung,Hồ Chí Minh,Street
+street_9354a1296570,Đường Số 10,duong so 10,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_93b110e9e1ef,Đường Đông Hưng Thuận 6,duong dong hung thuan 6,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_93d16ac7f2e2,Đường Nguyễn Sơn,duong nguyen son,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_93ffe6ea3f38,Đường 30,duong 30,ward_phuong_binh_phu,Hồ Chí Minh,Street
+street_942e6be02683,Đường Số 10 Cư Xá Ra Đa Phú Lâm,duong so 10 cu xa ra da phu lam,ward_phuong_phu_lam,Hồ Chí Minh,Street
+street_943ac0b34098,Đường Huỳnh Khương An,duong huynh khuong an,ward_phuong_an_nhon,Hồ Chí Minh,Street
+street_948568592ad2,Đường Mạc Đĩnh Chi,duong mac dinh chi,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_94e286549962,Đường Văn Cao,duong van cao,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_9515cdf3f444,Đường Thạnh Lộc 37,duong thanh loc 37,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_95813c92da3d,Đường Giải Phóng,duong giai phong,ward_phuong_tan_son_nhat,Hồ Chí Minh,Street
+street_95894629a330,Đường 12,duong 12,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_95d1c072bc66,Đường D1,duong d1,ward_phuong_dong_hoa,Hồ Chí Minh,Street
+street_95de2bedc683,Đường Cầm Bá Thước,duong cam ba thuoc,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_95e671843283,Đường Trần Hưng Đạo,duong tran hung dao,ward_phuong_cau_ong_lanh,Hồ Chí Minh,Street
+street_9618b22f1d7b,Đường Hồ Học Lãm,duong ho hoc lam,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_963f0a9e3b56,Đường Thiên Phước,duong thien phuoc,ward_phuong_tan_hoa,Hồ Chí Minh,Street
+street_965f95995276,Đường Đỗ Quang Đẩu,duong do quang dau,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_96923a5227e6,Đường Mạc Đĩnh Chi,duong mac dinh chi,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_96b28e27c741,Đường N1,duong n1,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_978bb6bfc7da,Đường Phạm Văn Đồng,duong pham van dong,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_97e31f4ac9d8,Đường Phạm Ngọc Thạch,duong pham ngoc thach,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_98cd7fe00e7d,Đường Trường Lưu,duong truong luu,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_991dd589751f,Đường Đinh Bộ Lĩnh,duong dinh bo linh,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_9939801d2cde,Đường Phan Liêm,duong phan liem,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_995f0c836fc8,Đường Âu Cơ,duong au co,ward_phuong_tan_hoa,Hồ Chí Minh,Street
+street_998efaa67be2,Đường Dương Thị Mười,duong duong thi muoi,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_9993b92ac5df,Đường Âu Cơ,duong au co,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_99a56909435b,Đường 102,duong 102,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_99a8ca381c9b,Đường Khuông Việt,duong khuong viet,ward_phuong_tan_phu,Hồ Chí Minh,Street
+street_99e6d0d15569,Đường Tân Cảng,duong tan cang,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_9a43e6760ce2,Đường Lê Đình Cẩn,duong le dinh can,ward_phuong_tan_tao,Hồ Chí Minh,Street
+street_9a615c2e3ed5,Đường Tân Quý,duong tan quy,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_9aa25bb0f7eb,Đường Tỉnh Lộ 10,duong tinh lo 10,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_9aad01b1d1d3,Đường Tân Thới Nhất 5,duong tan thoi nhat 5,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_9af2a831e74b,Đường Võ Thị Sáu,duong vo thi sau,ward_xa_long_dien,Hồ Chí Minh,Street
+street_9b572dfbe9fa,Đường Số 2,duong so 2,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_9b6b291e73b5,Đường Hùng Vương,duong hung vuong,ward_phuong_cho_quan,Hồ Chí Minh,Street
+street_9b77ce1bf307,Đường Minh Phụng,duong minh phung,ward_phuong_binh_tay,Hồ Chí Minh,Street
+street_9b7cbfd231e0,Đường 475,duong 475,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_9bad659f0b41,Đường Trung Mỹ Tây 17,duong trung my tay 17,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_9bb7dfb5e0dc,Đường 50,duong 50,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_9bbb2b3df63f,Đường Số 48,duong so 48,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_9c0acf847fec,Đường Lê Đại Hành,duong le dai hanh,ward_phuong_minh_phung,Hồ Chí Minh,Street
+street_9c2645dbda4d,Đường Nghĩa Thục,duong nghia thuc,ward_phuong_an_dong,Hồ Chí Minh,Street
+street_9c552644a854,Đường 2/9,duong 2 9,ward_phuong_phuoc_thang,Hồ Chí Minh,Street
+street_9c5fabd5af6a,Đường Huỳnh Thị Đồng,duong huynh thi dong,ward_xa_nha_be,Hồ Chí Minh,Street
+street_9ca3eac6a1d5,Đường 22,duong 22,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_9ca6d88a9a05,Đường Số 28,duong so 28,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_9ce3bafe18c5,Đường Thạnh Xuân 24,duong thanh xuan 24,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_9d0c622505a4,Phố Nguyễn Siêu,pho nguyen sieu,ward_phuong_sai_gon,Hồ Chí Minh,Street
+street_9d259a3b2599,Đường D2,duong d2,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_9d64eff7dfd6,Đường Trần Cao Vân,duong tran cao van,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_9dfbfc2cda0d,Đường Tam Bình,duong tam binh,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_9e0738850589,Đường Thạnh Lộc 22,duong thanh loc 22,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_9f483678f3f5,Đường Nguyễn Cơ Thạch,duong nguyen co thach,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_9f4a92a5cef9,Đường Phan Huy Ích,duong phan huy ich,ward_phuong_an_hoi_tay,Hồ Chí Minh,Street
+street_9f686f22626f,Đường Chuông Vàng,duong chuong vang,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_9fe48d688f66,Đường Hoàng Minh Giám,duong hoang minh giam,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_9ff2a748aa0e,Đường Thạch Thị Thanh,duong thach thi thanh,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_a0280d2fc4d3,Đường Trường Chinh,duong truong chinh,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_a07652bd034c,Phố Trần Xuân Soạn,pho tran xuan soan,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_a07b6b70740a,Đường Hồ Đắc Di,duong ho dac di,ward_phuong_tay_thanh,Hồ Chí Minh,Street
+street_a0a5e1d36474,Đường 2,duong 2,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_a0c56af13155,Đường Huỳnh Mẫn Đạt,duong huynh man dat,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_a0e4af6a6270,Đường Bạch Đằng,duong bach dang,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_a0ee94fee529,Đường Cách Mạng Tháng Tám,duong cach mang thang tam,ward_phuong_tan_son_nhat,Hồ Chí Minh,Street
+street_a107871c082f,Đường D17,duong d17,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_a1901ad42b24,Đường Huỳnh Thúc Kháng,duong huynh thuc khang,ward_phuong_binh_duong,Hồ Chí Minh,Street
+street_a1b54c8968b8,Đường N7,duong n7,ward_phuong_long_phuoc,Hồ Chí Minh,Street
+street_a1d9a6894f1a,Đường 3/2,duong 3 2,ward_phuong_dien_hong,Hồ Chí Minh,Street
+street_a1daad5f36f1,Đường Võ Văn Tần,duong vo van tan,ward_phuong_ban_co,Hồ Chí Minh,Street
+street_a1fef227df21,Đường Mễ Cốc,duong me coc,ward_phuong_phu_dinh,Hồ Chí Minh,Street
+street_a2293fcd59f6,Đường Lê Quang Định,duong le quang dinh,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_a22c73a83fcf,Đường Thới An 20,duong thoi an 20,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_a26558312e8f,Đường Nguyễn Công Trứ,duong nguyen cong tru,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_a2b33261af33,Đường Trần Hữu Trang,duong tran huu trang,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_a304be4d7701,Đường Cống Quỳnh,duong cong quynh,ward_phuong_cau_ong_lanh,Hồ Chí Minh,Street
+street_a327f0131e85,Đường Tân Kỳ Tân Quý,duong tan ky tan quy,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_a361691d65b6,Đường Đô Đốc Thủ,duong do doc thu,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_a3d265442915,Đường An Phú Đông 12,duong an phu dong 12,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_a3ff383a909c,Phố Thạch Lam,pho thach lam,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_a40f261b2295,Đường Nguyễn Văn Lượng,duong nguyen van luong,ward_phuong_an_nhon,Hồ Chí Minh,Street
+street_a48cbb89af7f,Đường Cao Thắng,duong cao thang,ward_phuong_ban_co,Hồ Chí Minh,Street
+street_a49395274ede,Đường Ca Văn Thỉnh,duong ca van thinh,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_a4c6883cbdb8,Đường Đặng Văn Ngữ,duong dang van ngu,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_a4e6acf3ed37,Đường Hiệp Thành 17,duong hiep thanh 17,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_a4ecb6b18cb3,Đường Lê Thị Riêng,duong le thi rieng,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_a511c8aa1682,Đường C18,duong c18,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_a586155afef9,Phố Nguyễn Thiện Thuật,pho nguyen thien thuat,ward_phuong_ban_co,Hồ Chí Minh,Street
+street_a5a8bf37ec02,Đường Nguyễn Hữu Thọ,duong nguyen huu tho,ward_xa_nha_be,Hồ Chí Minh,Street
+street_a60046c90bac,Phố Mai Hắc Đế,pho mai hac de,ward_phuong_phu_dinh,Hồ Chí Minh,Street
+street_a63f417c5a12,Đường Số 26,duong so 26,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_a65bb64d9b1f,Đường Trương Văn Thành,duong truong van thanh,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_a678919f066e,Đường Số 5C,duong so 5c,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_a6bd7a5b08e6,Đường Cư Xá Phú Lâm A,duong cu xa phu lam a,ward_phuong_phu_lam,Hồ Chí Minh,Street
+street_a6d9d9f91e07,Đường Trần Phú,duong tran phu,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_a6fb9292b9b3,Đường Lê Trọng Tấn,duong le trong tan,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_a6feebf0c272,Đường Số 78,duong so 78,ward_phuong_binh_phu,Hồ Chí Minh,Street
+street_a751ad30c17f,Đường Số 3,duong so 3,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_a792abcffd30,Đường Trần Thị Cờ,duong tran thi co,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_a7d9bc53cd27,Đường Số 2,duong so 2,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_a865a1816b2b,Đường Vĩnh Viễn,duong vinh vien,ward_phuong_dien_hong,Hồ Chí Minh,Street
+street_a89d1be12ddb,Đường Cách Mạng Tháng Tám,duong cach mang thang tam,ward_phuong_lai_thieu,Hồ Chí Minh,Street
+street_a8a57b2abf23,Đường Hòa Bình,duong hoa binh,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_a8e5441c5501,Đường 17,duong 17,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_a8fdb1ba6a25,Đường Nguyễn Tri Phương,duong nguyen tri phuong,ward_phuong_vuon_lai,Hồ Chí Minh,Street
+street_a93589bfb127,Đường Lạc Long Quân,duong lac long quan,ward_phuong_tan_hoa,Hồ Chí Minh,Street
+street_a9d2473951b8,Đường Dân Chủ,duong dan chu,ward_phuong_binh_duong,Hồ Chí Minh,Street
+street_aa75791b091b,Đường 9A,duong 9a,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_aaf42d605510,Đường Tân Lập,duong tan lap,ward_phuong_dong_hoa,Hồ Chí Minh,Street
+street_ab09a97a093d,Đường Phan Xích Long,duong phan xich long,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_ab333c976ebe,Đường Nguyễn Duy Trinh,duong nguyen duy trinh,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_aba3f17daf82,Đường Thống Nhất,duong thong nhat,ward_phuong_dong_hoa,Hồ Chí Minh,Street
+street_abcdae1a74c1,Đường An Hạ,duong an ha,ward_xa_tan_vinh_loc,Hồ Chí Minh,Street
+street_ac01fc712488,Đường Cây Keo,duong cay keo,ward_phuong_tam_binh,Hồ Chí Minh,Street
+street_ac0d30f7aaaa,Đường Nguyễn Thị Minh Khai,duong nguyen thi minh khai,ward_phuong_tam_thang,Hồ Chí Minh,Street
+street_ac1e16406a91,Đường Trương Công Định,duong truong cong dinh,ward_phuong_tam_thang,Hồ Chí Minh,Street
+street_ac217f10df44,Đường Số 20,duong so 20,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_acbd36fbb271,Đường D2,duong d2,ward_phuong_thoi_hoa,Hồ Chí Minh,Street
+street_acdc86a7a430,Đường Dương Thị Giang,duong duong thi giang,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_acfcd46abf51,Đường Trịnh Đình Trọng,duong trinh dinh trong,ward_phuong_tan_phu,Hồ Chí Minh,Street
+street_ad34c06d7ed1,Đường Số 1,duong so 1,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_ad9efef1ad26,Đường Lê Cao Lãng,duong le cao lang,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_adb0c110aa35,Đường Hoàng Diệu 2,duong hoang dieu 2,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_adc683db5a4c,Đường Hoàng Sa,duong hoang sa,ward_quan_3,Hồ Chí Minh,Street
+street_ae3d58af5ce0,Đường Thất Sơn,duong that son,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_ae60fff0ffef,Đường Võ Văn Kiệt,duong vo van kiet,ward_phuong_cau_ong_lanh,Hồ Chí Minh,Street
+street_ae7b7d47342c,Đường 14,duong 14,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_aed06ac3891b,Đường Bùi Xuân Phái,duong bui xuan phai,ward_phuong_tay_thanh,Hồ Chí Minh,Street
+street_aedde9a9bd63,Đường Dương Quảng Hàm,duong duong quang ham,ward_phuong_go_vap,Hồ Chí Minh,Street
+street_aefc72d85393,Đường D17,duong d17,ward_phuong_binh_hoa,Hồ Chí Minh,Street
+street_af4d037ea5fe,Đường Số 4,duong so 4,ward_phuong_tan_tao,Hồ Chí Minh,Street
+street_b010422a8f3b,Đường Nguyễn Tư Giản,duong nguyen tu gian,ward_phuong_an_hoi_tay,Hồ Chí Minh,Street
+street_b043dc22472d,Đường Hoàng Quốc Việt,duong hoang quoc viet,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_b0457c8cb31d,Đường Trần Quý Cáp,duong tran quy cap,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_b0881c151754,Phố Bà Huyện Thanh Quan,pho ba huyen thanh quan,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_b089fac9a49c,Đường Số 5,duong so 5,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_b0d7de11eeba,Đường Lam Sơn,duong lam son,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_b0ebca22ac1d,Đường Tân Chánh Hiệp 5,duong tan chanh hiep 5,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_b1107d411ded,Đường Tân Thới Hiệp 21,duong tan thoi hiep 21,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_b11e79f482c4,Đường T10,duong t10,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_b18aacb62a31,Đường Số 8,duong so 8,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_b19f464171f7,Đường Ba Vân,duong ba van,ward_quan_tan_binh,Hồ Chí Minh,Street
+street_b1a00d3c604c,Đường Tôn Thất Thuyết,duong ton that thuyet,ward_phuong_vinh_hoi,Hồ Chí Minh,Street
+street_b1f35985addb,Đường Đoàn Văn Bơ,duong doan van bo,ward_phuong_xom_chieu,Hồ Chí Minh,Street
+street_b26124b01594,Đường Bình Phú,duong binh phu,ward_phuong_binh_phu,Hồ Chí Minh,Street
+street_b29228b6706a,Đường Lê Hồng Phong,duong le hong phong,ward_phuong_phu_loi,Hồ Chí Minh,Street
+street_b2ce72a52aab,Đường An Phú Đông 25,duong an phu dong 25,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_b30e9b334f06,Đường 18,duong 18,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_b3613f9b7f28,Đường Hoàng Hoa Thám,duong hoang hoa tham,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_b39aa965721f,Đường T8,duong t8,ward_phuong_tay_thanh,Hồ Chí Minh,Street
+street_b3acfbb92ed0,Đường Thanh Nga,duong thanh nga,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_b3d5cece6761,Đường Số 2,duong so 2,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_b415c1fe484c,Đường Lò Lu,duong lo lu,ward_phuong_long_phuoc,Hồ Chí Minh,Street
+street_b458da90e2fb,Đường Ngô Quyền,duong ngo quyen,ward_phuong_an_dong,Hồ Chí Minh,Street
+street_b4dad8b5550a,Đường Nam Kỳ Khởi Nghĩa,duong nam ky khoi nghia,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_b4ed027c7efa,Đường Phan Chu Trinh,duong phan chu trinh,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_b500c67c4ee6,Đường Vĩnh Phú 42,duong vinh phu 42,ward_phuong_lai_thieu,Hồ Chí Minh,Street
+street_b5269e29221c,Đường Quang Trung,duong quang trung,ward_phuong_go_vap,Hồ Chí Minh,Street
+street_b54b38524f33,Đường Số 4,duong so 4,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_b561f209539d,Đường Nguyễn Thị Xiếu,duong nguyen thi xieu,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_b581f423dc83,Đường N4,duong n4,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_b58a79d91706,Đường Tôn Dật Tiên,duong ton dat tien,ward_phuong_tan_my,Hồ Chí Minh,Street
+street_b595e5b3bd58,Đường Cộng Hòa,duong cong hoa,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_b64c9fe92cd8,Đường Thảo Điền,duong thao dien,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_b66175dc07fc,Đường Số 19,duong so 19,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_b6c9ef973fbd,Đường Hưng Phú,duong hung phu,ward_phuong_chanh_hung,Hồ Chí Minh,Street
+street_b6cfccc9757b,Đường Đại Lộ Bình Dương,duong dai lo binh duong,ward_phuong_thuan_giao,Hồ Chí Minh,Street
+street_b6d970ba51ba,Đường Hiệp Thành 12,duong hiep thanh 12,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_b6f21a56a5aa,Đường Nguyễn Duy Hiệu,duong nguyen duy hieu,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_b751ba0324c1,Đường Nguyễn Bình,duong nguyen binh,ward_xa_hiep_phuoc,Hồ Chí Minh,Street
+street_b7db54e8f3a6,Đường Phạm Văn Đồng,duong pham van dong,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_b81a69210086,Đường Hòa Hảo,duong hoa hao,ward_phuong_vuon_lai,Hồ Chí Minh,Street
+street_b86dd2dd3cbf,Đường Hoàng Dư Khương,duong hoang du khuong,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_b894feb83a8a,Đường Số 3,duong so 3,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_b8a58c652cc7,Đường Lê Lâm,duong le lam,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_b8b3118cb69e,Đường Đại lộ 3,duong dai lo 3,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_b8c1a46df5d6,Đường Bàu Cát 8,duong bau cat 8,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_b90d9324f7d8,Đường 2A,duong 2a,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_b90e60b8a35d,Đường Lô Tư,duong lo tu,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_b93a15c256b5,Đường Quốc lộ 1A,duong quoc lo 1a,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_b9a4bd7d338e,Đường Bình Long,duong binh long,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_b9c8dd400b66,Đường Kinh Dương Vương,duong kinh duong vuong,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_ba15d87c8bdf,Đường Thới An 19,duong thoi an 19,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_baa7cd503999,Đường Hà Huy Giáp,duong ha huy giap,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_bad5edccf355,Đường Số 10,duong so 10,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_baeb59eded4d,Đường Số 1,duong so 1,ward_phuong_binh_dong,Hồ Chí Minh,Street
+street_bb24ea088d00,Đường Yên Đỗ,duong yen do,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_bb56de868390,Đường Bùi Văn Ba,duong bui van ba,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_bbda7561faea,Đường Số 54A,duong so 54a,ward_phuong_tan_tao,Hồ Chí Minh,Street
+street_bc129964ffd9,Đường Yên Thế,duong yen the,ward_phuong_tan_son_hoa,Hồ Chí Minh,Street
+street_bccabd6b8604,Đường ĐT 743A,duong dt 743a,ward_phuong_di_an,Hồ Chí Minh,Street
+street_bdc7379abc84,Đường Nguyễn Văn Nghi,duong nguyen van nghi,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_be42a5d37950,Đường Phạm Hữu Lầu,duong pham huu lau,ward_phuong_di_an,Hồ Chí Minh,Street
+street_bea5e16e2230,Đường Nhiêu Tứ,duong nhieu tu,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_bec48e5aa9d2,Đường X2B,duong x2b,ward_phuong_vinh_tan,Hồ Chí Minh,Street
+street_bf15c63b804d,Đường Thạnh Xuân 31,duong thanh xuan 31,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_bf38ac7c98ce,Đường 3A,duong 3a,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_bf4bf2608774,Đường Phổ Quang,duong pho quang,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_bf73252ea12a,Đường Lê Lợi,duong le loi,ward_xa_hoc_mon,Hồ Chí Minh,Street
+street_bf7761eba700,Đường Tôn Đản,duong ton dan,ward_phuong_xom_chieu,Hồ Chí Minh,Street
+street_bf8f9ea763a8,Đường Số 4,duong so 4,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_bfcda536f8e1,Đường Số 2,duong so 2,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_c0228e49ccba,Đường Số 15,duong so 15,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_c02956661089,Đường DC7,duong dc7,ward_phuong_tay_thanh,Hồ Chí Minh,Street
+street_c07b29b9a4fc,Đường Số 28,duong so 28,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_c0ac22f62ace,Đường Số 2,duong so 2,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_c0b39a11ced7,Đường Nguyễn Quý Anh,duong nguyen quy anh,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_c0bf3a4bc5c2,The Opus One - Vinhomes Grand Park,the opus one vinhomes grand park,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_c0d7dba03849,Đường Thạnh Lộc 15,duong thanh loc 15,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_c0e8ddf6cf19,Đường Võ Thị Sáu,duong vo thi sau,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_c0edc7911d9d,Đường 38,duong 38,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_c0f8da7558dc,Đường Số 16,duong so 16,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_c0fa4c659dc6,Đường Số 9,duong so 9,ward_phuong_an_hoi_dong,Hồ Chí Minh,Street
+street_c118aa7fdbe1,Đường Âu Cơ,duong au co,ward_phuong_hoa_binh,Hồ Chí Minh,Street
+street_c14f0eb638b7,Đường Phan Văn Trị,duong phan van tri,ward_phuong_go_vap,Hồ Chí Minh,Street
+street_c17ab2cdb216,Đường Tam Bình,duong tam binh,ward_phuong_tam_binh,Hồ Chí Minh,Street
+street_c181503ccf97,đường D28,duong d28,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_c190775f49a4,Đường Phan Tây Hồ,duong phan tay ho,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_c25f14199451,Đường Lê Hồng Phong,duong le hong phong,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_c28cc0572f0a,Đường Lê Văn Khương,duong le van khuong,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_c29fd0e80dca,Đường Nguyễn Đình Chiểu,duong nguyen dinh chieu,ward_phuong_ban_co,Hồ Chí Minh,Street
+street_c2a9f590f2fe,Đường Nguyễn Duy,duong nguyen duy,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_c2ad913ff482,Đường Huỳnh Tấn Phát,duong huynh tan phat,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_c2b1ea219ad9,Đường Nguyễn Thị Thập,duong nguyen thi thap,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_c2ca2e5ad837,Đường Số 19,duong so 19,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_c2d6fb35b16e,Đường Nguyễn Duy Cung,duong nguyen duy cung,ward_phuong_an_hoi_tay,Hồ Chí Minh,Street
+street_c32e2d5ab40f,Đường Số 3,duong so 3,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_c3437df805c3,Đường 14,duong 14,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_c418ae3b6553,Đường Phạm Văn Hai,duong pham van hai,ward_phuong_tan_son_hoa,Hồ Chí Minh,Street
+street_c48316496b75,Phố Trần Đại Nghĩa,pho tran dai nghia,ward_phuong_dong_hoa,Hồ Chí Minh,Street
+street_c5dbc1e1b493,Đường Nguyên Hồng,duong nguyen hong,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_c5e209a5f789,Đường Số 2,duong so 2,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_c63a8b79f7da,Đường Trường Chinh,duong truong chinh,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_c6adcf22d515,Đường Bàu Giã,duong bau gia,ward_xa_cu_chi,Hồ Chí Minh,Street
+street_c6d8a62c7020,Đường Bạch Đằng,duong bach dang,ward_phuong_tan_son_hoa,Hồ Chí Minh,Street
+street_c7458bef65ab,Đường Lê Đức Thọ,duong le duc tho,ward_phuong_an_hoi_dong,Hồ Chí Minh,Street
+street_c764abadeb8e,Đường Nguyễn Thị Kiểu,duong nguyen thi kieu,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_c7e52851934d,Đường N3,duong n3,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_c7f9f360796c,Đường Dương Văn Cam,duong duong van cam,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_c87d066931df,Đường Lâm Thị Hố,duong lam thi ho,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_c88a5a81641d,Đường Hồng Lạc,duong hong lac,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_c8ad24e56ca9,Phố Lương Định Của,pho luong dinh cua,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_c8df70965406,Đường Hoàng Xuân Nhị,duong hoang xuan nhi,ward_phuong_tan_phu,Hồ Chí Minh,Street
+street_c91cde8abb39,Đường Trần Thị Dương,duong tran thi duong,ward_phuong_di_an,Hồ Chí Minh,Street
+street_c92218687506,Đường Nam Kỳ Khởi Nghĩa,duong nam ky khoi nghia,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_c940e3c63b59,Đường D2S,duong d2s,ward_phuong_thoi_hoa,Hồ Chí Minh,Street
+street_ca0884396a77,Đường Tây Lân,duong tay lan,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_ca1ce483816d,Đường N4,duong n4,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_ca1da25671ec,Đường Nguyễn Thị Búp,duong nguyen thi bup,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_ca70494bcc87,Đường Nguyễn Khuyến,duong nguyen khuyen,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_ca7889fc905d,Phố Đặng Dung,pho dang dung,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_ca7f443a7257,Đường Thủ Khoa Huân,duong thu khoa huan,ward_phuong_thuan_an,Hồ Chí Minh,Street
+street_cb40117cb065,Đường Hoàng Lê Kha,duong hoang le kha,ward_phuong_tam_thang,Hồ Chí Minh,Street
+street_cbd9aa20b693,Phố Hai Bà Trưng,pho hai ba trung,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_cc3977c82622,Đường Số 48,duong so 48,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_cc89c91dcee3,Đường Số 2,duong so 2,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_cc9e99bd0b51,Đường Bình Trị Đông,duong binh tri dong,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_cca2b097f767,Đường Tản Viên,duong tan vien,ward_phuong_tan_son_hoa,Hồ Chí Minh,Street
+street_cd0c5924122e,Đường Nguyễn Trọng Lội,duong nguyen trong loi,ward_phuong_tan_son_nhat,Hồ Chí Minh,Street
+street_cd906a3f65e0,Đường Tân Kỳ Tân Quý,duong tan ky tan quy,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_cde6e4ded154,Đường Phạm Phú Thứ,duong pham phu thu,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_ce11eae8a34a,Đường Nguyễn Văn Yến,duong nguyen van yen,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_ce63c58c07c5,Đường Nguyễn Văn Bứa,duong nguyen van bua,ward_xa_xuan_thoi_son,Hồ Chí Minh,Street
+street_ce99dbd661fe,Đường Số 37,duong so 37,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_cebccbbe392a,Đường Đô Đốc Long,duong do doc long,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_ceead9af29b9,Đường Huỳnh Tấn Phát,duong huynh tan phat,ward_xa_nha_be,Hồ Chí Minh,Street
+street_ceee954615cf,Đường Số 12,duong so 12,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_cf39a85cef03,Đường Quốc Lộ 13,duong quoc lo 13,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_cf39fd561b11,Đường Kha Vạn Cân,duong kha van can,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_cf941b025145,Đường Phan Bội Châu,duong phan boi chau,ward_phuong_thu_dau_mot,Hồ Chí Minh,Street
+street_cfa3c7e160c4,Đường Số 9M,duong so 9m,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_cfef81365ecc,Đường Lê Thánh Tôn,duong le thanh ton,ward_phuong_sai_gon,Hồ Chí Minh,Street
+street_cff67f074430,Đường Nguyễn Khoái,duong nguyen khoai,ward_phuong_vinh_hoi,Hồ Chí Minh,Street
+street_d025491e1977,Đường Đào Duy Anh,duong dao duy anh,ward_phuong_duc_nhuan,Hồ Chí Minh,Street
+street_d03ba63c1925,Đường Võ Văn Vân,duong vo van van,ward_huyen_binh_chanh,Hồ Chí Minh,Street
+street_d04c9dec22a1,Đường Tỉnh Lộ 10,duong tinh lo 10,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_d06a4dfadc05,Đường Hoa Lan,duong hoa lan,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_d0c676739d96,Đường Bình Hòa 1,duong binh hoa 1,ward_phuong_binh_hoa,Hồ Chí Minh,Street
+street_d0f5d474f570,Đường Số 10,duong so 10,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_d13109b66f9c,Đường Hà Thị Đát,duong ha thi dat,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_d16eaf5bc66b,Đường Trần Quang Khải,duong tran quang khai,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_d1cfb3a3631d,Đường Ấp Bắc,duong ap bac,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_d1dc11ee8963,Phố 45,pho 45,ward_phuong_khanh_hoi,Hồ Chí Minh,Street
+street_d209bb8f99da,Đường D2,duong d2,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_d2139e2e06af,Đường Xô Viết Nghệ Tĩnh,duong xo viet nghe tinh,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_d2435aa3d775,Đường Hồ Quý Ly,duong ho quy ly,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_d25928cc1857,Đường Số 11,duong so 11,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_d298291aed3a,Đường Trần Quang Đạo,duong tran quang dao,ward_xa_binh_khanh,Hồ Chí Minh,Street
+street_d2a4d3d88ca6,Đường Bế Văn Cấm,duong be van cam,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_d2de541dcf94,Đường Bàu Cát,duong bau cat,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_d2f2ddda6256,Đường D1,duong d1,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_d3287854f87b,Đường Trường Chinh,duong truong chinh,ward_phuong_tay_thanh,Hồ Chí Minh,Street
+street_d3350650fa6c,Phố Hoàng Thế Thiện,pho hoang the thien,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_d361bccc347e,Đường Vườn Chuối,duong vuon chuoi,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_d39485cb7dd5,Đường Tân Thới Hiệp 29,duong tan thoi hiep 29,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_d3ae30b0a337,Đường Trương Thị Hoa,duong truong thi hoa,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_d3cb87fe1487,Đường Hồ Văn Long,duong ho van long,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_d40bf52a4144,Đường Huỳnh Tấn Phát,duong huynh tan phat,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_d455a47d2230,Đường Ba Vì,duong ba vi,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_d471c76dca71,Đường An Hội,duong an hoi,ward_phuong_an_hoi_dong,Hồ Chí Minh,Street
+street_d48a60d41971,Đường Nguyễn Du,duong nguyen du,ward_phuong_binh_hoa,Hồ Chí Minh,Street
+street_d48cf83adf26,Đường Nguyễn Hiền,duong nguyen hien,ward_phuong_ban_co,Hồ Chí Minh,Street
+street_d4ef7420d0da,Đường Phạm Văn Đồng,duong pham van dong,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_d5003f24ca56,Đường N2,duong n2,ward_xa_tru_van_tho,Hồ Chí Minh,Street
+street_d509eccfa775,Đường Nguyễn Văn Linh,duong nguyen van linh,ward_xa_binh_hung,Hồ Chí Minh,Street
+street_d50db7606022,Đường Phạm Văn Bạch,duong pham van bach,ward_phuong_an_hoi_tay,Hồ Chí Minh,Street
+street_d553861f663d,Đường Rạch Cát,duong rach cat,ward_phuong_phu_dinh,Hồ Chí Minh,Street
+street_d56811a2fa7d,Đường Hoàng Văn Thụ,duong hoang van thu,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_d59b80dba7b9,Đường Trần Đình Xu,duong tran dinh xu,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_d5c52afa2403,Đường Đào Tông Nguyên,duong dao tong nguyen,ward_xa_nha_be,Hồ Chí Minh,Street
+street_d5c69157b446,Đường Tân Lập 1,duong tan lap 1,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_d62842f5f462,Đường Số 11,duong so 11,ward_phuong_linh_xuan,Hồ Chí Minh,Street
+street_d63230ce8037,Đường N2,duong n2,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_d652a92f0da5,Đường Lê Hồng Phong,duong le hong phong,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_d684e42dd598,Đường Nguyễn Văn Quá,duong nguyen van qua,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_d706e437737e,Đường Thăng Long,duong thang long,ward_phuong_tan_son_nhat,Hồ Chí Minh,Street
+street_d7490230a664,Đường Nguyễn Tiểu La,duong nguyen tieu la,ward_phuong_dien_hong,Hồ Chí Minh,Street
+street_d7e8f928cdd5,Đường 1,duong 1,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_d7e9f24c0a2e,Đường 7,duong 7,ward_phuong_tam_binh,Hồ Chí Minh,Street
+street_d8113616b92e,Đường Tôn Thất Thuyết,duong ton that thuyet,ward_phuong_khanh_hoi,Hồ Chí Minh,Street
+street_d8295a66572f,Đường Hoàng Sa,duong hoang sa,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_d848b638f716,Đường Tân Thới Nhất 17,duong tan thoi nhat 17,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_d851c59e0ece,Đường Bùi Điền,duong bui dien,ward_phuong_chanh_hung,Hồ Chí Minh,Street
+street_d852d22e0b7b,Đường Đào Sư Tích,duong dao su tich,ward_xa_nha_be,Hồ Chí Minh,Street
+street_d973acf67ed6,Đường Số 5,duong so 5,ward_phuong_tan_my,Hồ Chí Minh,Street
+street_d983136ea551,Đường Trần Quang Diệu,duong tran quang dieu,ward_phuong_nhieu_loc,Hồ Chí Minh,Street
+street_d9ccfdd84111,Đường Nguyễn Đình Chính,duong nguyen dinh chinh,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_dabf6dd528e9,Đường Song Hành,duong song hanh,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_dad77b2976b7,Phố Đỗ Nhuận,pho do nhuan,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_dad95f0e9837,Đường 27,duong 27,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_dadea7044205,Đường Bình Tiên,duong binh tien,ward_phuong_binh_tien,Hồ Chí Minh,Street
+street_dae80b2e97cf,Đường Cao Xuân Dục,duong cao xuan duc,ward_phuong_phu_dinh,Hồ Chí Minh,Street
+street_db0fb6b602b0,Đường Thới An 5,duong thoi an 5,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_db1522366299,Đường Lê Trực,duong le truc,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_db24407e9566,Đường D1,duong d1,ward_phuong_tan_hiep,Hồ Chí Minh,Street
+street_db4357b8bf29,Đường Số 7,duong so 7,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_db8fbf2e5e88,Đường Trương Công Định,duong truong cong dinh,ward_phuong_tan_binh,Hồ Chí Minh,Street
+street_dbd3f7e113d0,Đường Gò Cát,duong go cat,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_dbdac24aaf32,Đường Âu Dương Lân,duong au duong lan,ward_phuong_chanh_hung,Hồ Chí Minh,Street
+street_dbf6f3d54dcb,Đường Ông Ích Khiêm,duong ong ich khiem,ward_phuong_hoa_binh,Hồ Chí Minh,Street
+street_dc0da3c106f0,Đường 23,duong 23,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_dc0f496140ee,Đường Phan Đình Phùng,duong phan dinh phung,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_dc3a1f8b7626,Đường Trần Văn Quang,duong tran van quang,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_dc4eba61c658,Đường D4,duong d4,ward_phuong_tan_my,Hồ Chí Minh,Street
+street_dc705c6cb550,Đường Trung Mỹ Tây 13A,duong trung my tay 13a,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_dc84444b4bc6,Đường Đặng Văn Bi,duong dang van bi,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_dcc3def1959c,Đường D8,duong d8,ward_phuong_thu_dau_mot,Hồ Chí Minh,Street
+street_dcd2f315d9e5,Đường Huỳnh Tịnh Của,duong huynh tinh cua,ward_phuong_xuan_hoa,Hồ Chí Minh,Street
+street_dd104925436e,Đường Hiệp Thành 13,duong hiep thanh 13,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_dd443394f679,Đường Nguyễn Lâm,duong nguyen lam,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_dd57cbabef25,Đường Tân Chánh Hiệp 17,duong tan chanh hiep 17,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_dd8a95033200,Đường Nguyễn Hữu Cảnh,duong nguyen huu canh,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_dd8c8e7d810e,Đường Số 21,duong so 21,ward_phuong_thong_tay_hoi,Hồ Chí Minh,Street
+street_dd9b726fda22,Đường An Dương Vương,duong an duong vuong,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_dda555f024e2,Đường Võ Duy Ninh,duong vo duy ninh,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_ddb06bb01dce,Đường Trần Văn Đang,duong tran van dang,ward_phuong_ban_co,Hồ Chí Minh,Street
+street_ddb6f63a2822,Đường Nguyễn Văn Giai,duong nguyen van giai,ward_phuong_sai_gon,Hồ Chí Minh,Street
+street_de35f7243c43,Đường Trần Khánh Dư,duong tran khanh du,ward_phuong_tan_dinh,Hồ Chí Minh,Street
+street_de4bc88ad5a7,Đường Phạm Văn Đồng,duong pham van dong,ward_phuong_hanh_thong,Hồ Chí Minh,Street
+street_de707ba3c682,Đường Nguyễn Duy Trinh,duong nguyen duy trinh,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_de9017016930,Đường Miếu Gò Xoài,duong mieu go xoai,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_de91a0488498,Đường Số 20,duong so 20,ward_phuong_an_nhon,Hồ Chí Minh,Street
+street_dee666db212c,Đường Phan Văn Trị,duong phan van tri,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_dee989ac6a42,Đường Phạm Văn Chiêu,duong pham van chieu,ward_phuong_an_hoi_tay,Hồ Chí Minh,Street
+street_df3e528be686,Đường Đỗ Xuân Hợp,duong do xuan hop,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_df84db5df9de,Đường Trần Kế Xương,duong tran ke xuong,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_dfb2181fb693,Đường Số 3,duong so 3,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_dffef9b773af,Đường Nguyễn Trọng Tuyển,duong nguyen trong tuyen,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_e01dffefbca1,Đường Đặng Thúc Vịnh,duong dang thuc vinh,ward_xa_dong_thanh,Hồ Chí Minh,Street
+street_e02efb4c3e81,Đường 17A,duong 17a,ward_phuong_binh_hung_hoa,Hồ Chí Minh,Street
+street_e0528ee654d8,Đường Thạnh Lộc 16,duong thanh loc 16,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_e07721cd266a,Đường Tân Thới Hiệp 6,duong tan thoi hiep 6,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_e09e2bef81ba,Đường Hồ Biểu Chánh,duong ho bieu chanh,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_e10ad1c7e0cd,Đường Tân Thới Nhất 6,duong tan thoi nhat 6,ward_phuong_dong_hung_thuan,Hồ Chí Minh,Street
+street_e127d1120e9d,Đường Bùi Thị Xuân,duong bui thi xuan,ward_phuong_tan_dong_hiep,Hồ Chí Minh,Street
+street_e14250b1fa13,Đường Rạch Bùng Binh,duong rach bung binh,ward_phuong_nhieu_loc,Hồ Chí Minh,Street
+street_e1bc81c38f6f,Đường Số 51,duong so 51,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_e25a8efadd89,Phố Trần Xuân Soạn,pho tran xuan soan,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_e2a473624cfb,Đường Sương Nguyệt Ánh,duong suong nguyet anh,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_e2cc864c3a3b,Đường Bùi Viện,duong bui vien,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_e2cd3b788514,Đường D11,duong d11,ward_xa_tru_van_tho,Hồ Chí Minh,Street
+street_e2ea325da357,Đường Tỉnh Lộ 10,duong tinh lo 10,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_e3160fae5f57,Đường Nguyễn Thái Sơn,duong nguyen thai son,ward_phuong_an_nhon,Hồ Chí Minh,Street
+street_e3402c929e53,Đường N2,duong n2,ward_phuong_cat_lai,Hồ Chí Minh,Street
+street_e371202ae163,Đường Dương Thị Mười,duong duong thi muoi,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_e3e0bc4a8579,Đường Nguyễn Văn Linh,duong nguyen van linh,ward_phuong_binh_dong,Hồ Chí Minh,Street
+street_e495fece8e69,Đường Đồng Văn Cống,duong dong van cong,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_e4a7059b1b08,Đường Nguyễn Văn Tạo,duong nguyen van tao,ward_xa_hiep_phuoc,Hồ Chí Minh,Street
+street_e541d29b96db,Đường 182,duong 182,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_e55a34c53c3e,Đường Nguyễn Bỉnh Khiêm,duong nguyen binh khiem,ward_phuong_vung_tau,Hồ Chí Minh,Street
+street_e5830c6e07c7,Đường Tô Ngọc Vân,duong to ngoc van,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_e58f4727ea99,Đường Thạnh Xuân 40,duong thanh xuan 40,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_e5d043046a0d,Đường Lê Văn Duyệt,duong le van duyet,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_e613a545b414,Đường Lê Hữu Kiều,duong le huu kieu,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_e65a48c4c244,Đường Số 28,duong so 28,ward_phuong_an_nhon,Hồ Chí Minh,Street
+street_e6694e593bc4,Đường Bế Văn Đàn,duong be van dan,ward_phuong_di_an,Hồ Chí Minh,Street
+street_e6bd041b3bc9,Đường Số 1,duong so 1,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_e6dcd06cbb56,Đường Số 6E,duong so 6e,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_e703631179b3,Đường Lê Văn Lương,duong le van luong,ward_xa_nha_be,Hồ Chí Minh,Street
+street_e70a58236e93,Đường Lê Văn Sỹ,duong le van sy,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_e737bdabb1d9,Đường Lê Thị Riêng,duong le thi rieng,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_e77edfcc86b3,Đường Nguyễn Thị Nhung,duong nguyen thi nhung,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_e78de6050c0c,Đường Nơ Trang Long,duong no trang long,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_e80dfb35c049,Đường Nguyễn Thị Ngâu,duong nguyen thi ngau,ward_xa_dong_thanh,Hồ Chí Minh,Street
+street_e856b789b577,Đường Đinh Tiên Hoàng,duong dinh tien hoang,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_e99b1eb90f47,Đường Hát Giang,duong hat giang,ward_phuong_tan_son_hoa,Hồ Chí Minh,Street
+street_ea4c96681f21,Đường Cư Xá Lữ Gia,duong cu xa lu gia,ward_phuong_phu_tho,Hồ Chí Minh,Street
+street_ea949de48751,Đường Hiệp Thành 35,duong hiep thanh 35,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_ea98664cf587,Đường Số 5,duong so 5,ward_xa_nha_be,Hồ Chí Minh,Street
+street_eaba485a73f7,Đường Phạm Viết Chánh,duong pham viet chanh,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_eabbbb2e5e0d,Đường Tân Phước Khánh 46,duong tan phuoc khanh 46,ward_phuong_tan_khanh,Hồ Chí Minh,Street
+street_eb0902bf2e42,Đường Tỉnh Lộ 10,duong tinh lo 10,ward_phuong_tan_tao,Hồ Chí Minh,Street
+street_eb8805cdff57,Phố Tạ Quang Bửu,pho ta quang buu,ward_phuong_chanh_hung,Hồ Chí Minh,Street
+street_ebcb8c81d684,Đường Số 12,duong so 12,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_ec02a717377b,Đường Phước Thiện,duong phuoc thien,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_ec2359804246,Đường Thoại Ngọc Hầu,duong thoai ngoc hau,ward_phuong_phu_thanh,Hồ Chí Minh,Street
+street_ec3ab4ed7ee2,Đường 6,duong 6,ward_phuong_binh_tan,Hồ Chí Minh,Street
+street_ec7e0b6a6540,Đường Phú Thuận,duong phu thuan,ward_phuong_phu_thuan,Hồ Chí Minh,Street
+street_ec95f5716239,Đường 3/2,duong 3 2,ward_phuong_phuoc_thang,Hồ Chí Minh,Street
+street_ecea6a6a6513,Đường Trần Văn Ơn,duong tran van on,ward_phuong_tan_son_nhi,Hồ Chí Minh,Street
+street_ecf8e5f19bbc,Đường Thạnh Lộc 7,duong thanh loc 7,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_ed50ca56f34b,Đường Nguyễn Ảnh Thủ,duong nguyen anh thu,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_ed8fdd756d86,Đường Thái Thuận,duong thai thuan,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_ed93e6d920fd,Đường Tân Hiệp 4,duong tan hiep 4,ward_xa_hoc_mon,Hồ Chí Minh,Street
+street_edd00ec20692,Đường Số 8,duong so 8,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_edfbd8643fbe,Đường Nguyễn Văn Lượng,duong nguyen van luong,ward_phuong_go_vap,Hồ Chí Minh,Street
+street_ee07b5ba5660,Đường Lê Văn Quới,duong le van quoi,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_ee60b06450ee,Đường Phạm Văn Đồng,duong pham van dong,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_ee8c94d99681,Đường Phạm Văn Đồng,duong pham van dong,ward_phuong_di_an,Hồ Chí Minh,Street
+street_ef95d8d633ac,Đường Lê Văn Lương,duong le van luong,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_ef9ced0948f8,Đường Trần Bình Trọng,duong tran binh trong,ward_phuong_cho_quan,Hồ Chí Minh,Street
+street_efbf8db77eb4,Đường Tân Chánh Hiệp 8,duong tan chanh hiep 8,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_efe80eb6b65e,Đường Số 24,duong so 24,ward_phuong_hiep_binh,Hồ Chí Minh,Street
+street_efe836c68da1,Đường Quốc lộ 1A,duong quoc lo 1a,ward_phuong_tan_tao,Hồ Chí Minh,Street
+street_f019cbe2938f,Đường Thạnh Xuân 46,duong thanh xuan 46,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_f027106d0a10,Đường Nguyễn Văn Trỗi,duong nguyen van troi,ward_phuong_tan_son_hoa,Hồ Chí Minh,Street
+street_f035bbf920cf,Đường Thạnh Xuân 21,duong thanh xuan 21,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_f04724196608,Đường Võ Nguyên Giáp,duong vo nguyen giap,ward_phuong_an_khanh,Hồ Chí Minh,Street
+street_f0981e9ad74d,Đường Hậu Giang,duong hau giang,ward_phuong_binh_phu,Hồ Chí Minh,Street
+street_f0add4ed4864,Đường Số 29,duong so 29,ward_phuong_binh_phu,Hồ Chí Minh,Street
+street_f10501a62e77,Đường Điện Biên Phủ,duong dien bien phu,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_f17342405c50,Đường ĐT 743,duong dt 743,ward_phuong_an_phu,Hồ Chí Minh,Street
+street_f191beb9c6c7,Phố Vũ Ngọc Phan,pho vu ngoc phan,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_f1b5653d9ba1,Đường Huỳnh Văn Bánh,duong huynh van banh,ward_phuong_phu_nhuan,Hồ Chí Minh,Street
+street_f1bbd82ebada,Đường Liên Phường,duong lien phuong,ward_phuong_phuoc_long,Hồ Chí Minh,Street
+street_f1ea89b6fe7a,Đường Huỳnh Văn Nghệ,duong huynh van nghe,ward_phuong_tan_son,Hồ Chí Minh,Street
+street_f1f6da04edf4,Đường Sư Vạn Hạnh,duong su van hanh,ward_phuong_hoa_hung,Hồ Chí Minh,Street
+street_f2267b62bffe,Đường Gò Dầu,duong go dau,ward_phuong_phu_tho_hoa,Hồ Chí Minh,Street
+street_f245a6bb8dd7,Đường Trần Quốc Toản,duong tran quoc toan,ward_phuong_nhieu_loc,Hồ Chí Minh,Street
+street_f281708e2c0d,Đường Cô Giang,duong co giang,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_f28455696c51,Đường Số 5,duong so 5,ward_phuong_binh_trung,Hồ Chí Minh,Street
+street_f2b5810979da,Đường Thạnh Lộc 27,duong thanh loc 27,ward_phuong_an_phu_dong,Hồ Chí Minh,Street
+street_f2c22e9a6eb3,Đường Lũy Bán Bích,duong luy ban bich,ward_phuong_tan_phu,Hồ Chí Minh,Street
+street_f3120ceb8cc9,Đường Phổ Quang,duong pho quang,ward_phuong_tan_son_hoa,Hồ Chí Minh,Street
+street_f34a3505d12b,Đường Nguyễn Huệ,duong nguyen hue,ward_phuong_binh_duong,Hồ Chí Minh,Street
+street_f352b7c281b2,Phố Mạc Thiên Tích,pho mac thien tich,ward_phuong_cho_lon,Hồ Chí Minh,Street
+street_f363f4e138ba,Đường Trần Bình Trọng,duong tran binh trong,ward_phuong_binh_loi_trung,Hồ Chí Minh,Street
+street_f401d21cf727,Đường Tân Hòa Đông,duong tan hoa dong,ward_phuong_phu_lam,Hồ Chí Minh,Street
+street_f403ddab0ef2,Đường Lê Văn Lương,duong le van luong,ward_xa_hiep_phuoc,Hồ Chí Minh,Street
+street_f409901a302a,Đường Số 59,duong so 59,ward_phuong_an_hoi_tay,Hồ Chí Minh,Street
+street_f41648d8cede,Đường Trường Sa,duong truong sa,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_f41b9e8297ba,Đường Số 10,duong so 10,ward_phuong_binh_tri_dong,Hồ Chí Minh,Street
+street_f41f8ab4f25f,Đường Võ Văn Kiệt,duong vo van kiet,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_f43cd25476a6,Đường An Dương Vương,duong an duong vuong,ward_phuong_binh_phu,Hồ Chí Minh,Street
+street_f4439672585b,Đường Nhuận Đức,duong nhuan duc,ward_xa_nhuan_duc,Hồ Chí Minh,Street
+street_f4a968d4fb8f,Đường Trung Mỹ Tây 9,duong trung my tay 9,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_f4e229d64743,Đường Tân Hòa 2,duong tan hoa 2,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_f4f351a798ff,Đường 100 Bình Thới,duong 100 binh thoi,ward_phuong_hoa_binh,Hồ Chí Minh,Street
+street_f5019b6e6223,Đường Nguyễn Ảnh Thủ,duong nguyen anh thu,ward_phuong_tan_thoi_hiep,Hồ Chí Minh,Street
+street_f56dffc21fa4,Đường N1,duong n1,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_f57a73dc84a6,Đường Số 19E,duong so 19e,ward_phuong_an_lac,Hồ Chí Minh,Street
+street_f670eaf650d9,Đường Số 1,duong so 1,ward_phuong_an_nhon,Hồ Chí Minh,Street
+street_f6936896d37d,Đường 12,duong 12,ward_phuong_thu_duc,Hồ Chí Minh,Street
+street_f6abc0d763ed,Đường Võ Văn Hát,duong vo van hat,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_f6dbe4262ca7,Đường N12,duong n12,ward_phuong_long_truong,Hồ Chí Minh,Street
+street_f6ea41f9945e,Đường S7,duong s7,ward_phuong_tay_thanh,Hồ Chí Minh,Street
+street_f7466b4b6604,Đường D8,duong d8,ward_phuong_thanh_my_tay,Hồ Chí Minh,Street
+street_f7746c8386b3,Đường Huỳnh Bá Chánh,duong huynh ba chanh,ward_xa_tan_nhut,Hồ Chí Minh,Street
+street_f7ce3b89f38b,Đường Đoàn Văn Bơ,duong doan van bo,ward_phuong_khanh_hoi,Hồ Chí Minh,Street
+street_f7d463edd8c2,Đường Lâm Văn Bền,duong lam van ben,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_f842c4890ec9,Đường An Dương Vương,duong an duong vuong,ward_phuong_cho_quan,Hồ Chí Minh,Street
+street_f8828f9e32be,Đường Bến Vân Đồn,duong ben van don,ward_phuong_khanh_hoi,Hồ Chí Minh,Street
+street_f8c293649a46,Đường Nguyễn Thái Bình,duong nguyen thai binh,ward_phuong_ben_thanh,Hồ Chí Minh,Street
+street_f8d65f46e85c,Đường Bạch Vân,duong bach van,ward_phuong_an_dong,Hồ Chí Minh,Street
+street_f8d8430d7cac,Đường Nguyễn Hữu Thọ,duong nguyen huu tho,ward_phuong_tan_hung,Hồ Chí Minh,Street
+street_f8fe6ad5bf70,Đường T2,duong t2,ward_phuong_long_binh,Hồ Chí Minh,Street
+street_f9643bed1f2b,Đường Trung Mỹ Tây 03,duong trung my tay 03,ward_phuong_trung_my_tay,Hồ Chí Minh,Street
+street_f96655e30e50,Đường Số 10,duong so 10,ward_phuong_tan_thuan,Hồ Chí Minh,Street
+street_fa2a2572e5d0,Đường Đình Quới An,duong dinh quoi an,ward_phuong_thoi_an,Hồ Chí Minh,Street
+street_fa6f0106ae2c,Đường Cao Đạt,duong cao dat,ward_phuong_cho_quan,Hồ Chí Minh,Street
+street_fab6764a1c9d,Đường Nguyễn Văn Khối,duong nguyen van khoi,ward_phuong_thong_tay_hoi,Hồ Chí Minh,Street
+street_fb462b2afa64,Đường Dương Quảng Hàm,duong duong quang ham,ward_phuong_an_nhon,Hồ Chí Minh,Street
+street_fc1c9f5a4a22,Phố Nguyễn Xí,pho nguyen xi,ward_phuong_binh_thanh,Hồ Chí Minh,Street
+street_fc496745a141,Đường Nguyễn Xiển,duong nguyen xien,ward_phuong_tang_nhon_phu,Hồ Chí Minh,Street
+street_fc76fab609b1,Đường Bùi Hữu Nghĩa,duong bui huu nghia,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_fc90b061f317,Đường Lê Thị Hà,duong le thi ha,ward_xa_hoc_mon,Hồ Chí Minh,Street
+street_fcd9a92226e1,Đường Thống Nhất,duong thong nhat,ward_phuong_thong_tay_hoi,Hồ Chí Minh,Street
+street_fcf25259f1a9,Đường Ni Sư Huỳnh Liên,duong ni su huynh lien,ward_phuong_bay_hien,Hồ Chí Minh,Street
+street_fd12ef7ee9b6,Đường Đinh Tiên Hoàng,duong dinh tien hoang,ward_phuong_sai_gon,Hồ Chí Minh,Street
+street_fd8286d72d66,Đường Trường Sa,duong truong sa,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_fdd5042b965d,Đường Số 45,duong so 45,ward_phuong_an_hoi_tay,Hồ Chí Minh,Street
+street_fde47945f725,Đường Ngô Thời Nhiệm,duong ngo thoi nhiem,ward_phuong_cau_kieu,Hồ Chí Minh,Street
+street_fe663b8bbe3f,Đường Hoàng Hoa Thám,duong hoang hoa tham,ward_phuong_gia_dinh,Hồ Chí Minh,Street
+street_fef7d045eb09,Đường Lê Trọng Tấn,duong le trong tan,ward_phuong_tay_thanh,Hồ Chí Minh,Street
+street_ff8ac388d973,Đường Lạc Long Quân,duong lac long quan,ward_phuong_binh_thoi,Hồ Chí Minh,Street
+street_ffd5c028aa40,Đường Lạc Long Quân,duong lac long quan,ward_phuong_bay_hien,Hồ Chí Minh,Street

@@ -93,7 +93,7 @@ pip install -r requirements.txt
 ---
 
 ### Bước 3: Xuất dữ liệu tầng Gold (`data/gold/`)
-Đóng gói dữ liệu sạch cho **SQL** (3 bảng: `listings.csv`, `amenities.csv`, `listing_amenities.csv`) và **Graph** (4 file nodes + 3 file edges), đồng thời tự động kiểm tra toàn vẹn khóa chính/khóa ngoại:
+Đóng gói dữ liệu sạch cho **SQL** (3 bảng: `listings.csv`, `amenities.csv`, `listing_amenities.csv`) và **Graph** (6 file nodes + 6 file edges), đồng thời tự động kiểm tra toàn vẹn khóa chính/khóa ngoại:
 
 ```powershell
 # Xuất cả 2 bộ SQL & Graph (mặc định)
@@ -134,5 +134,5 @@ crawl_data/
     ├── listing_poi_routes.csv
     └── gold/
         ├── sql/                     # 3 bảng SQL (listings, amenities, listing_amenities)
-        └── graph/                   # 4 file nodes + 3 file edges (graph_nodes_*, graph_edges_*)
+        └── graph/                   # 6 file nodes + 6 file edges (graph_nodes_*, graph_edges_*)
 ```

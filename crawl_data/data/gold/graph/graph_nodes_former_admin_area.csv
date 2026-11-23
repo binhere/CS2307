@@ -1,0 +1,41 @@
+﻿former_area_id:ID(FormerAdminArea),name:string,normalized_name:string,area_type:string,former_city_province:string,:LABEL
+faa_huyen_bau_bang,Huyện Bàu Bàng,huyen bau bang,Huyện,Bình Dương,FormerAdminArea
+faa_huyen_binh_chanh,Huyện Bình Chánh,huyen binh chanh,Huyện,Hồ Chí Minh,FormerAdminArea
+faa_huyen_can_gio,Huyện Cần Giờ,huyen can gio,Huyện,Hồ Chí Minh,FormerAdminArea
+faa_huyen_cu_chi,Huyện Củ Chi,huyen cu chi,Huyện,Hồ Chí Minh,FormerAdminArea
+faa_huyen_hoc_mon,Huyện Hóc Môn,huyen hoc mon,Huyện,Hồ Chí Minh,FormerAdminArea
+faa_huyen_long_dien,Huyện Long Điền,huyen long dien,Huyện,Bà Rịa Vũng Tàu,FormerAdminArea
+faa_huyen_nha_be,Huyện Nhà Bè,huyen nha be,Huyện,Hồ Chí Minh,FormerAdminArea
+faa_phuong_chanh_hung,Phường Chánh Hưng,phuong chanh hung,Phường,Hồ Chí Minh mới,FormerAdminArea
+faa_phuong_hiep_binh,Phường Hiệp Bình,phuong hiep binh,Phường,Hồ Chí Minh mới,FormerAdminArea
+faa_phuong_long_binh,Phường Long Bình,phuong long binh,Phường,Hồ Chí Minh mới,FormerAdminArea
+faa_phuong_long_truong,Phường Long Trường,phuong long truong,Phường,Hồ Chí Minh mới,FormerAdminArea
+faa_phuong_nhieu_loc,Phường Nhiêu Lộc,phuong nhieu loc,Phường,Hồ Chí Minh mới,FormerAdminArea
+faa_phuong_tan_binh,Phường Tân Bình,phuong tan binh,Phường,Hồ Chí Minh mới,FormerAdminArea
+faa_phuong_thanh_my_tay,Phường Thạnh Mỹ Tây,phuong thanh my tay,Phường,Hồ Chí Minh mới,FormerAdminArea
+faa_quan_1,Quận 1,quan 1,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_10,Quận 10,quan 10,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_11,Quận 11,quan 11,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_12,Quận 12,quan 12,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_2,Quận 2,quan 2,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_3,Quận 3,quan 3,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_4,Quận 4,quan 4,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_5,Quận 5,quan 5,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_6,Quận 6,quan 6,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_7,Quận 7,quan 7,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_8,Quận 8,quan 8,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_9,Quận 9,quan 9,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_binh_tan,Quận Bình Tân,quan binh tan,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_binh_thanh,Quận Bình Thạnh,quan binh thanh,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_go_vap,Quận Gò Vấp,quan go vap,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_phu_nhuan,Quận Phú Nhuận,quan phu nhuan,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_tan_binh,Quận Tân Bình,quan tan binh,Quận,Hồ Chí Minh,FormerAdminArea
+faa_quan_tan_phu,Quận Tân Phú,quan tan phu,Quận,Hồ Chí Minh,FormerAdminArea
+faa_thanh_pho_ben_cat,Thành Phố Bến Cát,thanh pho ben cat,Thành phố,Bình Dương,FormerAdminArea
+faa_thanh_pho_di_an,Thành Phố Dĩ An,thanh pho di an,Thành phố,Bình Dương,FormerAdminArea
+faa_thanh_pho_tan_uyen,Thành Phố Tân Uyên,thanh pho tan uyen,Thành phố,Bình Dương,FormerAdminArea
+faa_thanh_pho_thu_dau_mot,Thành Phố Thủ Dầu Một,thanh pho thu dau mot,Thành phố,Bình Dương,FormerAdminArea
+faa_thanh_pho_thu_duc,Thành Phố Thủ Đức,thanh pho thu duc,Thành phố,Hồ Chí Minh,FormerAdminArea
+faa_thanh_pho_thuan_an,Thành Phố Thuận An,thanh pho thuan an,Thành phố,Bình Dương,FormerAdminArea
+faa_thanh_pho_vung_tau,Thành Phố Vũng Tàu,thanh pho vung tau,Thành phố,Bà Rịa Vũng Tàu,FormerAdminArea
+faa_xa_tan_vinh_loc,Xã Tân Vĩnh Lộc,xa tan vinh loc,Xã,Hồ Chí Minh mới,FormerAdminArea

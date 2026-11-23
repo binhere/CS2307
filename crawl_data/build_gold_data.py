@@ -16,15 +16,21 @@ Writes:
     - graph_nodes_amenity.csv
     - graph_nodes_geo_cluster.csv
     - graph_nodes_ward.csv
+    - graph_nodes_former_admin_area.csv
+    - graph_nodes_street.csv
     - graph_edges_listing_near_amenity.csv
     - graph_edges_listing_in_cluster.csv
     - graph_edges_listing_in_ward.csv
+    - graph_edges_listing_in_former_area.csv
+    - graph_edges_ward_mapped_from_former_area.csv
+    - graph_edges_listing_on_street.csv
 """
 from __future__ import annotations
 
 import argparse
 import collections
 import csv
+import hashlib
 import re
 import sys
 import unicodedata
@@ -73,6 +79,41 @@ def iso_date(value: object) -> str:
     return v
 
 
+def as_int_str(value: object) -> str:
+    v = clean(value)
+    if not v:
+        return ""
+    try:
+        return str(int(float(v)))
+    except ValueError:
+        return v
+
+
+def parse_former_area(old_address: object) -> tuple[str, str, str]:
+    """Extract (former_area_name, area_type, former_city) from old_address."""
+    parts = [p.strip() for p in clean(old_address).split(",") if p.strip()]
+    if not parts:
+        return "", "", ""
+    name = parts[0]
+    city = re.sub(r"\s+cũ$", "", parts[1], flags=re.I).strip() if len(parts) > 1 else ""
+    area_type = next(
+        (t for t in ("Thành phố", "Thị xã", "Quận", "Huyện", "Phường", "Xã") if name.lower().startswith(t.lower())),
+        "",
+    )
+    return name, area_type, city
+
+
+def parse_street(address: object) -> str:
+    """Extract street name appearing right before Phường/Xã/Thị trấn in address."""
+    parts = [p.strip() for p in clean(address).split(",") if p.strip()]
+    ward_idx = next((i for i in range(len(parts) - 1, -1, -1) if re.match(r"^(?:Phường|Xã|Thị trấn)\b", parts[i], re.I)), -1)
+    if ward_idx >= 2:
+        return parts[ward_idx - 1]
+    if ward_idx == 1 and re.match(r"^(?:Đường|Phố|Đại lộ|Xa lộ|Quốc lộ|Tỉnh lộ|Hẻm|Ngõ)\b", parts[0], re.I):
+        return parts[0]
+    return ""
+
+
 def read_csv(path: Path) -> tuple[list[dict[str, str]], list[str]]:
     with open(path, encoding="utf-8-sig", newline="") as f:
         reader = csv.DictReader(f)
@@ -104,6 +145,9 @@ def export_sql(
         out = dict(r)
         out["posted_date"] = iso_date(r.get("posted_date"))
         out["expiry_date"] = iso_date(r.get("expiry_date"))
+        out["bedrooms"] = as_int_str(r.get("bedrooms"))
+        out["bathrooms"] = as_int_str(r.get("bathrooms"))
+        out["n_references"] = as_int_str(r.get("n_references"))
         out["listing_road_offset_m"] = road_offset_by_lid.get(r["listing_id"], "")
         prop_rows.append(out)
     write_csv(sql_dir / "listings.csv", prop_rows, prop_fields)
@@ -190,7 +234,7 @@ def export_graph(
             if col in date_cols:
                 val = iso_date(val)
             if col in int_cols:
-                node[f"{col}:int"] = val
+                node[f"{col}:int"] = as_int_str(val)
             elif col in float_cols:
                 node[f"{col}:float"] = val
             elif col in date_cols:
@@ -303,7 +347,99 @@ def export_graph(
         [":START_ID(Listing)", ":END_ID(Ward)", ":TYPE"],
     )
 
-    # 5. graph_listing_near_amenity_edges.csv
+    # 5. graph_nodes_former_admin_area.csv + IN_FORMER_AREA + MAPPED_FROM
+    former_nodes_map: dict[str, dict[str, object]] = {}
+    in_former_edges: list[dict[str, object]] = []
+    ward_former_counts: collections.Counter[tuple[str, str]] = collections.Counter()
+
+    for r in listings:
+        fname, ftype, fcity = parse_former_area(r.get("old_address"))
+        if not fname:
+            continue
+        fid = f"faa_{slug(fname)}"
+        if fid not in former_nodes_map:
+            former_nodes_map[fid] = {
+                "former_area_id:ID(FormerAdminArea)": fid,
+                "name:string": fname,
+                "normalized_name:string": norm(fname),
+                "area_type:string": ftype,
+                "former_city_province:string": fcity,
+                ":LABEL": "FormerAdminArea",
+            }
+        in_former_edges.append({
+            ":START_ID(Listing)": r["listing_id"],
+            ":END_ID(FormerAdminArea)": fid,
+            ":TYPE": "IN_FORMER_AREA",
+        })
+        ward_name = clean(r.get("district"))
+        if ward_name:
+            wid = f"ward_{slug(ward_name)}"
+            ward_former_counts[(wid, fid)] += 1
+
+    former_nodes = [former_nodes_map[k] for k in sorted(former_nodes_map)]
+    mapped_from_edges = [
+        {
+            ":START_ID(Ward)": wid,
+            ":END_ID(FormerAdminArea)": fid,
+            "supporting_listing_count:int": cnt,
+            ":TYPE": "MAPPED_FROM",
+        }
+        for (wid, fid), cnt in sorted(ward_former_counts.items())
+    ]
+    write_csv(
+        graph_dir / "graph_nodes_former_admin_area.csv",
+        former_nodes,
+        ["former_area_id:ID(FormerAdminArea)", "name:string", "normalized_name:string", "area_type:string", "former_city_province:string", ":LABEL"],
+    )
+    write_csv(
+        graph_dir / "graph_edges_listing_in_former_area.csv",
+        in_former_edges,
+        [":START_ID(Listing)", ":END_ID(FormerAdminArea)", ":TYPE"],
+    )
+    write_csv(
+        graph_dir / "graph_edges_ward_mapped_from_former_area.csv",
+        mapped_from_edges,
+        [":START_ID(Ward)", ":END_ID(FormerAdminArea)", "supporting_listing_count:int", ":TYPE"],
+    )
+
+    # 6. graph_nodes_street.csv + ON_STREET
+    street_nodes_map: dict[str, dict[str, object]] = {}
+    on_street_edges: list[dict[str, object]] = []
+    for r in listings:
+        ward_name = clean(r.get("district"))
+        street_name = parse_street(r.get("address"))
+        if not ward_name or not street_name:
+            continue
+        wid = f"ward_{slug(ward_name)}"
+        sid = "street_" + hashlib.sha1(f"{wid}|{norm(street_name)}".encode("utf-8")).hexdigest()[:12]
+        if sid not in street_nodes_map:
+            street_nodes_map[sid] = {
+                "street_id:ID(Street)": sid,
+                "name:string": street_name,
+                "normalized_name:string": norm(street_name),
+                "ward_id:string": wid,
+                "city_province:string": clean(r.get("city_province")),
+                ":LABEL": "Street",
+            }
+        on_street_edges.append({
+            ":START_ID(Listing)": r["listing_id"],
+            ":END_ID(Street)": sid,
+            ":TYPE": "ON_STREET",
+        })
+
+    street_nodes = [street_nodes_map[k] for k in sorted(street_nodes_map)]
+    write_csv(
+        graph_dir / "graph_nodes_street.csv",
+        street_nodes,
+        ["street_id:ID(Street)", "name:string", "normalized_name:string", "ward_id:string", "city_province:string", ":LABEL"],
+    )
+    write_csv(
+        graph_dir / "graph_edges_listing_on_street.csv",
+        on_street_edges,
+        [":START_ID(Listing)", ":END_ID(Street)", ":TYPE"],
+    )
+
+    # 7. graph_edges_listing_near_amenity.csv
     near_header = [
         ":START_ID(Listing)",
         ":END_ID(Amenity)",
@@ -343,9 +479,14 @@ def export_graph(
         "amenity_nodes": len(amen_nodes),
         "geo_cluster_nodes": len(cluster_nodes),
         "ward_nodes": len(ward_nodes),
+        "former_admin_area_nodes": len(former_nodes),
+        "street_nodes": len(street_nodes),
         "near_amenity_edges": len(near_edges),
         "in_cluster_edges": len(in_cluster_edges),
         "in_ward_edges": len(in_ward_edges),
+        "in_former_area_edges": len(in_former_edges),
+        "ward_mapped_from_edges": len(mapped_from_edges),
+        "on_street_edges": len(on_street_edges),
     }
 
 
