@@ -12,7 +12,7 @@ except ImportError:  # Parser-only environments may not install numeric dependen
 class EmbeddingApiTests(unittest.TestCase):
     @patch("src.search.embedding.http_session.post")
     def test_lmstudio_calls_embeddings_api_and_normalizes_vectors(self, post):
-        from src.search.embedding import E5EmbeddingModel
+        from src.search.embedding import EmbeddingModel
 
         first = [0.0] * 1024
         first[0] = 3.0
@@ -37,7 +37,7 @@ class EmbeddingApiTests(unittest.TestCase):
             },
             clear=True,
         ):
-            model = E5EmbeddingModel()
+            model = EmbeddingModel()
             vectors = model.encode(["căn hộ", "nhà phố"], kind="passage")
 
         self.assertEqual(vectors.shape, (2, 1024))
@@ -45,24 +45,24 @@ class EmbeddingApiTests(unittest.TestCase):
         post.assert_called_once_with(
             "http://localhost:1234/v1/embeddings",
             headers={"Content-Type": "application/json", "Authorization": "Bearer secret"},
-            json={"model": "test-e5", "input": ["passage: căn hộ", "passage: nhà phố"]},
+            json={"model": "test-e5", "input": ["căn hộ", "nhà phố"]},
             timeout=60.0,
         )
 
     @patch("src.search.embedding.http_session.post")
     def test_lmstudio_rejects_vectors_with_wrong_dimension(self, post):
-        from src.search.embedding import E5EmbeddingModel
+        from src.search.embedding import EmbeddingModel
 
         response = Mock()
         response.json.return_value = {"data": [{"index": 0, "embedding": [1.0, 2.0]}]}
         post.return_value = response
         with patch.dict(os.environ, {"SEARCH_EMBEDDING_PROVIDER": "lmstudio"}, clear=True):
-            model = E5EmbeddingModel()
+            model = EmbeddingModel()
             self.assertIsNone(model.encode_query("test"))
 
     @patch("src.search.embedding.http_session.post")
     def test_lmstudio_can_request_schema_dimension(self, post):
-        from src.search.embedding import E5EmbeddingModel
+        from src.search.embedding import EmbeddingModel
 
         response = Mock()
         response.json.return_value = {"data": [{"index": 0, "embedding": [1.0] * 1024}]}
@@ -75,7 +75,7 @@ class EmbeddingApiTests(unittest.TestCase):
             },
             clear=True,
         ):
-            model = E5EmbeddingModel()
+            model = EmbeddingModel()
             vectors = model.encode_query("test")
 
         self.assertEqual(vectors.shape, (1024,))
@@ -83,7 +83,7 @@ class EmbeddingApiTests(unittest.TestCase):
 
     @patch("src.search.embedding.http_session.post")
     def test_query_request_timeout_never_exceeds_stage_budget(self, post):
-        from src.search.embedding import E5EmbeddingModel
+        from src.search.embedding import EmbeddingModel
 
         response = Mock()
         response.json.return_value = {"data": [{"index": 0, "embedding": [1.0] * 1024}]}
@@ -93,7 +93,7 @@ class EmbeddingApiTests(unittest.TestCase):
             {"SEARCH_EMBEDDING_TIMEOUT": "60", "SEARCH_EMBEDDING_STAGE_TIMEOUT_SECONDS": "7"},
             clear=True,
         ):
-            model = E5EmbeddingModel()
+            model = EmbeddingModel()
             model.encode_query("căn hộ quận 7")
             query_timeout = post.call_args.kwargs["timeout"]
             model.encode(["căn hộ"], kind="passage")

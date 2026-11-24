@@ -13,34 +13,47 @@ services:
       timeout: 5s
       retries: 5
 
+  # minio/minio and minio/mc are no longer published on Docker Hub; Chainguard builds
+  # are used instead (as in databases/object_storage). They ship without a shell or
+  # curl, so there is no healthcheck and the bucket job retries until MinIO is up.
   minio:
-    image: minio/minio:latest
+    image: cgr.dev/chainguard/minio:latest
     restart: unless-stopped
     env_file: .env
-    command: server /data --console-address ":9001"
+    user: "0"   # write the named volume created by earlier root-based images
+    command: ["server", "/data", "--console-address", ":9001"]
     ports:
       - "9000:9000"
       - "9001:9001"
     volumes:
       - minio_data:/data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
 
   minio-init:
-    image: minio/mc:latest
+    image: cgr.dev/chainguard/minio-client:latest
     depends_on:
-      minio:
-        condition: service_healthy
-    env_file: .env
-    entrypoint: >
-      sh -c "
-      mc alias set local http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD &&
-      mc mb --ignore-existing local/$$MINIO_BUCKET_NAME
-      "
-    restart: "no"
+      - minio
+    environment:
+      - MC_HOST_local=http://${MINIO_ROOT_USER}:${MINIO_ROOT_PASSWORD}@minio:9000
+    command: ["mb", "--ignore-existing", "local/${MINIO_BUCKET_NAME}"]
+    restart: on-failure
+
+  # Query and catalog embeddings on CPU (no GPU needed). The model is downloaded into
+  # the ollama_models volume on first start; later starts reuse it.
+  embedding:
+    image: ollama/ollama:0.19.0
+    restart: unless-stopped
+    environment:
+      - EMBEDDING_MODEL=${SEARCH_EMBEDDING_MODEL:-qwen3-embedding:0.6b}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - "ollama serve & until ollama list >/dev/null 2>&1; do sleep 1; done; ollama pull \"$$EMBEDDING_MODEL\" && wait"
+    volumes:
+      - ollama_models:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   neo4j-import-init:
     image: busybox:1.36
@@ -98,6 +111,7 @@ services:
 
 volumes:
   pgdata:
+  ollama_models:
   minio_data:
   neo4j_data:
   neo4j_import:

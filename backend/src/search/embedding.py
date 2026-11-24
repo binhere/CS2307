@@ -34,31 +34,28 @@ def embedding_stage_timeout_seconds() -> float:
     return seconds if seconds > 0 else DEFAULT_EMBEDDING_STAGE_TIMEOUT_SECONDS
 
 
-class E5EmbeddingModel:
+class EmbeddingModel:
     """Embedding client backed by an OpenAI-compatible embeddings endpoint.
 
-    The backend intentionally does not load a local Hugging Face model. This
-    keeps model memory and ML runtime dependencies out of the API container;
-    LM Studio/OpenRouter (or another compatible endpoint) owns embedding
-    inference instead.
+    The backend does not load a model itself: a separate server (Ollama with
+    qwen3-embedding:0.6b by default, CPU is enough) owns inference. Catalog passages
+    and user queries must go through the same model, so this is configured on the
+    server only and never taken from a user's own API key.
     """
 
     dimension = 1024
 
     def __init__(self):
-        configured_provider = str(config_value("SEARCH_EMBEDDING_PROVIDER", "lmstudio")).strip().lower()
-        if configured_provider != "lmstudio":
-            logger.warning(
-                "Only the OpenAI-compatible embedding endpoint is supported; "
-                "using lmstudio API mode instead of provider={!r}",
-                configured_provider,
-            )
-        self.provider = "lmstudio"
-        self.model_name = config_value("SEARCH_EMBEDDING_MODEL", "qwen/qwen3-embedding-4b")
+        self.provider = "openai-compatible"
+        self.model_name = config_value("SEARCH_EMBEDDING_MODEL", "qwen3-embedding:0.6b")
         self.base_url = str(
-            config_value("SEARCH_EMBEDDING_BASE_URL", "http://127.0.0.1:1234/v1")
+            config_value("SEARCH_EMBEDDING_BASE_URL", "http://127.0.0.1:11434/v1")
         ).rstrip("/")
         self.api_key = str(config_value("SEARCH_EMBEDDING_API_KEY", "") or "").strip()
+        # Qwen3 embeddings need no "query:"/"passage:" markers (those belong to E5 models);
+        # a model that wants them can set the prefixes. Changing either requires re-embedding.
+        self.query_prefix = str(config_value("SEARCH_EMBEDDING_QUERY_PREFIX", "") or "")
+        self.passage_prefix = str(config_value("SEARCH_EMBEDDING_PASSAGE_PREFIX", "") or "")
         requested_dimensions = str(config_value("SEARCH_EMBEDDING_REQUEST_DIMENSIONS", "") or "").strip()
         try:
             self.request_dimensions = int(requested_dimensions) if requested_dimensions else None
@@ -89,7 +86,7 @@ class E5EmbeddingModel:
     def encode(self, texts: List[str], kind: str = "query") -> Optional[np.ndarray]:
         if not texts:
             return None
-        prefix = "query: " if kind == "query" else "passage: "
+        prefix = self.query_prefix if kind == "query" else self.passage_prefix
         prepared = [prefix + (text or "") for text in texts]
         timeout = self.query_timeout if kind == "query" else self.request_timeout
         return self._encode_api(prepared, timeout)
@@ -98,7 +95,7 @@ class E5EmbeddingModel:
         """Embed prepared texts through the OpenAI-compatible endpoint.
 
         Args:
-            texts: Inputs already carrying their "query: "/"passage: " prefix.
+            texts: Inputs already carrying their configured query/passage prefix.
             timeout: HTTP timeout in seconds for this request.
 
         Returns:
@@ -156,4 +153,4 @@ class E5EmbeddingModel:
         return vector
 
 
-embedding_model = E5EmbeddingModel()
+embedding_model = EmbeddingModel()
