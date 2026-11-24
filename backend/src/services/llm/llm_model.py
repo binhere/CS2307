@@ -29,6 +29,9 @@ OPENAI_COMPATIBLE_DEFAULTS = {
     "groq": ("https://api.groq.com/openai/v1", "llama-3.3-70b-versatile"),
     "grok": ("https://api.x.ai/v1", "grok-3-mini"),
 }
+# Google's Chat Completions endpoint for Gemini, used by clients that only speak
+# the OpenAI protocol (LangChain's ChatOpenAI in the chat agent).
+GEMINI_OPENAI_COMPATIBLE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 OPENAI_COMPATIBLE_PROVIDERS = {
     "openai",
     "openai-compatible",
@@ -48,7 +51,9 @@ class LLModel:
         temperature: float = 0.5,
         top_p: float = 1.0,
         top_k: int = 30,
-        max_output_tokens: int = 1024 * 20,
+        # 8192 fits every default model's output cap (gpt-4o-mini rejects more
+        # than 16384) and is far above what the parser/answer JSON needs.
+        max_output_tokens: int = 8192,
         provider: Optional[str] = None,
         base_url: Optional[str] = None,
         api_key: Optional[str] = None,
@@ -137,6 +142,25 @@ class LLModel:
         if self.provider == "gemini":
             return bool(self.gemini_api_keys)
         return bool(self.api_keys)
+
+    def chat_completions_endpoint(self) -> Tuple[Optional[str], str, str]:
+        """Resolve the Chat Completions endpoint for OpenAI-protocol clients.
+
+        The chat agent talks to the model through LangChain's ChatOpenAI, which
+        only speaks the OpenAI protocol. Resolving the endpoint here keeps it on
+        the same provider, model and key as every other LLM call; a Gemini
+        configuration goes through Google's OpenAI-compatible endpoint.
+
+        Returns:
+            Tuple of (base_url, model_name, api_key). base_url is None for the
+            OpenAI default endpoint; api_key is "not-needed" when no key is
+            configured (local OpenAI-compatible servers accept any key).
+        """
+        if self.provider == "gemini":
+            api_key = self.gemini_api_keys[0] if self.gemini_api_keys else "not-needed"
+            return GEMINI_OPENAI_COMPATIBLE_URL, self.model_name, api_key
+        api_key = self.api_keys[0] if self.api_keys else "not-needed"
+        return self.base_url, self.model_name, api_key
 
     async def ask_llm(
         self,

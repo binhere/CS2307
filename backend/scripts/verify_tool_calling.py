@@ -12,7 +12,8 @@ from langchain.tools import tool
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_openai import ChatOpenAI
 
-from src.settings.config import APPLICATION, config_value
+from src.services.llm.llm_model import LLModel
+from src.settings.config import config_value
 
 
 @tool
@@ -22,10 +23,13 @@ def echo_tool(value: str) -> str:
 
 
 async def main() -> None:
+    # Resolve the endpoint exactly as the chat agent does (provider defaults,
+    # Gemini's OpenAI-compatible URL), so the smoke test checks the same server.
+    base_url, model_name, api_key = LLModel().chat_completions_endpoint()
     model = ChatOpenAI(
-        model=APPLICATION.get("llm_model"),
-        base_url=APPLICATION.get("llm_base_url") or None,
-        api_key=APPLICATION.get("llm_api_key") or "not-needed",
+        model=model_name,
+        base_url=base_url,
+        api_key=api_key,
         temperature=0,
         timeout=int(config_value("CHAT_MODEL_TIMEOUT_SECONDS", "60")),
         max_retries=0,

@@ -3,7 +3,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 # A bare/approximate numeric target ("5 tỷ", "70m2") is matched as a soft band of
@@ -104,6 +104,43 @@ class ParsedSearchQuery(BaseModel):
     protected_constraints: List[str] = Field(default_factory=list)
 
 
+# Numeric UI/API filters and the type the parser casts each one to. Values the
+# parser treats as "not set" (None, "", 0, "0") are skipped there and here.
+NUMERIC_FILTER_TYPES = {
+    "min_price": float, "max_price": float,
+    "min_area": float, "max_area": float,
+    "bedrooms": int, "bathrooms": int,
+}
+UNSET_FILTER_VALUES = (None, "", 0, "0")
+
+
+def validate_explicit_filters(filters: Dict[str, Any]) -> Dict[str, Any]:
+    """Reject numeric filter values the parser cannot cast.
+
+    Without this check a value such as "abc" fails deep inside the search and
+    surfaces as a 500 instead of a client error.
+
+    Args:
+        filters: The UI/API filter payload, e.g. {"min_price": 2, "district": "Quận 7"}.
+
+    Returns:
+        Dict[str, Any]: The same payload, unchanged, when every numeric value casts.
+
+    Raises:
+        ValueError: Naming the first filter whose value is not a valid number.
+    """
+    for key, caster in NUMERIC_FILTER_TYPES.items():
+        value = filters.get(key)
+        if value in UNSET_FILTER_VALUES:
+            continue
+        try:
+            caster(value)
+        except (TypeError, ValueError):
+            kind = "an integer" if caster is int else "a number"
+            raise ValueError(f"filters.{key} must be {kind}, got {value!r}") from None
+    return filters
+
+
 class SearchRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -112,6 +149,11 @@ class SearchRequest(BaseModel):
     page: int = Field(default=1, ge=1)
     debug: bool = False
     filters: Dict[str, Any] = Field(default_factory=dict)
+
+    @field_validator("filters")
+    @classmethod
+    def _validate_filters(cls, value):
+        return validate_explicit_filters(value)
 
 
 class ParseRequest(BaseModel):

@@ -19,7 +19,7 @@ from alembic.config import Config
 
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = BACKEND_ROOT.parent
-DEFAULT_DATA_DIR = BACKEND_ROOT / "Data" if (BACKEND_ROOT / "Data").exists() else REPO_ROOT / "Data"
+DEFAULT_DATA_DIR = BACKEND_ROOT / "data" if (BACKEND_ROOT / "data").exists() else REPO_ROOT / "data"
 DATA_DIR = Path(os.getenv("SEARCH_DATA_DIR", str(DEFAULT_DATA_DIR)))
 sys.path.insert(0, str(BACKEND_ROOT))
 

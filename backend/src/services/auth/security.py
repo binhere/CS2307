@@ -21,6 +21,11 @@ _pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # Default to a 7-day token so there is nothing to refresh; overridable via env.
 _DEFAULT_EXPIRE_MINUTES = 60 * 24 * 7
 
+# bcrypt hash (cost 12, same as real accounts) of a random password nobody knows.
+# Login verifies against it when the username does not exist, so an unknown
+# username takes as long to reject as a wrong password and cannot be probed.
+DUMMY_PASSWORD_HASH = "$2b$12$.T5uh/XFAhMp/SlB0p0Vk.q8TuzTD.Mb/h/I0wgg5pzOc41RpV3C6"
+
 
 def _is_debug() -> bool:
     return str(config_value("DEBUG", "false")).lower() in {"1", "true", "yes"}

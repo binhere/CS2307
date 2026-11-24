@@ -1,4 +1,3 @@
-from loguru import logger
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 from sqlalchemy.sql import text
@@ -10,6 +9,26 @@ from src.settings.config import config_value
 # pool, so keep this pool small. Overridable via DB_POOL_SIZE / DB_MAX_OVERFLOW.
 DEFAULT_POOL_SIZE = 10
 DEFAULT_MAX_OVERFLOW = 10
+# A stuck query must not hold a pooled connection (and a worker thread) forever.
+# 0 disables the limit, as in PostgreSQL itself.
+DEFAULT_STATEMENT_TIMEOUT_SECONDS = 15.0
+
+
+def statement_timeout_milliseconds() -> int:
+    """Read the per-statement time limit applied to every pooled connection.
+
+    Returns:
+        int: DB_STATEMENT_TIMEOUT_SECONDS converted to milliseconds; the default
+        (15 s) when the setting is missing or not a non-negative number, and 0
+        (no limit) when the setting is 0.
+    """
+    try:
+        seconds = float(config_value("DB_STATEMENT_TIMEOUT_SECONDS", DEFAULT_STATEMENT_TIMEOUT_SECONDS))
+    except (TypeError, ValueError):
+        seconds = DEFAULT_STATEMENT_TIMEOUT_SECONDS
+    if seconds < 0:
+        seconds = DEFAULT_STATEMENT_TIMEOUT_SECONDS
+    return int(seconds * 1000)
 
 
 class PostgresConnector:
@@ -24,10 +43,11 @@ class PostgresConnector:
         self.username = None
 
     def start(self):
-        self.username, self.password, self.host, self.port, self.dbname, statement_timeout = self.config["username_db"], \
-            self.config[
-                "password_db"], \
-            self.config["host_db"], self.config["port_db"], self.config["database"], 100
+        self.username = self.config["username_db"]
+        self.password = self.config["password_db"]
+        self.host = self.config["host_db"]
+        self.port = self.config["port_db"]
+        self.dbname = self.config["database"]
         # URL.create escapes special characters (@, /, :) in the password.
         url = URL.create(
             "postgresql",
@@ -43,25 +63,14 @@ class PostgresConnector:
             pool_size=int(config_value("DB_POOL_SIZE", DEFAULT_POOL_SIZE)),
             max_overflow=int(config_value("DB_MAX_OVERFLOW", DEFAULT_MAX_OVERFLOW)),
             pool_pre_ping=True,
+            connect_args={"options": f"-c statement_timeout={statement_timeout_milliseconds()}"},
         )
-
-    def execute_raw_query(self, raw_query: str, **kwargs):
-        try:
-            query = text(raw_query)
-            rr = self.engine.execute(query, **kwargs).fetchall()
-            if len(rr) == 0:
-                return None
-            res = [tuple(i) for i in rr]
-            return res
-        except Exception as e:
-            logger.error(f"execute_raw_query ex: {e}")
-            return None
 
     def fetch_mappings(self, raw_query: str, **kwargs):
         """Execute a read query and preserve column names.
 
-        Unlike the legacy method, errors are not converted to an empty result. Search
-        must distinguish an unavailable database from a valid no-result response.
+        Errors are raised, never converted to an empty result: callers must be able
+        to tell an unavailable database from a valid no-result response.
         """
         query = text(raw_query)
         with self.engine.connect() as connection:

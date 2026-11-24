@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from datetime import date, datetime
-import re
 from typing import Any, Dict, Iterable, List, Optional
 
-from src.search.normalizer import normalize_text
+from src.search.normalizer import location_terms, normalize_text
 from src.search.personalization import score_item as personalization_score
 from src.search.schemas import ParsedSearchQuery, RankingProfile
 
@@ -142,25 +141,12 @@ def _criteria_score(item: dict, parsed: ParsedSearchQuery) -> float:
     return sum(scores) / len(scores) if scores else .5
 
 
-def _location_terms(values) -> set[str]:
-    terms = set()
-    for value in values:
-        if value in (None, ""):
-            continue
-        normalized = normalize_text(str(value))
-        if not normalized:
-            continue
-        terms.add(normalized)
-        terms.add(re.sub(r"^(?:phuong|xa|quan|huyen|thi xa|thanh pho|tp)\s+", "", normalized))
-    return {term for term in terms if term}
-
-
 def _location_score(item: dict, parsed: ParsedSearchQuery) -> float:
     preferred = parsed.preference_filters
-    requested = _location_terms((*preferred.districts, *preferred.former_admin_areas))
+    requested = location_terms((*preferred.districts, *preferred.former_admin_areas))
     if not requested:
         return .5
-    actual = _location_terms((item.get("district"), item.get("former_admin_area")))
+    actual = location_terms((item.get("district"), item.get("former_admin_area")))
     return float(bool(requested & actual))
 
 

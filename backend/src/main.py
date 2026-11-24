@@ -1,9 +1,3 @@
-import typing
-from starlette import routing
-from starlette.concurrency import run_in_threadpool
-from starlette.routing import iscoroutinefunction_or_partial
-from starlette.types import ASGIApp, Receive, Scope, Send
-from src.utils.functions import now
 from fastapi import FastAPI, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException, RequestValidationError
@@ -19,33 +13,7 @@ from src.settings.config import APPLICATION
 from src.settings.event import (
     create_start_app_handler, create_stop_app_handler,
 )
-# from app.settings.middleware import middleware_setting
 from src.utils.error_messages import VALIDATE_ERROR
-
-
-def request_response(func: typing.Callable) -> ASGIApp:
-    """
-    Takes a function or coroutine `func(request) -> response`,
-    and returns an ASGI application.
-    """
-    is_coroutine = iscoroutinefunction_or_partial(func)
-
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request(scope, receive=receive, send=send)
-        request.start_time = now()
-
-        if is_coroutine:
-            response = await func(request)
-        else:
-            response = await run_in_threadpool(func, request)
-
-        await response(scope, receive, send)
-
-    return app
-
-
-# gán thêm start_time cho từng request để khi ghi log thì lấy start_time ra
-routing.request_response = request_response
 
 
 app = FastAPI(
@@ -70,6 +38,19 @@ app.add_event_handler("startup", create_start_app_handler(app))
 app.add_event_handler("shutdown", create_stop_app_handler(app))
 
 app.include_router(router=v1_router.router, prefix="/v1")
+
+
+@app.get("/health", include_in_schema=False)
+async def report_health() -> dict:
+    """Liveness probe for the Docker Compose healthcheck.
+
+    The Swagger page at "/" is disabled when DEBUG is false, so the healthcheck
+    cannot rely on it.
+
+    Returns:
+        dict: {"status": "ok"} with HTTP 200 while the process serves requests.
+    """
+    return {"status": "ok"}
 
 # handler exception
 @app.exception_handler(RequestValidationError)

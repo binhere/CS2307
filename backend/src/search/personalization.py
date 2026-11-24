@@ -21,7 +21,17 @@ def _normalize(weights: Dict[str, float]) -> Dict[str, float]:
 
 
 def build_user_profile(user_id: int) -> Optional[Dict[str, Any]]:
-    """Return a preference profile, or ``None`` when there is no usable signal."""
+    """Build a preference profile from the user's recent interactions.
+
+    Args:
+        user_id: The authenticated user.
+
+    Returns:
+        Optional[Dict[str, Any]]: {"districts": {name: weight 0-1},
+        "property_types": {name: weight 0-1}, "price_center": float | None,
+        "saved_listing_ids": set[int]} where saved means currently saved (latest
+        save/unsave is a save) or contacted; None when there is no usable signal.
+    """
     from src.services.feedback import repository as feedback_repository
 
     interactions = feedback_repository.get_recent_interactions(user_id)
@@ -30,11 +40,17 @@ def build_user_profile(user_id: int) -> Optional[Dict[str, Any]]:
 
     districts: Dict[str, float] = {}
     property_types: Dict[str, float] = {}
-    saved_listing_ids: set[int] = set()
+    contacted_listing_ids: set[int] = set()
+    # Rows arrive newest first, so the first save/unsave seen per listing is its
+    # current state; an unsave cancels every earlier save of that listing.
+    latest_save_actions: Dict[int, str] = {}
     price_weight_sum = 0.0
     price_weighted_total = 0.0
 
     for row in interactions:
+        action = row.get("action_type")
+        if action in {"save", "unsave"} and row.get("listing_id") is not None:
+            latest_save_actions.setdefault(int(row["listing_id"]), action)
         score = float(row.get("implicit_score") or 0.0)
         if score <= 0:
             continue
@@ -48,8 +64,12 @@ def build_user_profile(user_id: int) -> Optional[Dict[str, Any]]:
         if price is not None:
             price_weighted_total += float(price) * score
             price_weight_sum += score
-        if row.get("action_type") in {"save", "contact"} and row.get("listing_id") is not None:
-            saved_listing_ids.add(int(row["listing_id"]))
+        if action == "contact" and row.get("listing_id") is not None:
+            contacted_listing_ids.add(int(row["listing_id"]))
+
+    saved_listing_ids = contacted_listing_ids | {
+        listing_id for listing_id, latest_action in latest_save_actions.items() if latest_action == "save"
+    }
 
     price_center = (
         price_weighted_total / price_weight_sum if price_weight_sum > 0 else None

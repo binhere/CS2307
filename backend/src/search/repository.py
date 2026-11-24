@@ -26,6 +26,8 @@ GRAPH_RELATIONSHIP_FEATURES = {
     "near_mall", "near_market", "near_park",
 }
 
+# search_text is deliberately absent: it only feeds ts_rank_cd inside SQL, and
+# returning it would ship ~1.6 KB of unused text per candidate to the API.
 SELECT_COLUMNS = """
     p.id, p.listing_id, p.listing_type, p.posted_date, p.expiry_date,
     p.property_type, p.city_province, p.district, p.images, p.folder, p.title,
@@ -38,7 +40,7 @@ SELECT_COLUMNS = """
     p.near_mall, p.near_market, p.near_park, p.river_view, p.park_view,
     p.city_view, p.balcony, p.garden, p.garage, p.terrace, p.frontage,
     p.access_road, p.metadata, p.updated_at, p.created_at,
-    p.search_text, p.former_admin_area, p.geo_cluster_150m,
+    p.former_admin_area, p.geo_cluster_150m,
     p.data_quality_flags, p.coordinate_confidence
 """
 

@@ -56,5 +56,24 @@ class EstimateListingTests(unittest.TestCase):
             self.assertTrue(str(ctx.exception), patch)
 
 
+class WarmUpTests(unittest.TestCase):
+    def test_warm_up_loads_the_bundle_once(self):
+        service = PricePredictionService()
+        self.assertTrue(service.warm_up())
+        bundle = service._bundle
+        self.assertIsNotNone(bundle)
+        service.warm_up()
+        self.assertIs(service._bundle, bundle)
+
+    def test_missing_model_does_not_break_startup(self):
+        service = PricePredictionService()
+
+        def missing():
+            raise FileNotFoundError("best_model.joblib")
+
+        service._resolve_model_path = missing
+        self.assertFalse(service.warm_up())
+
+
 if __name__ == "__main__":
     unittest.main()

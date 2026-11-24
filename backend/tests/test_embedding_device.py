@@ -10,7 +10,7 @@ except ImportError:  # Parser-only environments may not install numeric dependen
 
 @unittest.skipUnless(np is not None, "numpy is not installed in this test environment")
 class EmbeddingApiTests(unittest.TestCase):
-    @patch("src.search.embedding.requests.post")
+    @patch("src.search.embedding.http_session.post")
     def test_lmstudio_calls_embeddings_api_and_normalizes_vectors(self, post):
         from src.search.embedding import E5EmbeddingModel
 
@@ -49,7 +49,7 @@ class EmbeddingApiTests(unittest.TestCase):
             timeout=60.0,
         )
 
-    @patch("src.search.embedding.requests.post")
+    @patch("src.search.embedding.http_session.post")
     def test_lmstudio_rejects_vectors_with_wrong_dimension(self, post):
         from src.search.embedding import E5EmbeddingModel
 
@@ -60,7 +60,7 @@ class EmbeddingApiTests(unittest.TestCase):
             model = E5EmbeddingModel()
             self.assertIsNone(model.encode_query("test"))
 
-    @patch("src.search.embedding.requests.post")
+    @patch("src.search.embedding.http_session.post")
     def test_lmstudio_can_request_schema_dimension(self, post):
         from src.search.embedding import E5EmbeddingModel
 
@@ -80,6 +80,27 @@ class EmbeddingApiTests(unittest.TestCase):
 
         self.assertEqual(vectors.shape, (1024,))
         self.assertEqual(post.call_args.kwargs["json"]["dimensions"], 1024)
+
+    @patch("src.search.embedding.http_session.post")
+    def test_query_request_timeout_never_exceeds_stage_budget(self, post):
+        from src.search.embedding import E5EmbeddingModel
+
+        response = Mock()
+        response.json.return_value = {"data": [{"index": 0, "embedding": [1.0] * 1024}]}
+        post.return_value = response
+        with patch.dict(
+            os.environ,
+            {"SEARCH_EMBEDDING_TIMEOUT": "60", "SEARCH_EMBEDDING_STAGE_TIMEOUT_SECONDS": "7"},
+            clear=True,
+        ):
+            model = E5EmbeddingModel()
+            model.encode_query("căn hộ quận 7")
+            query_timeout = post.call_args.kwargs["timeout"]
+            model.encode(["căn hộ"], kind="passage")
+            passage_timeout = post.call_args.kwargs["timeout"]
+
+        self.assertEqual(query_timeout, 7.0)
+        self.assertEqual(passage_timeout, 60.0)
 
 
 if __name__ == "__main__":

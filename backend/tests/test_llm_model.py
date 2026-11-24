@@ -2,7 +2,7 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 
-from src.services.llm.llm_model import LLModel
+from src.services.llm.llm_model import GEMINI_OPENAI_COMPATIBLE_URL, LLModel
 
 
 class LLModelTests(unittest.IsolatedAsyncioTestCase):
@@ -49,6 +49,41 @@ class LLModelTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(content)
         self.assertIsInstance(error, RuntimeError)
         self.assertEqual(completion.await_count, 2)
+
+
+class ChatCompletionsEndpointTests(unittest.TestCase):
+    """The chat agent's ChatOpenAI client must reach the configured provider."""
+
+    def test_gemini_uses_google_openai_compatible_endpoint_and_gemini_key(self):
+        llm = LLModel(provider="gemini", model_name="gemini-2.5-flash", api_key="gemini-key")
+
+        base_url, model_name, api_key = llm.chat_completions_endpoint()
+
+        self.assertEqual(base_url, GEMINI_OPENAI_COMPATIBLE_URL)
+        self.assertEqual(model_name, "gemini-2.5-flash")
+        self.assertEqual(api_key, "gemini-key")
+
+    def test_groq_without_base_url_uses_provider_default(self):
+        llm = LLModel(provider="groq", api_key="groq-key")
+
+        base_url, model_name, api_key = llm.chat_completions_endpoint()
+
+        self.assertEqual(base_url, "https://api.groq.com/openai/v1")
+        self.assertEqual(model_name, "llama-3.3-70b-versatile")
+        self.assertEqual(api_key, "groq-key")
+
+    def test_local_endpoint_without_key_gets_placeholder_key(self):
+        llm = LLModel(
+            provider="openai-compatible",
+            model_name="local-model",
+            base_url="http://localhost:11434/v1",
+            api_key="",
+        )
+
+        self.assertEqual(
+            llm.chat_completions_endpoint(),
+            ("http://localhost:11434/v1", "local-model", "not-needed"),
+        )
 
 
 if __name__ == "__main__":

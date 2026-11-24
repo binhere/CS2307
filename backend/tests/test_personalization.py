@@ -59,6 +59,19 @@ class BuildUserProfileTests(unittest.TestCase):
         self.assertEqual(profile["saved_listing_ids"], {1, 2})  # save + contact
         self.assertAlmostEqual(profile["price_center"], 6.03, places=1)
 
+    def test_unsave_cancels_an_earlier_save(self):
+        from src.search.personalization import build_user_profile
+
+        rows = [  # newest first, as the repository returns them
+            {"listing_id": 1, "action_type": "unsave", "implicit_score": 0.0},
+            {"listing_id": 1, "action_type": "save", "implicit_score": 0.7, "district": "Q7"},
+            {"listing_id": 4, "action_type": "save", "implicit_score": 0.7, "district": "Q7"},
+        ]
+        with self._with_repo(rows):
+            profile = build_user_profile(1)
+
+        self.assertEqual(profile["saved_listing_ids"], {4})
+
     def test_no_interactions_returns_none(self):
         from src.search.personalization import build_user_profile
 

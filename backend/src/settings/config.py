@@ -15,8 +15,6 @@ def config_value(name, default=None):
 
 DEBUG = str(config_value("DEBUG", "False")).lower() in {"true", "1", "yes"}
 
-MESSAGE_QUEUE = []
-
 APPLICATION = {
     "version": config_value("VERSION", "1.0.0"),
     "project_name": config_value("PROJECT_NAME"),
@@ -60,38 +58,12 @@ APPLICATION = {
     ),
 }
 
-DATE_FORMAT = '%Y-%m-%d'
-TIME_FORMAT = '%H:%M:%S'
-DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
-
-# logging configuration
-LOGGING_LEVEL = logging.DEBUG if APPLICATION["debug"] else logging.INFO
-LOGGERS = ("hypercorn.asgi", "hypercorn.access")  # noqa
-logger.level("CUSTOM", no=15, color="<blue>", icon="@")
-logger.level("SERVICE", no=200)
+# Containers only surface stderr (docker logs), so warnings and errors must reach
+# it in every environment; DEBUG adds INFO for local development.
+STDERR_LOG_LEVEL = "INFO" if APPLICATION["debug"] else "WARNING"
+# Rotated log files to keep next to the active one; bounds disk use to ~60 MB.
+LOG_FILE_RETENTION = 5
 
 logging.getLogger().handlers = [InterceptHandler()]
-
-if APPLICATION["debug"]:
-    logger.configure(
-        handlers=[
-            {"sink": sys.stderr, "level": LOGGING_LEVEL},
-            {
-                "sink": sys.stderr,
-                "level": 200,
-                "format": "<blue>{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}</blue>",
-            },
-        ]
-    )
-else:
-    logger.configure(
-        handlers=[
-            {
-                "sink": sys.stderr,
-                "level": 200,
-                "format": "<blue>{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}</blue>",
-            },
-        ]
-    )
-
-logger.add("./logs/app.log", rotation='10 MB')
+logger.configure(handlers=[{"sink": sys.stderr, "level": STDERR_LOG_LEVEL}])
+logger.add("./logs/app.log", rotation="10 MB", retention=LOG_FILE_RETENTION)

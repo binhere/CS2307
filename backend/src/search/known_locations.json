@@ -1,0 +1,1052 @@
+[
+ {
+  "name": "Huyện Bàu Bàng",
+  "kind": "former_area",
+  "keyword": "huyen",
+  "bare_name": "bau bang"
+ },
+ {
+  "name": "Huyện Bình Chánh",
+  "kind": "former_area",
+  "keyword": "huyen",
+  "bare_name": "binh chanh"
+ },
+ {
+  "name": "Huyện Cần Giờ",
+  "kind": "former_area",
+  "keyword": "huyen",
+  "bare_name": "can gio"
+ },
+ {
+  "name": "Huyện Củ Chi",
+  "kind": "former_area",
+  "keyword": "huyen",
+  "bare_name": "cu chi"
+ },
+ {
+  "name": "Huyện Hóc Môn",
+  "kind": "former_area",
+  "keyword": "huyen",
+  "bare_name": "hoc mon"
+ },
+ {
+  "name": "Huyện Long Điền",
+  "kind": "former_area",
+  "keyword": "huyen",
+  "bare_name": "long dien"
+ },
+ {
+  "name": "Huyện Long Đất",
+  "kind": "former_area",
+  "keyword": "huyen",
+  "bare_name": "long dat"
+ },
+ {
+  "name": "Huyện Nhà Bè",
+  "kind": "former_area",
+  "keyword": "huyen",
+  "bare_name": "nha be"
+ },
+ {
+  "name": "Huyện Xuyên Mộc",
+  "kind": "former_area",
+  "keyword": "huyen",
+  "bare_name": "xuyen moc"
+ },
+ {
+  "name": "Phường Chánh Hưng",
+  "kind": "former_area",
+  "keyword": "phuong",
+  "bare_name": "chanh hung"
+ },
+ {
+  "name": "Phường Hiệp Bình",
+  "kind": "former_area",
+  "keyword": "phuong",
+  "bare_name": "hiep binh"
+ },
+ {
+  "name": "Phường Long Bình",
+  "kind": "former_area",
+  "keyword": "phuong",
+  "bare_name": "long binh"
+ },
+ {
+  "name": "Phường Long Trường",
+  "kind": "former_area",
+  "keyword": "phuong",
+  "bare_name": "long truong"
+ },
+ {
+  "name": "Phường Nhiêu Lộc",
+  "kind": "former_area",
+  "keyword": "phuong",
+  "bare_name": "nhieu loc"
+ },
+ {
+  "name": "Phường Thạnh Mỹ Tây",
+  "kind": "former_area",
+  "keyword": "phuong",
+  "bare_name": "thanh my tay"
+ },
+ {
+  "name": "Phường Tân Bình",
+  "kind": "former_area",
+  "keyword": "phuong",
+  "bare_name": "tan binh"
+ },
+ {
+  "name": "Quận 1",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "1"
+ },
+ {
+  "name": "Quận 10",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "10"
+ },
+ {
+  "name": "Quận 11",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "11"
+ },
+ {
+  "name": "Quận 12",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "12"
+ },
+ {
+  "name": "Quận 2",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "2"
+ },
+ {
+  "name": "Quận 3",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "3"
+ },
+ {
+  "name": "Quận 4",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "4"
+ },
+ {
+  "name": "Quận 5",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "5"
+ },
+ {
+  "name": "Quận 6",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "6"
+ },
+ {
+  "name": "Quận 7",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "7"
+ },
+ {
+  "name": "Quận 8",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "8"
+ },
+ {
+  "name": "Quận 9",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "9"
+ },
+ {
+  "name": "Quận Bình Thạnh",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "binh thanh"
+ },
+ {
+  "name": "Quận Bình Tân",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "binh tan"
+ },
+ {
+  "name": "Quận Gò Vấp",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "go vap"
+ },
+ {
+  "name": "Quận Phú Nhuận",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "phu nhuan"
+ },
+ {
+  "name": "Quận Tân Bình",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "tan binh"
+ },
+ {
+  "name": "Quận Tân Phú",
+  "kind": "former_area",
+  "keyword": "quan",
+  "bare_name": "tan phu"
+ },
+ {
+  "name": "Thành Phố Bà Rịa",
+  "kind": "former_area",
+  "keyword": "thanh pho",
+  "bare_name": "ba ria"
+ },
+ {
+  "name": "Thành Phố Bến Cát",
+  "kind": "former_area",
+  "keyword": "thanh pho",
+  "bare_name": "ben cat"
+ },
+ {
+  "name": "Thành Phố Dĩ An",
+  "kind": "former_area",
+  "keyword": "thanh pho",
+  "bare_name": "di an"
+ },
+ {
+  "name": "Thành Phố Thuận An",
+  "kind": "former_area",
+  "keyword": "thanh pho",
+  "bare_name": "thuan an"
+ },
+ {
+  "name": "Thành Phố Thủ Dầu Một",
+  "kind": "former_area",
+  "keyword": "thanh pho",
+  "bare_name": "thu dau mot"
+ },
+ {
+  "name": "Thành Phố Thủ Đức",
+  "kind": "former_area",
+  "keyword": "thanh pho",
+  "bare_name": "thu duc"
+ },
+ {
+  "name": "Thành Phố Tân Uyên",
+  "kind": "former_area",
+  "keyword": "thanh pho",
+  "bare_name": "tan uyen"
+ },
+ {
+  "name": "Thành Phố Vũng Tàu",
+  "kind": "former_area",
+  "keyword": "thanh pho",
+  "bare_name": "vung tau"
+ },
+ {
+  "name": "Xã Tân Vĩnh Lộc",
+  "kind": "former_area",
+  "keyword": "xa",
+  "bare_name": "tan vinh loc"
+ },
+ {
+  "name": "Phường 14",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "14"
+ },
+ {
+  "name": "Phường 22",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "22"
+ },
+ {
+  "name": "Phường 5",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "5"
+ },
+ {
+  "name": "Phường 9",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "9"
+ },
+ {
+  "name": "Phường An Hội Tây",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "an hoi tay"
+ },
+ {
+  "name": "Phường An Hội Đông",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "an hoi dong"
+ },
+ {
+  "name": "Phường An Khánh",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "an khanh"
+ },
+ {
+  "name": "Phường An Lạc",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "an lac"
+ },
+ {
+  "name": "Phường An Nhơn",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "an nhon"
+ },
+ {
+  "name": "Phường An Phú",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "an phu"
+ },
+ {
+  "name": "Phường An Phú Đông",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "an phu dong"
+ },
+ {
+  "name": "Phường An Đông",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "an dong"
+ },
+ {
+  "name": "Phường Bàn Cờ",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "ban co"
+ },
+ {
+  "name": "Phường Bình Dương",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh duong"
+ },
+ {
+  "name": "Phường Bình Hòa",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh hoa"
+ },
+ {
+  "name": "Phường Bình Hưng Hòa",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh hung hoa"
+ },
+ {
+  "name": "Phường Bình Lợi Trung",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh loi trung"
+ },
+ {
+  "name": "Phường Bình Phú",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh phu"
+ },
+ {
+  "name": "Phường Bình Quới",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh quoi"
+ },
+ {
+  "name": "Phường Bình Thạnh",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh thanh"
+ },
+ {
+  "name": "Phường Bình Thới",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh thoi"
+ },
+ {
+  "name": "Phường Bình Tiên",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh tien"
+ },
+ {
+  "name": "Phường Bình Trưng",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh trung"
+ },
+ {
+  "name": "Phường Bình Trị Đông",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh tri dong"
+ },
+ {
+  "name": "Phường Bình Tân",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh tan"
+ },
+ {
+  "name": "Phường Bình Tây",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh tay"
+ },
+ {
+  "name": "Phường Bình Đông",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "binh dong"
+ },
+ {
+  "name": "Phường Bảy Hiền",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "bay hien"
+ },
+ {
+  "name": "Phường Bến Thành",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "ben thanh"
+ },
+ {
+  "name": "Phường Chánh Hiệp",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "chanh hiep"
+ },
+ {
+  "name": "Phường Chánh Hưng",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "chanh hung"
+ },
+ {
+  "name": "Phường Chánh Phú Hòa",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "chanh phu hoa"
+ },
+ {
+  "name": "Phường Chợ Lớn",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "cho lon"
+ },
+ {
+  "name": "Phường Chợ Quán",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "cho quan"
+ },
+ {
+  "name": "Phường Cát Lái",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "cat lai"
+ },
+ {
+  "name": "Phường Cầu Kiệu",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "cau kieu"
+ },
+ {
+  "name": "Phường Cầu Ông Lãnh",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "cau ong lanh"
+ },
+ {
+  "name": "Phường Diên Hồng",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "dien hong"
+ },
+ {
+  "name": "Phường Dĩ An",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "di an"
+ },
+ {
+  "name": "Phường Gia Định",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "gia dinh"
+ },
+ {
+  "name": "Phường Gò Vấp",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "go vap"
+ },
+ {
+  "name": "Phường Hiệp Bình",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "hiep binh"
+ },
+ {
+  "name": "Phường Hiệp Bình Chánh",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "hiep binh chanh"
+ },
+ {
+  "name": "Phường Hòa Bình",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "hoa binh"
+ },
+ {
+  "name": "Phường Hòa Hưng",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "hoa hung"
+ },
+ {
+  "name": "Phường Hòa Lợi",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "hoa loi"
+ },
+ {
+  "name": "Phường Hạnh Thông",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "hanh thong"
+ },
+ {
+  "name": "Phường Khánh Hội",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "khanh hoi"
+ },
+ {
+  "name": "Phường Linh Xuân",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "linh xuan"
+ },
+ {
+  "name": "Phường Long Bình",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "long binh"
+ },
+ {
+  "name": "Phường Long Hương",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "long huong"
+ },
+ {
+  "name": "Phường Long Nguyên",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "long nguyen"
+ },
+ {
+  "name": "Phường Long Phước",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "long phuoc"
+ },
+ {
+  "name": "Phường Long Trường",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "long truong"
+ },
+ {
+  "name": "Phường Lái Thiêu",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "lai thieu"
+ },
+ {
+  "name": "Phường Minh Phụng",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "minh phung"
+ },
+ {
+  "name": "Phường Nhiêu Lộc",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "nhieu loc"
+ },
+ {
+  "name": "Phường Phú Hữu",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "phu huu"
+ },
+ {
+  "name": "Phường Phú Lâm",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "phu lam"
+ },
+ {
+  "name": "Phường Phú Lợi",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "phu loi"
+ },
+ {
+  "name": "Phường Phú Nhuận",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "phu nhuan"
+ },
+ {
+  "name": "Phường Phú Thuận",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "phu thuan"
+ },
+ {
+  "name": "Phường Phú Thạnh",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "phu thanh"
+ },
+ {
+  "name": "Phường Phú Thọ",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "phu tho"
+ },
+ {
+  "name": "Phường Phú Thọ Hòa",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "phu tho hoa"
+ },
+ {
+  "name": "Phường Phú Định",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "phu dinh"
+ },
+ {
+  "name": "Phường Phước Long",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "phuoc long"
+ },
+ {
+  "name": "Phường Phước Thắng",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "phuoc thang"
+ },
+ {
+  "name": "Phường Rạch Dừa",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "rach dua"
+ },
+ {
+  "name": "Phường Sài Gòn",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "sai gon"
+ },
+ {
+  "name": "Phường Tam Bình",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tam binh"
+ },
+ {
+  "name": "Phường Tam Thắng",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tam thang"
+ },
+ {
+  "name": "Phường Thuận An",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "thuan an"
+ },
+ {
+  "name": "Phường Thuận Giao",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "thuan giao"
+ },
+ {
+  "name": "Phường Thông Tây Hội",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "thong tay hoi"
+ },
+ {
+  "name": "Phường Thạnh Mỹ Tây",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "thanh my tay"
+ },
+ {
+  "name": "Phường Thới An",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "thoi an"
+ },
+ {
+  "name": "Phường Thới Hòa",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "thoi hoa"
+ },
+ {
+  "name": "Phường Thủ Dầu Một",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "thu dau mot"
+ },
+ {
+  "name": "Phường Thủ Đức",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "thu duc"
+ },
+ {
+  "name": "Phường Trung Mỹ Tây",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "trung my tay"
+ },
+ {
+  "name": "Phường Tân Bình",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan binh"
+ },
+ {
+  "name": "Phường Tân Hiệp",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan hiep"
+ },
+ {
+  "name": "Phường Tân Hòa",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan hoa"
+ },
+ {
+  "name": "Phường Tân Hưng",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan hung"
+ },
+ {
+  "name": "Phường Tân Khánh",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan khanh"
+ },
+ {
+  "name": "Phường Tân Mỹ",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan my"
+ },
+ {
+  "name": "Phường Tân Phú",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan phu"
+ },
+ {
+  "name": "Phường Tân Sơn",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan son"
+ },
+ {
+  "name": "Phường Tân Sơn Hòa",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan son hoa"
+ },
+ {
+  "name": "Phường Tân Sơn Nhì",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan son nhi"
+ },
+ {
+  "name": "Phường Tân Sơn Nhất",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan son nhat"
+ },
+ {
+  "name": "Phường Tân Thuận",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan thuan"
+ },
+ {
+  "name": "Phường Tân Thới Hiệp",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan thoi hiep"
+ },
+ {
+  "name": "Phường Tân Tạo",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan tao"
+ },
+ {
+  "name": "Phường Tân Đông Hiệp",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan dong hiep"
+ },
+ {
+  "name": "Phường Tân Định",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tan dinh"
+ },
+ {
+  "name": "Phường Tây Thạnh",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tay thanh"
+ },
+ {
+  "name": "Phường Tăng Nhơn Phú",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "tang nhon phu"
+ },
+ {
+  "name": "Phường Vĩnh Hội",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "vinh hoi"
+ },
+ {
+  "name": "Phường Vĩnh Tân",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "vinh tan"
+ },
+ {
+  "name": "Phường Vũng Tàu",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "vung tau"
+ },
+ {
+  "name": "Phường Vườn Lài",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "vuon lai"
+ },
+ {
+  "name": "Phường Xuân Hòa",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "xuan hoa"
+ },
+ {
+  "name": "Phường Xóm Chiếu",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "xom chieu"
+ },
+ {
+  "name": "Phường Đông Hòa",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "dong hoa"
+ },
+ {
+  "name": "Phường Đông Hưng Thuận",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "dong hung thuan"
+ },
+ {
+  "name": "Phường Đức Nhuận",
+  "kind": "ward",
+  "keyword": "phuong",
+  "bare_name": "duc nhuan"
+ },
+ {
+  "name": "Xã Bà Điểm",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "ba diem"
+ },
+ {
+  "name": "Xã Bàu Bàng",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "bau bang"
+ },
+ {
+  "name": "Xã Bình Chánh",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "binh chanh"
+ },
+ {
+  "name": "Xã Bình Hưng",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "binh hung"
+ },
+ {
+  "name": "Xã Bình Khánh",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "binh khanh"
+ },
+ {
+  "name": "Xã Bình Lợi",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "binh loi"
+ },
+ {
+  "name": "Xã Củ Chi",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "cu chi"
+ },
+ {
+  "name": "Xã Hiệp Phước",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "hiep phuoc"
+ },
+ {
+  "name": "Xã Hóc Môn",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "hoc mon"
+ },
+ {
+  "name": "Xã Hưng Long",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "hung long"
+ },
+ {
+  "name": "Xã Hồ Tràm",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "ho tram"
+ },
+ {
+  "name": "Xã Long Điền",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "long dien"
+ },
+ {
+  "name": "Xã Nhuận Đức",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "nhuan duc"
+ },
+ {
+  "name": "Xã Nhà Bè",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "nha be"
+ },
+ {
+  "name": "Xã Thái Mỹ",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "thai my"
+ },
+ {
+  "name": "Xã Trừ Văn Thố",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "tru van tho"
+ },
+ {
+  "name": "Xã Tân An Hội",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "tan an hoi"
+ },
+ {
+  "name": "Xã Tân Nhựt",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "tan nhut"
+ },
+ {
+  "name": "Xã Tân Vĩnh Lộc",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "tan vinh loc"
+ },
+ {
+  "name": "Xã Vĩnh Lộc",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "vinh loc"
+ },
+ {
+  "name": "Xã Vĩnh Lộc B",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "vinh loc b"
+ },
+ {
+  "name": "Xã Xuân Thới Sơn",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "xuan thoi son"
+ },
+ {
+  "name": "Xã Đông Thạnh",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "dong thanh"
+ },
+ {
+  "name": "Xã Đất Đỏ",
+  "kind": "ward",
+  "keyword": "xa",
+  "bare_name": "dat do"
+ }
+]

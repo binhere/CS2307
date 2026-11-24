@@ -1,34 +1,17 @@
 import datetime
-from typing import Union
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
 
-from src.services.minio.minio_client import MinioClient
-
 
 class BaseController:
-    def __init__(
-            self,
-            request: Request = None,
-            current_user: Union[dict, None] = None,
-            minio_client: MinioClient = None,
-    ):
+    def __init__(self, request: Request = None):
         self.errors = []
         self.transaction_start_time = datetime.datetime.now()
-        self.host_of_client_call_request = request.client.host if request else None
+        self.host_of_client_call_request = request.client.host if request and request.client else None
         self.request = request
-        self.current_user = current_user
-        self.minio_client = minio_client
 
-    def response_openai_chat(self, data, status_code=HTTP_200_OK):
-        response = JSONResponse(
-            content=data,
-            status_code=status_code
-        )
-        return response
-    
     def response(
             self,
             data='',

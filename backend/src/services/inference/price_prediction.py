@@ -8,14 +8,16 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
+from threading import Lock
 from typing import Any, Dict, Optional
 
 import joblib
 import numpy as np
 import pandas as pd
+from loguru import logger
 
 
-# shortcut: label rules duplicated from Data/forecasting-data/step-1/remove-unreliable-features.py
+# shortcut: label rules duplicated from price_prediction/data_preparation/step-1/remove-unreliable-features.py
 # (DB stores the raw v3 labels, the model was trained on the normalized ones); keep in sync on retrain.
 _APARTMENT_TYPES = {"Căn hộ", "Căn hộ chung cư"}
 _COORDINATES = re.compile(r"(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)")
@@ -41,30 +43,41 @@ def normalize_legal_status(value: Optional[str]) -> str:
 class PricePredictionService:
     def __init__(self) -> None:
         self._bundle: Optional[Dict[str, Any]] = None
+        # Predictions run in worker threads; the lock makes concurrent first calls
+        # load the bundle once instead of once per thread.
+        self._bundle_lock = Lock()
 
     def _resolve_model_path(self) -> Path:
-        """Find the trained model bundle path in container or local environment."""
-        local_artifact = Path(__file__).resolve().parent / "artifacts" / "best_model.joblib"
-        if local_artifact.exists():
-            return local_artifact
-
-        # Fallback to repository root price-prediction/best_model.joblib
-        repo_artifact = (
-            Path(__file__).resolve().parents[4] / "price-prediction" / "best_model.joblib"
-        )
-        if repo_artifact.exists():
-            return repo_artifact
-
-        raise FileNotFoundError(
-            f"Trained price model not found. Checked: {local_artifact} and {repo_artifact}"
-        )
+        """Return the trained model bundle written by price_prediction/train-models.py."""
+        model_path = Path(__file__).resolve().parent / "artifacts" / "best_model.joblib"
+        if model_path.exists():
+            return model_path
+        raise FileNotFoundError(f"Trained price model not found: {model_path}")
 
     def _get_bundle(self) -> Dict[str, Any]:
         """Lazy-load and cache the model bundle."""
         if self._bundle is None:
-            model_path = self._resolve_model_path()
-            self._bundle = joblib.load(model_path)
+            with self._bundle_lock:
+                if self._bundle is None:
+                    self._bundle = joblib.load(self._resolve_model_path())
         return self._bundle
+
+    def warm_up(self) -> bool:
+        """Load the model bundle ahead of the first request.
+
+        The first load takes about a second (joblib plus scikit-learn imports);
+        doing it at startup keeps that delay out of a user's request.
+
+        Returns:
+            bool: True when the bundle is loaded; False when it could not be
+            loaded, in which case predictions raise on use as before.
+        """
+        try:
+            self._get_bundle()
+            return True
+        except Exception as error:  # noqa: BLE001 - startup must not fail on a missing model
+            logger.warning("Price model warm-up failed; predictions are unavailable: {}", error)
+            return False
 
     def predict(
         self,

@@ -21,19 +21,71 @@ class GraphSearchTests(unittest.TestCase):
         self.assertNotIn("amenity_distance_0", params)
         self.assertIn("khong qua", parsed.protected_constraints)
 
-    def test_near_feature_is_backed_by_graph_category(self):
+    def test_near_feature_is_backed_by_graph_category_within_threshold(self):
         parsed = self.parser.parse("Ưu tiên căn hộ gần metro")
         candidate = Neo4jGraphRepository._score_record(
             {
                 "listing_id": "123",
                 "matched_features": [],
                 "amenities": [{"category": "metro", "name": "Ga A"}],
+                "nearby_categories": ["metro"],
                 "wards": [],
             },
             parsed,
         )
         self.assertIn("near_metro", candidate["graph_evidence"]["matched_features"])
         self.assertEqual(candidate["graph_score"], 1.0)
+
+    def test_amenity_edge_outside_threshold_does_not_count_as_near(self):
+        # Every listing has top-5 edges to the nearest metro stations even 12 km
+        # away; only an edge inside the category threshold means "near".
+        parsed = self.parser.parse("Ưu tiên căn hộ gần metro")
+        candidate = Neo4jGraphRepository._score_record(
+            {
+                "listing_id": "123",
+                "matched_features": [],
+                "amenities": [{"category": "metro", "name": "Ga xa", "driving_distance_km": 12.0}],
+                "nearby_categories": [],
+                "wards": [],
+            },
+            parsed,
+        )
+        self.assertNotIn("near_metro", candidate["graph_evidence"]["matched_features"])
+        self.assertEqual(candidate["graph_score"], 0.0)
+
+    def test_strict_near_filter_requires_edge_within_threshold(self):
+        parsed = self.parser.parse("tìm căn hộ", explicit_filters={"near_metro": True})
+        query, params = Neo4jGraphRepository._query(parsed)
+        self.assertIn("required_near_metro_edge.within_threshold = true", query)
+        self.assertEqual(params["required_near_metro_categories"], ["metro"])
+
+    def test_listings_are_limited_before_neighbours_are_expanded(self):
+        parsed = self.parser.parse("mua nhà")
+        query, params = Neo4jGraphRepository._query(parsed)
+        self.assertLess(query.index("LIMIT $candidate_limit"), query.index("OPTIONAL MATCH"))
+        self.assertIn("AS nearby_categories", query)
+        self.assertEqual(params["candidate_limit"], 500)
+
+    def test_graph_queries_carry_the_configured_timeout(self):
+        from unittest.mock import MagicMock
+
+        repository = Neo4jGraphRepository()
+        repository.enabled = True
+        repository.query_timeout = 3.5
+        session = MagicMock()
+        session.run.return_value = []
+        repository._driver = MagicMock()
+        repository._driver.session.return_value.__enter__.return_value = session
+
+        response = repository.search(self.parser.parse("mua nhà"))
+
+        self.assertTrue(response.available)
+        statement = session.run.call_args.args[0]
+        self.assertEqual(statement.timeout, 3.5)
+        self.assertIn("MATCH (l:Listing)", statement.text)
+
+    def test_listing_lookups_compare_listing_id_without_tostring(self):
+        self.assertIn("WHERE l.listing_id = $listing_id", Neo4jGraphRepository._subgraph_query())
 
     def test_former_area_filter_uses_v2_relationship(self):
         parsed = self.parser.parse("tôi muốn mua nhà", explicit_filters={"district": "Quận 2"})

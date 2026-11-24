@@ -43,6 +43,9 @@ AMENITY_CATEGORY_ALIASES = {
     "bus": ("xe buyt", "bus", "ben xe"),
 }
 
+# Administrative prefix of a normalized place name ("phuong an khanh" -> "an khanh").
+ADMIN_PREFIX_PATTERN = re.compile(r"^(?:phuong|xa|quan|huyen|thi xa|thanh pho|tp)\s+")
+
 PROPERTY_TYPE_ALIASES = {
     "Căn hộ": ("can ho", "chung cu", "apartment"),
     "Nhà đất": ("nha dat", "nha pho", "nha rieng", "biet thu", "dat nen"),
@@ -77,3 +80,25 @@ def first_alias_match(text: str, aliases: dict[str, tuple[str, ...]]) -> List[st
     normalized = normalize_text(text)
     return [key for key, words in aliases.items() if any(word in normalized for word in words)]
 
+
+def location_terms(values: Iterable) -> set[str]:
+    """Comparable spellings of place names, with and without their admin prefix.
+
+    Listings, the graph and user queries spell the same place as "Phường An Khánh",
+    "phuong an khanh" or "An Khánh", so matching compares these normalized forms.
+
+    Args:
+        values: Place names (str); None and empty values are ignored.
+
+    Returns:
+        set[str]: Accent-free lowercase names plus the same names with a leading
+        phuong/xa/quan/huyen/thi xa/thanh pho/tp removed; never contains "".
+    """
+    terms = set()
+    for value in values:
+        if value in (None, ""):
+            continue
+        normalized = normalize_text(str(value))
+        terms.add(normalized)
+        terms.add(ADMIN_PREFIX_PATTERN.sub("", normalized))
+    return {term for term in terms if term}

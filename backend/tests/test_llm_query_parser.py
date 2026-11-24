@@ -67,6 +67,39 @@ class LLMQueryParserTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(parsed.preference_filters.price.target, 5)
         self.assertEqual(parsed.preference_filters.property_types, ["Căn hộ"])
 
+    async def test_parser_requests_native_json_at_temperature_zero(self):
+        query = "căn hộ quận 7"
+        fallback = RuleBasedQueryParser().parse(query)
+        llm = FakeLLM(ParsedSearchQuery(semantic_query=query))
+        captured = {}
+
+        async def recording_ask_llm(**kwargs):
+            captured.update(kwargs)
+            return await FakeLLM.ask_llm(llm, **kwargs)
+
+        llm.ask_llm = recording_ask_llm
+        with patch.dict(os.environ, {"SEARCH_USE_LLM_PARSER": "true"}):
+            await LLMQueryParser(llm).parse(query, fallback)
+
+        self.assertTrue(captured["json_mode"])
+        self.assertEqual(captured["temperature"], 0.0)
+
+    async def test_invalid_llm_output_falls_back_and_is_logged(self):
+        query = "căn hộ quận 7"
+        fallback = RuleBasedQueryParser().parse(query)
+
+        class BrokenLLM:
+            async def ask_llm(self, **_kwargs):
+                return True, "not json", None
+
+        with patch.dict(os.environ, {"SEARCH_USE_LLM_PARSER": "true"}), patch(
+            "src.search.query_parser.logger.warning"
+        ) as warning:
+            parsed = await LLMQueryParser(BrokenLLM()).parse(query, fallback)
+
+        self.assertIs(parsed, fallback)
+        warning.assert_called_once()
+
     async def test_rule_location_is_retained_when_llm_has_no_location(self):
         query = "mua nhà phường an khánh"
         fallback = RuleBasedQueryParser().parse(query)
@@ -76,7 +109,7 @@ class LLMQueryParserTests(unittest.IsolatedAsyncioTestCase):
             parsed = await LLMQueryParser(FakeLLM(llm_result)).parse(query, fallback)
 
         self.assertEqual(parsed.hard_filters.districts, [])
-        self.assertEqual(parsed.preference_filters.districts, ["Phường An Khanh"])
+        self.assertEqual(parsed.preference_filters.districts, ["Phường An Khánh"])
 
 
 if __name__ == "__main__":

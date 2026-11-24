@@ -59,6 +59,20 @@ class PostgresConnectorTests(unittest.TestCase):
             connector.stop()
 
 
+class StatementTimeoutTests(unittest.TestCase):
+    def test_statement_timeout_is_configurable_and_defaults_to_15_seconds(self):
+        from src.services.database.postgresql.connector import statement_timeout_milliseconds
+
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertEqual(statement_timeout_milliseconds(), 15000)
+        with patch.dict(os.environ, {"DB_STATEMENT_TIMEOUT_SECONDS": "2.5"}):
+            self.assertEqual(statement_timeout_milliseconds(), 2500)
+        with patch.dict(os.environ, {"DB_STATEMENT_TIMEOUT_SECONDS": "0"}):
+            self.assertEqual(statement_timeout_milliseconds(), 0)
+        with patch.dict(os.environ, {"DB_STATEMENT_TIMEOUT_SECONDS": "soon"}):
+            self.assertEqual(statement_timeout_milliseconds(), 15000)
+
+
 class LlmDefaultsTests(unittest.IsolatedAsyncioTestCase):
     async def test_defaults_are_bounded_and_overridable(self):
         llm = LLModel(provider="openai-compatible", base_url="http://x", api_key="k")

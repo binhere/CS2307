@@ -1,7 +1,7 @@
 """Parameterized SQL access for the ``users`` table.
 
-Uses the ``postgres_client`` context-manager idiom (``fetch_mappings`` /
-``fetch_write``) rather than the legacy ``execute_raw_query`` path.
+Uses the ``postgres_client`` context-manager helpers (``fetch_mappings`` /
+``fetch_write``), which raise on database errors.
 """
 
 from __future__ import annotations

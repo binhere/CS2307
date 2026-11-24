@@ -16,7 +16,7 @@ from neo4j import GraphDatabase
 BACKEND_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = BACKEND_ROOT.parent
 DEFAULT_DATA_DIR = (
-    (BACKEND_ROOT / "Data") if (BACKEND_ROOT / "Data").is_dir() else (REPO_ROOT / "Data")
+    (BACKEND_ROOT / "data") if (BACKEND_ROOT / "data").is_dir() else (REPO_ROOT / "data")
 ) / "v3" / "graph"
 
 NODE_FILES = (

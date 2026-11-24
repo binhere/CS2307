@@ -10,6 +10,7 @@ from loguru import logger
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from starlette.concurrency import run_in_threadpool
 
+from src.search.schemas import validate_explicit_filters
 from src.services.agent import chat_agent_service
 from src.services.auth.dependencies import get_current_user, get_current_user_optional
 from src.services.chat import repository
@@ -52,7 +53,9 @@ class ChatRequest(BaseModel):
     @field_validator("filters")
     @classmethod
     def _limit_filters(cls, value):
-        return _bounded_json(value, _MAX_FILTERS_CHARS, "filters")
+        # Reject uncastable numbers here (400) rather than inside the search tool,
+        # where the failure would only reach the user as "search unavailable".
+        return validate_explicit_filters(_bounded_json(value, _MAX_FILTERS_CHARS, "filters"))
 
     @field_validator("context_parsed_query")
     @classmethod

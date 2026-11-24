@@ -70,14 +70,25 @@ def get_saved_listing_ids(user_id: int) -> List[int]:
 
 
 def get_recent_interactions(user_id: int, limit: int = 200) -> List[dict]:
-    """Most recent positive-signal interactions for building a user profile."""
+    """Recent interactions used to build a user's preference profile.
+
+    Args:
+        user_id: The user whose interactions are read.
+        limit: Maximum number of rows.
+
+    Returns:
+        List[dict]: Newest first, each {listing_id, action_type, implicit_score,
+        district, property_type, price_range}. Positive signals plus ``unsave``
+        rows: an unsave scores 0 but must still cancel an earlier save.
+    """
     return postgres_client.fetch_mappings(
         "SELECT i.listing_id, i.action_type, i.implicit_score, "
         "       p.district, p.property_type, p.price_range "
         "FROM interactions i "
         "LEFT JOIN properties p ON p.listing_id = i.listing_id "
-        "WHERE i.user_id = :user_id AND i.implicit_score > 0 "
-        "ORDER BY i.created_at DESC LIMIT :limit",
+        "WHERE i.user_id = :user_id "
+        "  AND (i.implicit_score > 0 OR i.action_type = 'unsave') "
+        "ORDER BY i.created_at DESC, i.id DESC LIMIT :limit",
         user_id=user_id,
         limit=limit,
     )

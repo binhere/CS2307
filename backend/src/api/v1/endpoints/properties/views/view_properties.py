@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
+from loguru import logger
 from minio import S3Error
 from starlette.concurrency import run_in_threadpool
 from starlette.requests import Request
@@ -8,7 +9,6 @@ from src.api.v1.endpoints.properties.controllers.controller_properties import (
     PropertiesController,
 )
 from src.api.v1.endpoints.properties.schemas.properties import (
-    AISearchRequestModel,
     PricePredictionRequest,
 )
 from src.search.service import hybrid_search_service
@@ -120,6 +120,7 @@ async def view_get_properties(
     ),
     page: int = Query(
         default=1,
+        ge=1,
         description="Page number",
     ),
     property_type: str = Query(
@@ -128,7 +129,9 @@ async def view_get_properties(
     ),
     limit: int = Query(
         default=10,
-        description="Limit",
+        ge=1,
+        le=100,
+        description="Page size (at most 100)",
     ),
     district: str = Query(
         default=None,
@@ -182,88 +185,56 @@ async def view_get_properties(
         limit=limit,
         property_type=property_type,
         district=district,
-        pool=pool,
-        gym=gym,
-        park=park,
-        bbq=bbq,
-        kids_playground=kids_playground,
-        sports_court=sports_court,
-        security_24h=security_24h,
-        reception=reception,
-        elevator=elevator,
-        parking=parking,
-        near_metro=near_metro,
-        near_bus=near_bus,
-        near_highway=near_highway,
-        near_school=near_school,
-        near_hospital=near_hospital,
-        near_mall=near_mall,
-        near_market=near_market,
-        near_park=near_park,
-        river_view=river_view,
-        park_view=park_view,
-        city_view=city_view,
-        balcony=balcony,
-        garden=garden,
-        garage=garage,
-        terrace=terrace,
-    )
-
-
-@router.post("/ai-search", summary="Get AI search", description="Get AI search")
-async def view_get_ai_search(
-    request: Request,
-    data: AISearchRequestModel,
-):
-    return await PropertiesController(
-        request=request,
-    ).ctr_ai_search(
-        question=data.question,
-        min_price=data.min_price,
-        max_price=data.max_price,
-        min_area=data.min_area,
-        max_area=data.max_area,
-        bedrooms=data.bedrooms,
-        bathrooms=data.bathrooms,
-        legal_status=data.legal_status,
-        furniture=data.furniture,
-        house_direction=data.house_direction,
-        balcony_direction=data.balcony_direction,
-        length_road_entrance=data.length_road_entrance,
-        district=data.district,
-        pool=data.pool,
-        gym=data.gym,
-        park=data.park,
-        bbq=data.bbq,
-        kids_playground=data.kids_playground,
-        sports_court=data.sports_court,
-        security_24h=data.security_24h,
-        reception=data.reception,
-        elevator=data.elevator,
-        parking=data.parking,
-        near_metro=data.near_metro,
-        near_bus=data.near_bus,
-        near_highway=data.near_highway,
-        near_school=data.near_school,
-        near_hospital=data.near_hospital,
-        near_mall=data.near_mall,
-        near_market=data.near_market,
-        near_park=data.near_park,
-        river_view=data.river_view,
-        park_view=data.park_view,
-        city_view=data.city_view,
-        balcony=data.balcony,
-        garden=data.garden,
-        garage=data.garage,
-        terrace=data.terrace,
+        amenity_filters={
+            "pool": pool,
+            "gym": gym,
+            "park": park,
+            "bbq": bbq,
+            "kids_playground": kids_playground,
+            "sports_court": sports_court,
+            "security_24h": security_24h,
+            "reception": reception,
+            "elevator": elevator,
+            "parking": parking,
+            "near_metro": near_metro,
+            "near_bus": near_bus,
+            "near_highway": near_highway,
+            "near_school": near_school,
+            "near_hospital": near_hospital,
+            "near_mall": near_mall,
+            "near_market": near_market,
+            "near_park": near_park,
+            "river_view": river_view,
+            "park_view": park_view,
+            "city_view": city_view,
+            "balcony": balcony,
+            "garden": garden,
+            "garage": garage,
+            "terrace": terrace,
+        },
     )
 
 
 @router.post("/predict-price", summary="Predict property price using ML valuation model")
 async def view_predict_property_price(data: PricePredictionRequest):
-    """Estimate property price and confidence interval in billion VND."""
+    """Estimate a property's price and confidence interval.
+
+    Args:
+        data: Property type, area (m²), bedrooms, coordinates, district/ward and
+            optional legal status.
+
+    Returns:
+        dict: {"data": {estimated_price, lower_bound, upper_bound, unit, ...},
+        "errors": [], "status": "success"} with prices in billion VND.
+
+    Raises:
+        HTTPException: 400 for input the model rejects (ValueError), 500 with a
+        generic message for any other failure, which is logged.
+    """
     try:
-        result = price_prediction_service.predict(
+        # scikit-learn inference is CPU work; run it off the event loop.
+        result = await run_in_threadpool(
+            price_prediction_service.predict,
             property_type=data.property_type,
             area=data.area,
             bedrooms=data.bedrooms,
@@ -273,8 +244,11 @@ async def view_predict_property_price(data: PricePredictionRequest):
             legal_status=data.legal_status or "Sổ hồng riêng",
         )
         return {"data": result, "errors": [], "status": "success"}
-    except Exception as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except ValueError as error:
+        raise HTTPException(status_code=400, detail=str(error)) from error
+    except Exception as error:
+        logger.exception("Price prediction failed")
+        raise HTTPException(status_code=500, detail="Price prediction is unavailable") from error
 
 
 @router.get("/{property_id}/similar", summary="Get similar properties from pgvector")

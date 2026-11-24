@@ -1,25 +1,22 @@
 from __future__ import annotations
 
 import logging
-import os
-import re
 import time
 from dataclasses import dataclass, field
 from threading import Lock
 from typing import Any, Dict, List, Optional, Tuple
 
-from dotenv import dotenv_values, find_dotenv
-
-from src.search.normalizer import FEATURE_ALIASES, normalize_text
+from src.search.normalizer import FEATURE_ALIASES, location_terms
 from src.search.schemas import ParsedSearchQuery
+from src.settings.config import config_value
 
 logger = logging.getLogger(__name__)
-_ENV = {**dotenv_values(find_dotenv()), **os.environ}
 
 try:
-    from neo4j import GraphDatabase
+    from neo4j import GraphDatabase, Query
 except ImportError:  # pragma: no cover - exercised only in a misconfigured runtime
     GraphDatabase = None
+    Query = None
 
 
 GRAPH_FEATURE_CATEGORIES = {
@@ -32,18 +29,28 @@ GRAPH_FEATURE_CATEGORIES = {
     "near_park": {"park"},
 }
 
+# Every listing has NEAR_AMENITY edges to its top-5 nearest amenities of each
+# category, however far away. Only an edge flagged within_threshold (driving
+# distance within the category threshold) means the listing is actually near.
+NEARBY_EDGE_CONDITION = "within_threshold = true"
 
-def _location_terms(values) -> set[str]:
-    terms = set()
-    for value in values:
-        if not value:
-            continue
-        normalized = normalize_text(str(value))
-        terms.add(normalized)
-        terms.add(
-            re.sub(r"^(?:phuong|xa|quan|huyen|thi xa|thanh pho|tp)\s+", "", normalized)
-        )
-    return {term for term in terms if term}
+# Neo4j sets no transaction timeout by default, so a slow traversal would hold the
+# search (and its worker thread) until the chat tool budget runs out.
+DEFAULT_QUERY_TIMEOUT_SECONDS = 10.0
+
+
+def query_timeout_seconds() -> float:
+    """Read the server-side time limit for one graph query.
+
+    Returns:
+        float: NEO4J_QUERY_TIMEOUT_SECONDS when it is a positive number, otherwise
+        the 10 s default.
+    """
+    try:
+        seconds = float(config_value("NEO4J_QUERY_TIMEOUT_SECONDS", DEFAULT_QUERY_TIMEOUT_SECONDS))
+    except (TypeError, ValueError):
+        return DEFAULT_QUERY_TIMEOUT_SECONDS
+    return seconds if seconds > 0 else DEFAULT_QUERY_TIMEOUT_SECONDS
 
 
 @dataclass
@@ -73,11 +80,12 @@ class Neo4jGraphRepository:
     """
 
     def __init__(self) -> None:
-        self.enabled = str(_ENV.get("SEARCH_USE_NEO4J", "false")).lower() in {"1", "true", "yes"}
-        self.uri = _ENV.get("NEO4J_URI", "bolt://neo4j:7687")
-        self.user = _ENV.get("NEO4J_USER", "neo4j")
-        self.password = _ENV.get("NEO4J_PASSWORD")
-        self.database = _ENV.get("NEO4J_DATABASE", "neo4j")
+        self.enabled = str(config_value("SEARCH_USE_NEO4J", "false")).lower() in {"1", "true", "yes"}
+        self.uri = config_value("NEO4J_URI", "bolt://neo4j:7687")
+        self.user = config_value("NEO4J_USER", "neo4j")
+        self.password = config_value("NEO4J_PASSWORD")
+        self.database = config_value("NEO4J_DATABASE", "neo4j")
+        self.query_timeout = query_timeout_seconds()
         self._driver = None
         self._lock = Lock()
         self._last_connect_attempt = 0.0
@@ -126,6 +134,35 @@ class Neo4jGraphRepository:
             return False
         return self.start()
 
+    def _timed_query(self, query_text: str):
+        """Attach the configured server-side timeout to a Cypher statement.
+
+        Args:
+            query_text: The Cypher text to run.
+
+        Returns:
+            neo4j.Query: The statement with ``timeout`` set to ``self.query_timeout``
+            seconds; Neo4j aborts the transaction once it is exceeded.
+        """
+        return Query(query_text, timeout=self.query_timeout)
+
+    @staticmethod
+    def _requested_features(parsed: ParsedSearchQuery) -> set[str]:
+        """Collect every feature the query asks for, strict or preferred.
+
+        Args:
+            parsed: The parsed search query.
+
+        Returns:
+            set[str]: Feature keys (e.g. "near_metro", "pool") from the strict UI
+            filters, the chat preference filters and feature soft preferences.
+        """
+        return {
+            *parsed.hard_filters.required_features,
+            *parsed.preference_filters.required_features,
+            *(pref.value for pref in parsed.soft_preferences if pref.type == "feature" and pref.value),
+        }
+
     @staticmethod
     def _query(parsed: ParsedSearchQuery) -> Tuple[str, Dict[str, Any]]:
         hard = parsed.hard_filters
@@ -164,18 +201,10 @@ class Neo4jGraphRepository:
 
         location_values = [*hard.districts, *hard.former_admin_areas]
         if location_values:
-            location_terms_set = set()
-            for value in location_values:
-                normalized = normalize_text(value)
-                location_terms_set.update({value.lower(), normalized})
-                short_name = re.sub(
-                    r"^(?:phuong|xa|quan|huyen|thi xa|thanh pho|tp)\s+",
-                    "",
-                    normalized,
-                )
-                if short_name:
-                    location_terms_set.add(short_name)
-            location_terms = sorted(term for term in location_terms_set if term)
+            # Graph names keep their diacritics ("quận 2") while normalized_name and
+            # aliases are accent-free, so match against both spellings.
+            accented_terms = {value.lower() for value in location_values if value}
+            matched_location_terms = sorted(accented_terms | location_terms(location_values))
             where.append(
                 "(toLower(l.ward_commune) IN $location_terms OR "
                 "toLower(l.former_admin_area) IN $location_terms OR "
@@ -190,14 +219,15 @@ class Neo4jGraphRepository:
                 "OR any(alias IN split(coalesce(fa.aliases, ''), '|') "
                 "WHERE toLower(alias) IN $location_terms) })"
             )
-            params["location_terms"] = location_terms
+            params["location_terms"] = matched_location_terms
 
         for feature in hard.required_features:
             if feature in GRAPH_FEATURE_CATEGORIES:
                 key = f"required_{feature}_categories"
                 where.append(
-                    f"EXISTS {{ MATCH (l)-[:NEAR_AMENITY]->(required_{feature}:Amenity) "
-                    f"WHERE required_{feature}.category IN ${key} }}"
+                    f"EXISTS {{ MATCH (l)-[required_{feature}_edge:NEAR_AMENITY]->(required_{feature}:Amenity) "
+                    f"WHERE required_{feature}.category IN ${key} "
+                    f"AND required_{feature}_edge.{NEARBY_EDGE_CONDITION} }}"
                 )
                 params[key] = sorted(GRAPH_FEATURE_CATEGORIES[feature])
             elif feature in FEATURE_ALIASES:
@@ -206,8 +236,9 @@ class Neo4jGraphRepository:
             if feature in GRAPH_FEATURE_CATEGORIES:
                 key = f"excluded_{feature}_categories"
                 where.append(
-                    f"NOT EXISTS {{ MATCH (l)-[:NEAR_AMENITY]->(excluded_{feature}:Amenity) "
-                    f"WHERE excluded_{feature}.category IN ${key} }}"
+                    f"NOT EXISTS {{ MATCH (l)-[excluded_{feature}_edge:NEAR_AMENITY]->(excluded_{feature}:Amenity) "
+                    f"WHERE excluded_{feature}.category IN ${key} "
+                    f"AND excluded_{feature}_edge.{NEARBY_EDGE_CONDITION} }}"
                 )
                 params[key] = sorted(GRAPH_FEATURE_CATEGORIES[feature])
             elif feature in FEATURE_ALIASES:
@@ -229,16 +260,9 @@ class Neo4jGraphRepository:
                 f"WHERE {' AND '.join(clauses)} }}"
             )
 
-        requested_features = {
-            *hard.required_features,
-            *parsed.preference_filters.required_features,
-            *(pref.value for pref in parsed.soft_preferences if pref.type == "feature" and pref.value),
-        }
+        requested_features = Neo4jGraphRepository._requested_features(parsed)
         preference_features = sorted(
-            {
-                *requested_features,
-            }
-            & (set(FEATURE_ALIASES) - set(GRAPH_FEATURE_CATEGORIES))
+            requested_features & (set(FEATURE_ALIASES) - set(GRAPH_FEATURE_CATEGORIES))
         )
         amenity_categories = {item.amenity_category for item in parsed.amenity_filters}
         for feature in requested_features:
@@ -251,9 +275,15 @@ class Neo4jGraphRepository:
             }
         )
         where_sql = " AND ".join(where) if where else "true"
+        # Filter, order and limit the listings before expanding their neighbours:
+        # aggregating first would collect every amenity edge of every matching
+        # listing (about 262k edges for an unfiltered query) only to keep 500.
         query = f"""
             MATCH (l:Listing)
             WHERE {where_sql}
+            WITH l
+            ORDER BY coalesce(l.posted_date, date('1970-01-01')) DESC
+            LIMIT $candidate_limit
             OPTIONAL MATCH (l)-[:IN_WARD]->(w:Ward)
             OPTIONAL MATCH (l)-[:IN_FORMER_AREA]->(former:FormerAdminArea)
             OPTIONAL MATCH (l)-[near:NEAR_AMENITY]->(a:Amenity)
@@ -265,31 +295,44 @@ class Neo4jGraphRepository:
                      driving_distance_km: near.driving_distance_km,
                      driving_duration_min: near.driving_duration_min,
                      threshold_km: near.threshold_km
-                 }} END) AS amenities
+                 }} END) AS amenities,
+                 collect(DISTINCT CASE WHEN near.{NEARBY_EDGE_CONDITION} THEN a.category END) AS nearby_categories
             RETURN toString(l.listing_id) AS listing_id,
                    l.listing_node_id AS listing_node_id,
                    wards,
                    [x IN amenities WHERE x IS NOT NULL] AS amenities,
                    [feature IN $preference_features WHERE coalesce(l[feature], false)] AS matched_features,
                    coalesce(head(former_areas), l.former_admin_area) AS former_admin_area,
-                   l.geo_cluster_150m AS geo_cluster_150m
+                   l.geo_cluster_150m AS geo_cluster_150m,
+                   nearby_categories
             ORDER BY coalesce(l.posted_date, date('1970-01-01')) DESC
-            LIMIT $candidate_limit
         """
         return query, params
 
     @staticmethod
     def _score_record(record: dict, parsed: ParsedSearchQuery) -> dict:
-        requested_features = {
-            *parsed.hard_filters.required_features,
-            *parsed.preference_filters.required_features,
-            *(pref.value for pref in parsed.soft_preferences if pref.type == "feature" and pref.value),
-        }
+        """Score one graph candidate against the requested features and places.
+
+        Args:
+            record: One row of the ``_query`` result: listing_id, listing_node_id,
+                wards, amenities (evidence maps), matched_features (listing flags),
+                former_admin_area and nearby_categories (amenity categories with an
+                edge inside its distance threshold).
+            parsed: The parsed search query.
+
+        Returns:
+            dict: {"listing_id": str, "graph_score": float in [0, 1],
+            "graph_evidence": {listing_node_id, wards, former_admin_area,
+            matched_features, amenities}}; 0.5 when nothing was requested.
+        """
+        requested_features = Neo4jGraphRepository._requested_features(parsed)
         matched_features = set(record.get("matched_features") or [])
         evidence = record.get("amenities") or []
-        evidence_categories = {item.get("category") for item in evidence}
+        # A near_* feature is met only by an amenity inside its threshold, not by
+        # the top-5 nearest edge every listing has regardless of distance.
+        nearby_categories = set(record.get("nearby_categories") or [])
         for feature, categories in GRAPH_FEATURE_CATEGORIES.items():
-            if feature in requested_features and categories & evidence_categories:
+            if feature in requested_features and categories & nearby_categories:
                 matched_features.add(feature)
         components = []
         if requested_features:
@@ -316,11 +359,11 @@ class Neo4jGraphRepository:
                 amenity_scores.append(best)
             components.append(sum(amenity_scores) / len(amenity_scores))
 
-        preferred_locations = _location_terms(
+        preferred_locations = location_terms(
             (*parsed.preference_filters.districts, *parsed.preference_filters.former_admin_areas)
         )
         if preferred_locations:
-            actual_locations = _location_terms(
+            actual_locations = location_terms(
                 (*(record.get("wards") or []), record.get("former_admin_area"))
             )
             components.append(float(bool(preferred_locations & actual_locations)))
@@ -347,7 +390,7 @@ class Neo4jGraphRepository:
         params["candidate_limit"] = min(max(candidate_limit, parsed.top_k), 1000)
         try:
             with self._driver.session(database=self.database, default_access_mode="READ") as session:
-                records = [dict(record) for record in session.run(query, params)]
+                records = [dict(record) for record in session.run(self._timed_query(query), params)]
             candidates = [self._score_record(record, parsed) for record in records]
             return GraphSearchResponse(
                 available=True,
@@ -369,9 +412,11 @@ class Neo4jGraphRepository:
             return GraphSearchResponse(available=False, error="disabled")
         if not self._ensure_driver():
             return GraphSearchResponse(available=False, error="unavailable")
+        # Both importers store listing_id as a string; comparing the bare property
+        # (no toString()) lets Neo4j use listing_id_idx instead of scanning listings.
         query = """
             MATCH (source:Listing)
-            WHERE toString(source.listing_id) = $listing_id
+            WHERE source.listing_id = $listing_id
                OR source.listing_node_id = $listing_id
             WITH source LIMIT 1
             MATCH (source)-[source_rel:IN_WARD|ON_STREET|IN_CLUSTER|NEAR_AMENITY]->(shared)
@@ -404,7 +449,7 @@ class Neo4jGraphRepository:
         try:
             params = {"listing_id": str(listing_id), "limit": min(max(limit * 3, limit), 150)}
             with self._driver.session(database=self.database, default_access_mode="READ") as session:
-                records = [dict(record) for record in session.run(query, params)]
+                records = [dict(record) for record in session.run(self._timed_query(query), params)]
             candidates = []
             for record in records:
                 row = record
@@ -441,9 +486,11 @@ class Neo4jGraphRepository:
         and makes the later property whitelist explicit in Python.
         """
 
+        # listing_id is stored as a string, so it is compared without toString()
+        # to keep listing_id_idx usable.
         return """
             MATCH (l:Listing)
-            WHERE toString(l.listing_id) = $listing_id
+            WHERE l.listing_id = $listing_id
                OR l.listing_node_id = $listing_id
             WITH l
             LIMIT 1
@@ -673,7 +720,9 @@ class Neo4jGraphRepository:
             return GraphSubgraphResponse(state="unavailable", error="unavailable")
         try:
             with self._driver.session(database=self.database, default_access_mode="READ") as session:
-                record = session.run(self._subgraph_query(), {"listing_id": str(listing_id)}).single()
+                record = session.run(
+                    self._timed_query(self._subgraph_query()), {"listing_id": str(listing_id)}
+                ).single()
             if record is None:
                 return GraphSubgraphResponse(state="empty")
             return self._subgraph_from_record(dict(record))

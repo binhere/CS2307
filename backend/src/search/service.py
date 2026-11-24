@@ -8,7 +8,11 @@ from typing import Any, Dict
 from loguru import logger
 from starlette.concurrency import run_in_threadpool
 
-from src.search.embedding import embedding_model
+from src.search.embedding import (
+    DEFAULT_EMBEDDING_STAGE_TIMEOUT_SECONDS,
+    EMBEDDING_STAGE_TIMEOUT_SETTING,
+    embedding_model,
+)
 from src.search.explanation import attach_explanation
 from src.search.graph_repository import graph_repository
 from src.search.llm_answer import LLMSearchAnswerGenerator
@@ -24,7 +28,6 @@ from src.settings.event import llm_model
 # provider degrades to the deterministic path instead of consuming the whole
 # chat tool timeout (CHAT_TOOL_TIMEOUT_SECONDS) and losing already-found results.
 DEFAULT_PARSER_TIMEOUT_SECONDS = 20.0
-DEFAULT_EMBEDDING_TIMEOUT_SECONDS = 20.0
 DEFAULT_ANSWER_TIMEOUT_SECONDS = 25.0
 
 
@@ -65,6 +68,7 @@ class HybridSearchService:
         generate_llm_answer: bool = True,
         history: list[dict] | None = None,
         user_id: int | None = None,
+        conversation_id: int | None = None,
     ) -> dict:
         started = time.perf_counter()
         parsed = await self.parse(request.query, request.top_k, request.filters)
@@ -75,7 +79,7 @@ class HybridSearchService:
                 vector = await asyncio.wait_for(
                     run_in_threadpool(embedding_model.encode_query, parsed.semantic_query),
                     timeout=_stage_timeout(
-                        "SEARCH_EMBEDDING_STAGE_TIMEOUT_SECONDS", DEFAULT_EMBEDDING_TIMEOUT_SECONDS
+                        EMBEDDING_STAGE_TIMEOUT_SETTING, DEFAULT_EMBEDDING_STAGE_TIMEOUT_SECONDS
                     ),
                 )
             except asyncio.TimeoutError:
@@ -151,7 +155,7 @@ class HybridSearchService:
         # path is unchanged. Best-effort: never let logging break a search response.
         if user_id is not None and results:
             await run_in_threadpool(
-                self._log_impressions, request, results, user_id
+                self._log_impressions, request, results, user_id, conversation_id, start
             )
         response = {
             "query": request.query,
@@ -205,14 +209,32 @@ class HybridSearchService:
         return bands
 
     @staticmethod
-    def _log_impressions(request: SearchRequest, results: list, user_id: int) -> None:
-        """Persist one recommendation_events row per shown listing (best-effort)."""
+    def _log_impressions(
+        request: SearchRequest,
+        results: list,
+        user_id: int,
+        conversation_id: int | None = None,
+        rank_offset: int = 0,
+    ) -> None:
+        """Persist one recommendation_events row per shown listing (best-effort).
+
+        Args:
+            request: The search request (query text is logged as raw_query).
+            results: The listings shown on this page, in display order.
+            user_id: The authenticated user who saw them.
+            conversation_id: The chat conversation the search ran in, if any.
+            rank_offset: Number of results on earlier pages, so ranks stay
+                absolute across pages (page 2 of 20 starts at rank 21).
+
+        Returns:
+            None. Failures are logged and swallowed; impressions are non-critical.
+        """
         try:
             from src.services.feedback import repository as feedback_repository
 
             result_set_id = uuid.uuid4().hex
             rows = []
-            for rank, item in enumerate(results, start=1):
+            for rank, item in enumerate(results, start=rank_offset + 1):
                 listing_id = item.get("listing_id")
                 if listing_id is None:
                     continue
@@ -224,7 +246,7 @@ class HybridSearchService:
                         "result_set_id": result_set_id,
                         "user_id": user_id,
                         "session_id": None,
-                        "conversation_id": None,
+                        "conversation_id": conversation_id,
                         "raw_query": request.query,
                         "algorithm_version": "hybrid_v1",
                         "listing_id": int(listing_id),

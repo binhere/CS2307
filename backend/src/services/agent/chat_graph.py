@@ -25,12 +25,14 @@ from loguru import logger
 from pydantic import BaseModel, Field
 from psycopg.rows import dict_row
 from psycopg_pool import AsyncConnectionPool
+from starlette.concurrency import run_in_threadpool
 
 from src.search.schemas import SearchRequest
 from src.search.service import hybrid_search_service
 from src.search.repository import search_repository
 from src.services.inference.price_prediction import price_prediction_service
 from src.settings.config import APPLICATION, config_value
+from src.settings.event import llm_model
 
 
 _MESSAGE_LIMIT = 20
@@ -246,10 +248,11 @@ class ChatAgentService:
         return [search_properties, inspect_previous_recommendations]
 
     def _model(self, temperature: float, *, with_tools: bool = False):
+        base_url, model_name, api_key = llm_model.chat_completions_endpoint()
         model = ChatOpenAI(
-            model=APPLICATION.get("llm_model"),
-            base_url=APPLICATION.get("llm_base_url") or None,
-            api_key=APPLICATION.get("llm_api_key") or "not-needed",
+            model=model_name,
+            base_url=base_url,
+            api_key=api_key,
             temperature=temperature,
             timeout=int(config_value("CHAT_MODEL_TIMEOUT_SECONDS", "60")),
             max_retries=1,
@@ -447,6 +450,7 @@ class ChatAgentService:
                     # environment and skips the call when it is disabled.
                     generate_llm_answer=True,
                     user_id=state.get("user_id"),
+                    conversation_id=state.get("conversation_id"),
                 ),
                 timeout=int(config_value("CHAT_TOOL_TIMEOUT_SECONDS", "90")),
             )
@@ -506,9 +510,14 @@ class ChatAgentService:
         # shortlist rather than fabricate which card the user meant.
         if not selected and not requested:
             selected = results[:3]
+        # scikit-learn inference is CPU work; keep it off the event loop that serves
+        # every other request in this single-worker process.
         observation = {
             "requested": requested,
-            "listings": [{**_compact_listing(item), "price_estimate": _price_estimate(item)} for item in selected],
+            "listings": [
+                {**_compact_listing(item), "price_estimate": await run_in_threadpool(_price_estimate, item)}
+                for item in selected
+            ],
             "available_count": len(results),
         }
         return Command(
@@ -560,8 +569,6 @@ class ChatAgentService:
         safe_ids = [str(item) for item in listing_ids[:_RESULT_LIMIT] if str(item).strip()]
         if not safe_ids:
             return []
-        from starlette.concurrency import run_in_threadpool
-
         rows = await run_in_threadpool(search_repository.get_by_listing_ids, safe_ids)
         by_listing_id = {str(row.get("listing_id")): row for row in rows}
         # Preserve the visual order from the prior response so "căn thứ 2" keeps
