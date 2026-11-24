@@ -14,6 +14,7 @@ property_id_index*.json
 
 # Images & non-CSV derived exports
 data/images/
+data/images_scaled/
 data/img/
 data/images.zip
 data/*.xlsx
