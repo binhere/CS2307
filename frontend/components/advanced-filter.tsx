@@ -11,18 +11,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { AMENITIES, DEFAULT_PROPERTY_TYPE } from "@/lib/amenities"
 import { cn } from "@/lib/utils"
 
 const WARDS = [
   "Phường An Đông", "Phường An Hội Đông", "Phường An Hội Tây", "Phường An Khánh", "Phường An Lạc", "Phường An Nhơn", "Phường An Phú Đông", "Phường Bàn Cờ", "Phường Bảy Hiền", "Phường Bến Thành", "Phường Bình Dương", "Phường Bình Đông", "Phường Bình Hòa", "Phường Bình Hưng Hòa", "Phường Bình Lợi Trung", "Phường Bình Phú", "Phường Bình Quới", "Phường Bình Tân", "Phường Bình Tây", "Phường Bình Thạnh", "Phường Bình Thới", "Phường Bình Tiên", "Phường Bình Trị Đông", "Phường Bình Trưng", "Phường Cát Lái", "Phường Cầu Kiệu", "Phường Cầu Ông Lãnh", "Phường Chánh Hiệp", "Phường Chánh Hưng", "Phường Chánh Phú Hòa", "Phường Chợ Lớn", "Phường Chợ Quán", "Phường Diên Hồng", "Phường Dĩ An", "Phường Đông Hòa", "Phường Đông Hưng Thuận", "Phường Đức Nhuận", "Phường Gia Định", "Phường Gò Vấp", "Phường Hạnh Thông", "Phường Hiệp Bình", "Phường Hòa Bình", "Phường Hòa Hưng", "Phường Khánh Hội", "Phường Linh Xuân", "Phường Long Bình", "Phường Long Hương", "Phường Long Nguyên", "Phường Long Phước", "Phường Long Trường", "Phường Minh Phụng", "Phường Nhiêu Lộc", "Phường Phú Định", "Phường Phú Lâm", "Phường Phú Lợi", "Phường Phú Nhuận", "Phường Phú Thạnh", "Phường Phú Thọ", "Phường Phú Thọ Hòa", "Phường Phú Thuận", "Phường Phước Long", "Phường Phước Thắng", "Phường Rạch Dừa", "Phường Sài Gòn", "Phường Tam Bình", "Phường Tam Thắng", "Phường Tân Bình", "Phường Tân Định", "Phường Tân Đông Hiệp", "Phường Tân Hòa", "Phường Tân Hưng", "Phường Tân Mỹ", "Phường Tân Phú", "Phường Tân Sơn", "Phường Tân Sơn Hòa", "Phường Tân Sơn Nhất", "Phường Tân Sơn Nhì", "Phường Tân Tạo", "Phường Tân Thới Hiệp", "Phường Tân Thuận", "Phường Tăng Nhơn Phú", "Phường Tây Thạnh", "Phường Thạnh Mỹ Tây", "Phường Thới An", "Phường Thới Hòa", "Phường Thông Tây Hội", "Phường Thủ Dầu Một", "Phường Thủ Đức", "Phường Thuận Giao", "Phường Trung Mỹ Tây", "Phường Vĩnh Hội", "Phường Vũng Tàu", "Phường Vườn Lài", "Phường Xóm Chiếu", "Phường Xuân Hòa",
   "Xã Bà Điểm", "Xã Bàu Bàng", "Xã Bình Chánh", "Xã Bình Hưng", "Xã Bình Lợi", "Xã Đất Đỏ", "Xã Hiệp Phước", "Xã Hồ Tràm", "Xã Hóc Môn", "Xã Hưng Long", "Xã Nhà Bè", "Xã Tân An Hội", "Xã Tân Nhựt", "Xã Tân Vĩnh Lộc", "Xã Trừ Văn Thố", "Xã Vĩnh Lộc", "Xã Xuân Thới Sơn"
-]
-
-const AMENITIES = [
-  "Hồ bơi", "Gym", "Khuôn viên", "BBQ", "Khu vui chơi trẻ em", "Sân thể thao",
-  "An ninh 24h", "Lễ tân", "Thang máy", "Bãi đậu xe", "Gần Metro", "Gần Bus", "Gần cao tốc",
-  "Gần trường", "Gần bệnh viện", "Gần siêu thị", "Gần chợ", "Gần công viên", "View sông",
-  "View công viên", "View thành phố", "Ban công", "Vườn", "Garage", "Sân thượng"
 ]
 
 const LEGAL_STATUS_OPTIONS = ["Sổ hồng riêng", "Đang chờ sổ", "Sổ chung", "Không rõ"]
@@ -47,33 +41,28 @@ const PRICE_PRESETS = [
   { label: "Trên 10 tỷ", min: "10", max: "" },
 ]
 
-const AMENITY_MAPPING: { [key: string]: string } = {
-  "Hồ bơi": "pool",
-  "Gym": "gym",
-  "Khuôn viên": "park",
-  "BBQ": "bbq",
-  "Khu vui chơi trẻ em": "kids_playground",
-  "Sân thể thao": "sports_court",
-  "An ninh 24h": "security_24h",
-  "Lễ tân": "reception",
-  "Thang máy": "elevator",
-  "Bãi đậu xe": "parking",
-  "Gần Metro": "near_metro",
-  "Gần Bus": "near_bus",
-  "Gần cao tốc": "near_highway",
-  "Gần trường": "near_school",
-  "Gần bệnh viện": "near_hospital",
-  "Gần siêu thị": "near_mall",
-  "Gần chợ": "near_market",
-  "Gần công viên": "near_park",
-  "View sông": "river_view",
-  "View công viên": "park_view",
-  "View thành phố": "city_view",
-  "Ban công": "balcony",
-  "Vườn": "garden",
-  "Garage": "garage",
-  "Sân thượng": "terrace"
+/** One selectable chip: `value` is what the filter state stores, `label` what the user sees. */
+interface ChipOption {
+  value: string
+  label: string
 }
+
+/**
+ * Wrap plain strings as chip options whose stored value is the visible text, which is what
+ * the listing API expects for legal status, furniture and directions.
+ * @param values - Vietnamese option strings.
+ * @returns one ChipOption per string, value equal to label.
+ */
+function toChipOptions(values: string[]): ChipOption[] {
+  return values.map((value) => ({ value, label: value }))
+}
+
+const LEGAL_STATUS_CHIPS = toChipOptions(LEGAL_STATUS_OPTIONS)
+const FURNITURE_CHIPS = toChipOptions(FURNITURE_OPTIONS)
+const DIRECTION_CHIPS = toChipOptions(DIRECTIONS)
+
+/** Amenity chips store the backend flag name and show the shared Vietnamese label. */
+const AMENITY_CHIPS: ChipOption[] = AMENITIES.map(({ key, label }) => ({ value: key, label }))
 
 interface AdvancedFilterProps {
   onApplyFilters: (filters: any) => void
@@ -167,7 +156,7 @@ export function AdvancedFilter({
     if (selectedBedrooms) filters.bedrooms = parseInt(selectedBedrooms)
     if (selectedBathrooms) filters.bathrooms = parseInt(selectedBathrooms)
 
-    filters.property_type = propertyType === "Tất cả" ? "Căn hộ,Nhà đất" : propertyType
+    filters.property_type = propertyType === "Tất cả" ? DEFAULT_PROPERTY_TYPE : propertyType
 
     // Multi-value fields are sent as the exact Vietnamese strings joined by commas.
     if (selectedLegalStatus.length > 0) filters.legal_status = selectedLegalStatus.join(",")
@@ -175,9 +164,9 @@ export function AdvancedFilter({
     if (selectedHouseDirection.length > 0) filters.house_direction = selectedHouseDirection.join(",")
     if (selectedBalconyDirection.length > 0) filters.balcony_direction = selectedBalconyDirection.join(",")
 
-    selectedAmenities.forEach((amenity) => {
-      const apiParam = AMENITY_MAPPING[amenity]
-      if (apiParam) filters[apiParam] = true
+    // Amenity chips already hold the backend flag names.
+    selectedAmenities.forEach((amenityKey) => {
+      filters[amenityKey] = true
     })
 
     return filters
@@ -204,15 +193,15 @@ export function AdvancedFilter({
     setSelectedHouseDirection([])
     setSelectedBalconyDirection([])
     setSelectedAmenities([])
-    onApplyFilters({ property_type: "Căn hộ,Nhà đất" })
+    onApplyFilters({ property_type: DEFAULT_PROPERTY_TYPE })
   }
 
   const extraGroups = [
-    { key: "legal", label: "Pháp lý", options: LEGAL_STATUS_OPTIONS, selected: selectedLegalStatus, set: setSelectedLegalStatus },
-    { key: "furniture", label: "Nội thất", options: FURNITURE_OPTIONS, selected: selectedFurniture, set: setSelectedFurniture },
-    { key: "house", label: "Hướng nhà", options: DIRECTIONS, selected: selectedHouseDirection, set: setSelectedHouseDirection },
-    { key: "balcony", label: "Hướng ban công", options: DIRECTIONS, selected: selectedBalconyDirection, set: setSelectedBalconyDirection },
-    { key: "amenities", label: "Tiện ích", options: AMENITIES, selected: selectedAmenities, set: setSelectedAmenities },
+    { key: "legal", label: "Pháp lý", options: LEGAL_STATUS_CHIPS, selected: selectedLegalStatus, set: setSelectedLegalStatus },
+    { key: "furniture", label: "Nội thất", options: FURNITURE_CHIPS, selected: selectedFurniture, set: setSelectedFurniture },
+    { key: "house", label: "Hướng nhà", options: DIRECTION_CHIPS, selected: selectedHouseDirection, set: setSelectedHouseDirection },
+    { key: "balcony", label: "Hướng ban công", options: DIRECTION_CHIPS, selected: selectedBalconyDirection, set: setSelectedBalconyDirection },
+    { key: "amenities", label: "Tiện ích", options: AMENITY_CHIPS, selected: selectedAmenities, set: setSelectedAmenities },
   ]
 
   return (
@@ -285,16 +274,16 @@ export function AdvancedFilter({
             })}
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <Input placeholder="Từ" type="number" min={0} step="any" inputMode="decimal" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
-            <Input placeholder="Đến" type="number" min={0} step="any" inputMode="decimal" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
+            <Input aria-label="Giá từ (tỷ VNĐ)" placeholder="Từ" type="number" min={0} step="any" inputMode="decimal" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
+            <Input aria-label="Giá đến (tỷ VNĐ)" placeholder="Đến" type="number" min={0} step="any" inputMode="decimal" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
           </div>
         </div>
 
         <div>
           <FieldLabel>Diện tích (m²)</FieldLabel>
           <div className="grid grid-cols-2 gap-2">
-            <Input placeholder="Từ" type="number" min={0} inputMode="decimal" value={minArea} onChange={(e) => setMinArea(e.target.value)} />
-            <Input placeholder="Đến" type="number" min={0} inputMode="decimal" value={maxArea} onChange={(e) => setMaxArea(e.target.value)} />
+            <Input aria-label="Diện tích từ (m²)" placeholder="Từ" type="number" min={0} inputMode="decimal" value={minArea} onChange={(e) => setMinArea(e.target.value)} />
+            <Input aria-label="Diện tích đến (m²)" placeholder="Đến" type="number" min={0} inputMode="decimal" value={maxArea} onChange={(e) => setMaxArea(e.target.value)} />
           </div>
         </div>
 
@@ -339,7 +328,8 @@ export function AdvancedFilter({
           <div className="relative mb-2">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Tìm phường/xã..."
+              aria-label="Tìm phường/xã"
+              placeholder="Tìm phường/xã…"
               className="pl-9"
               value={wardSearch}
               onChange={(e) => setWardSearch(e.target.value)}
@@ -378,11 +368,11 @@ export function AdvancedFilter({
                 <div className="flex flex-wrap gap-2">
                   {group.options.map((option) => (
                     <Chip
-                      key={option}
-                      active={group.selected.includes(option)}
-                      onClick={() => group.set(toggleItem(group.selected, option))}
+                      key={option.value}
+                      active={group.selected.includes(option.value)}
+                      onClick={() => group.set(toggleItem(group.selected, option.value))}
                     >
-                      {option}
+                      {option.label}
                     </Chip>
                   ))}
                 </div>

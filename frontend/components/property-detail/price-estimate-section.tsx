@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { DetailSection } from '@/components/property-detail/section'
 import { formatPrice } from '@/lib/format'
+import { fetchJson, readEnvelopeDetail, type ApiEnvelope } from '@/lib/http'
 
 type Verdict = 'below' | 'within' | 'above'
 
@@ -29,15 +30,15 @@ export function PriceEstimateSection({ propertyId }: { propertyId: string }) {
     const controller = new AbortController()
     setEstimate(null)
     setUnavailable(null)
-    fetch(`/api/properties/${encodeURIComponent(propertyId)}/price-estimate`, {
+    fetchJson<ApiEnvelope<PriceEstimate>>(`/api/properties/${encodeURIComponent(propertyId)}/price-estimate`, {
       signal: controller.signal,
       cache: 'no-store',
     })
-      .then((response) => (response.ok ? response.json() : null))
       .then((payload) => {
-        if (payload?.status === 'success') setEstimate(payload.data)
-        else if (payload?.status === 'unavailable') setUnavailable(payload.errors?.[0]?.detail || 'Chưa có định giá cho tin này.')
+        if (payload?.status === 'success' && payload.data) setEstimate(payload.data)
+        else if (payload?.status === 'unavailable') setUnavailable(readEnvelopeDetail(payload) || 'Chưa có định giá cho tin này.')
       })
+      // A failed or aborted estimate simply hides the section; the listing itself is unaffected.
       .catch(() => {})
     return () => controller.abort()
   }, [propertyId])

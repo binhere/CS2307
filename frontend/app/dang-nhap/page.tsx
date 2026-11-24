@@ -40,11 +40,31 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         <label className="block">
           <span className="text-sm font-medium text-foreground">Tên đăng nhập</span>
-          <Input value={username} onChange={(e) => setUsername(e.target.value)} className="mt-1.5 h-11" autoFocus required />
+          <Input
+            name="username"
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="mt-1.5 h-11"
+            autoFocus
+            required
+          />
         </label>
         <label className="block">
           <span className="text-sm font-medium text-foreground">Mật khẩu</span>
-          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="mt-1.5 h-11" required />
+          <Input
+            type="password"
+            name="password"
+            autoComplete="current-password"
+            autoCapitalize="none"
+            spellCheck={false}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="mt-1.5 h-11"
+            required
+          />
         </label>
         {error && <p role="alert" className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
         <Button type="submit" disabled={loading || !username.trim() || !password} className="h-11 w-full">

@@ -27,14 +27,14 @@ export function SearchBar({ query = "", onSearch }: SearchBarProps) {
     <form
       onSubmit={handleSubmit}
       role="search"
-      className="flex items-center gap-2 rounded-xl bg-card p-2 shadow-lg ring-1 ring-black/5"
+      className="flex items-center gap-2 rounded-xl bg-card p-2 shadow-lg ring-1 ring-black/5 focus-within:ring-2 focus-within:ring-ring"
     >
       <div className="relative flex flex-1 items-center">
         <Search className="pointer-events-none absolute left-3 h-5 w-5 text-muted-foreground" />
         <input
           type="text"
           aria-label="Tìm kiếm bất động sản"
-          placeholder="Tên dự án, đường, phường hoặc từ khóa..."
+          placeholder="Tên dự án, đường, phường hoặc từ khóa…"
           className="h-11 w-full rounded-lg bg-transparent pl-11 pr-9 text-[15px] text-foreground outline-none placeholder:text-muted-foreground"
           suppressHydrationWarning
           value={searchInput}

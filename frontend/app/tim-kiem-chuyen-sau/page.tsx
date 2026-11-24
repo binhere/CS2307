@@ -4,9 +4,8 @@ import { useState } from "react"
 import { Header } from "@/components/header"
 import { SidebarFilter } from "@/components/SidebarFilter"
 import { AIChat } from "@/components/ai-chat"
+import { AMENITIES, DEFAULT_PROPERTY_TYPE } from "@/lib/amenities"
 import { cn } from "@/lib/utils"
-
-const DEFAULT_PROPERTY_TYPE = "Căn hộ,Nhà đất"
 
 export default function AdvancedSearchPage() {
   // State lifting: track filters from SidebarFilter and pass to AIChat
@@ -75,41 +74,8 @@ export default function AdvancedSearchPage() {
       summary.push(`Hướng ban công: ${filters.balcony_direction}`)
     }
 
-    // Collect amenities
-    const amenities: string[] = []
-    const amenityMap: { [key: string]: string } = {
-      pool: "Hồ bơi",
-      gym: "Phòng gym",
-      park: "Công viên",
-      bbq: "Khu BBQ",
-      kids_playground: "Sân chơi trẻ em",
-      sports_court: "Sân thể thao",
-      security_24h: "Bảo vệ 24/7",
-      reception: "Tiếp tân",
-      elevator: "Thang máy",
-      parking: "Bãi đỗ xe",
-      near_metro: "Gần tàu điện",
-      near_bus: "Gần xe buýt",
-      near_highway: "Gần đường cao tốc",
-      near_school: "Gần trường học",
-      near_hospital: "Gần bệnh viện",
-      near_mall: "Gần trung tâm thương mại",
-      near_market: "Gần chợ",
-      near_park: "Gần công viên",
-      river_view: "View sông",
-      park_view: "View công viên",
-      city_view: "View thành phố",
-      balcony: "Ban công",
-      garden: "Vườn",
-      garage: "Garage",
-      terrace: "Sân thượng",
-    }
-
-    for (const [key, label] of Object.entries(amenityMap)) {
-      if (filters[key]) {
-        amenities.push(label)
-      }
-    }
+    // Amenities are applied as individual boolean flags named by their backend key.
+    const amenities = AMENITIES.filter(({ key }) => filters[key]).map(({ label }) => label)
 
     if (amenities.length > 0) {
       summary.push(`Tiện ích: ${amenities.join(", ")}`)

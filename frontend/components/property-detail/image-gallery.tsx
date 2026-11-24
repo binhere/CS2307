@@ -33,6 +33,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
   return (
     <div className="space-y-2">
       <div
+        role="region"
         className="group relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-muted"
         onKeyDown={(e) => {
           if (e.key === 'ArrowLeft') goToPrevious()
@@ -55,7 +56,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
             <button
               type="button"
               aria-label="Ảnh trước"
-              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-800 shadow-md transition-opacity hover:bg-white md:opacity-0 md:group-hover:opacity-100"
+              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-800 shadow-md transition-opacity hover:bg-white focus-visible:opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
               onClick={goToPrevious}
             >
               <ChevronLeft className="h-5 w-5" />
@@ -63,7 +64,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
             <button
               type="button"
               aria-label="Ảnh sau"
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-800 shadow-md transition-opacity hover:bg-white md:opacity-0 md:group-hover:opacity-100"
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-800 shadow-md transition-opacity hover:bg-white focus-visible:opacity-100 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100"
               onClick={goToNext}
             >
               <ChevronRight className="h-5 w-5" />
@@ -87,7 +88,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
               aria-label={`Xem ảnh ${index + 1}`}
               aria-current={mainImageIndex === index}
               className={cn(
-                'relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-lg transition-all md:h-20 md:w-28',
+                'relative h-16 w-24 flex-shrink-0 overflow-hidden rounded-lg transition-[opacity,box-shadow] md:h-20 md:w-28',
                 mainImageIndex === index ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : 'opacity-70 hover:opacity-100',
               )}
             >

@@ -11,7 +11,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { PropertyCard } from "@/components/property-card"
-import { cn } from "@/lib/utils"
+import { fetchJson, isAbortError, type ApiEnvelope } from "@/lib/http"
+import { cn, getPreferredScrollBehavior } from "@/lib/utils"
 
 interface Property {
   id: string
@@ -25,6 +26,11 @@ interface Property {
   bedrooms: number | null
   bathrooms: number | null
   posted_date: string
+}
+
+/** Body of GET /api/properties: one page of listings plus paging totals. */
+interface ListingsResponse extends ApiEnvelope<{ properties?: Property[]; total?: number; num_pages?: number }> {
+  total?: number
 }
 
 interface PropertyListingsProps {
@@ -133,26 +139,23 @@ export function PropertyListings({
         // Encode spaces as %20 rather than "+" for the backend's query parser.
         const queryString = searchParams.toString().replace(/\+/g, "%20")
 
-        const response = await fetch(`/api/properties?${queryString}`, { signal: controller.signal })
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`)
-        }
-
-        const data = await response.json()
-        const fetchedProperties = data.data?.properties || []
-        const total = data.data?.total || data.total || fetchedProperties.length
+        const data = await fetchJson<ListingsResponse>(`/api/properties?${queryString}`, {
+          signal: controller.signal,
+        })
+        const fetchedProperties = data?.data?.properties || []
+        const total = data?.data?.total || data?.total || fetchedProperties.length
 
         setProperties(fetchedProperties)
         setTotalCount(total)
-        setTotalPages(data.data?.num_pages || 1)
+        setTotalPages(data?.data?.num_pages || 1)
 
         // Bring the top of the results into view after paging/filtering, but not on first paint.
         if (!isFirstLoad.current) {
-          topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
+          topRef.current?.scrollIntoView({ behavior: getPreferredScrollBehavior(), block: "start" })
         }
         isFirstLoad.current = false
       } catch (err) {
-        if (err instanceof DOMException && err.name === "AbortError") return
+        if (isAbortError(err)) return
         setError(err instanceof Error ? err.message : "Failed to fetch properties")
         setProperties([])
       } finally {
@@ -175,7 +178,7 @@ export function PropertyListings({
         <div>
           <h2 className="text-lg font-bold text-foreground">Bất động sản đang bán tại TP.HCM</h2>
           <p className="mt-0.5 text-sm text-muted-foreground">
-            {loading ? "Đang tải..." : `${totalCount.toLocaleString("vi-VN")} kết quả`}
+            {loading ? "Đang tải…" : `${totalCount.toLocaleString("vi-VN")} kết quả`}
           </p>
         </div>
 

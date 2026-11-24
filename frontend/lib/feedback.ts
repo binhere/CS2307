@@ -1,6 +1,7 @@
 // Client helper for recording user interactions (view/save/unsave/contact/share/thumbs).
-// Attaches the bearer token when logged in; otherwise sends a stable anonymous
-// session_id so the signal is still grouped. Fire-and-forget, never throws.
+// Attaches the bearer token when logged in and always sends a stable anonymous
+// session_id, so the signal is still grouped if the token turns out to be stale.
+// Fire-and-forget, never throws.
 import { authHeaders, getStoredToken } from "./auth-context"
 
 export type InteractionAction =
@@ -47,9 +48,9 @@ export async function sendInteraction(input: InteractionInput): Promise<void> {
     return
   }
   try {
-    const token = getStoredToken()
-    const body: Record<string, unknown> = { ...input, listing_id: listingId }
-    if (!token) body.session_id = getSessionId()
+    // The backend treats an expired or reissued token as anonymous and then requires a
+    // session_id, so sending it unconditionally keeps those interactions from being dropped.
+    const body: Record<string, unknown> = { ...input, listing_id: listingId, session_id: getSessionId() }
 
     await fetch("/api/feedback", {
       method: "POST",

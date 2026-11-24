@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { Phone } from 'lucide-react'
+import { Phone, RefreshCw } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { sendInteraction } from '@/lib/feedback'
 import { formatPrice, formatPricePerM2 } from '@/lib/format'
+import { fetchJson, HttpError, isAbortError, type ApiEnvelope } from '@/lib/http'
 
 interface PropertyData {
   id: string
@@ -68,18 +69,24 @@ interface PropertyData {
   terrace: boolean
 }
 
+/** Why the listing could not be shown: the backend has no such listing, or the request failed. */
+type LoadFailure = 'not_found' | 'error'
+
 export default function PropertyDetailPage() {
   const params = useParams<{ id: string }>()
   const propertyId = params?.id
   const [property, setProperty] = useState<PropertyData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [loadFailure, setLoadFailure] = useState<LoadFailure | null>(null)
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     if (!propertyId) return
 
     const controller = new AbortController()
-    let hasCachedProperty = false
+    let cachedProperty: PropertyData | null = null
     setIsLoading(true)
+    setLoadFailure(null)
 
     // Use the card payload for an instant first paint, but always refresh from
     // the backend so direct links and browser refreshes work as expected.
@@ -88,40 +95,41 @@ export default function PropertyDetailPage() {
       try {
         const parsedProperty = JSON.parse(selectedProperty) as PropertyData
         const cachedIds = [parsedProperty.id, parsedProperty.listing_id].filter(Boolean).map(String)
-        if (cachedIds.includes(String(propertyId))) {
-          setProperty(parsedProperty)
-          hasCachedProperty = true
-          setIsLoading(false)
-        }
+        if (cachedIds.includes(String(propertyId))) cachedProperty = parsedProperty
       } catch (err) {
         console.error('Error parsing selected property:', err)
       }
     }
+    const hasCachedProperty = cachedProperty !== null
+    // Also clears the previous listing when navigating from one listing to another.
+    setProperty(cachedProperty)
+    if (hasCachedProperty) setIsLoading(false)
 
-    fetch(`/api/properties/${encodeURIComponent(propertyId)}`, {
+    fetchJson<ApiEnvelope<PropertyData>>(`/api/properties/${encodeURIComponent(propertyId)}`, {
       signal: controller.signal,
       cache: 'no-store',
     })
-      .then(async (response) => {
-        const payload = await response.json().catch(() => ({}))
-        if (!response.ok) throw new Error(payload.error || 'Failed to fetch property')
-        return payload
-      })
       .then((payload) => {
-        if (!payload.data) throw new Error('Property not found')
+        // The backend answers an unknown id with 200 and `data: null` rather than a 404.
+        if (!payload?.data) {
+          if (!hasCachedProperty) setLoadFailure('not_found')
+          return
+        }
         setProperty(payload.data)
         sessionStorage.setItem('selectedProperty', JSON.stringify(payload.data))
       })
       .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === 'AbortError') return
-        if (!hasCachedProperty) setProperty(null)
+        if (isAbortError(error)) return
+        // A card payload already on screen stays visible; only a blank page needs an error state.
+        if (hasCachedProperty) return
+        setLoadFailure(error instanceof HttpError && error.status === 404 ? 'not_found' : 'error')
       })
       .finally(() => {
         if (!controller.signal.aborted) setIsLoading(false)
       })
 
     return () => controller.abort()
-  }, [propertyId])
+  }, [propertyId, retryCount])
 
   // Record a `view` on open and the accumulated dwell time on leave.
   const propertyListingKey = property ? String(property.listing_id ?? property.id) : null
@@ -150,22 +158,27 @@ export default function PropertyDetailPage() {
     </div>
   )
 
-  if (isLoading) {
+  if (!isLoading && !property && loadFailure === 'error') {
     return shell(
-      <main className="flex-1 container mx-auto px-4 py-6">
-        <Skeleton className="h-5 w-40 mb-4" />
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="space-y-4">
-            <Skeleton className="aspect-[16/10] w-full rounded-xl" />
-            <Skeleton className="h-40 w-full rounded-xl" />
+      <main className="flex-1 container mx-auto px-4 py-16">
+        <div className="mx-auto max-w-md text-center space-y-3">
+          <h2 className="text-2xl font-bold text-foreground">Không thể tải thông tin bất động sản</h2>
+          <p className="text-muted-foreground">Vui lòng thử lại sau.</p>
+          <div className="mt-2 flex flex-wrap justify-center gap-2">
+            <Button type="button" onClick={() => setRetryCount((count) => count + 1)}>
+              <RefreshCw className="h-4 w-4" />
+              Thử lại
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/">Quay lại danh sách</Link>
+            </Button>
           </div>
-          <Skeleton className="h-80 w-full rounded-xl" />
         </div>
       </main>,
     )
   }
 
-  if (!property) {
+  if (!isLoading && !property) {
     return shell(
       <main className="flex-1 container mx-auto px-4 py-16">
         <div className="mx-auto max-w-md text-center space-y-3">
@@ -179,54 +192,76 @@ export default function PropertyDetailPage() {
     )
   }
 
-  const pricePerM2 = formatPricePerM2(property.price_range, property.area)
+  const pricePerM2 = property ? formatPricePerM2(property.price_range, property.area) : null
 
+  // The estimate, graph and similar listings need only the id from the URL, so they mount
+  // (and start fetching) alongside the listing request instead of waiting for it. They sit
+  // in fixed positions so they are not remounted when the listing arrives.
   return shell(
     <>
       <main className="flex-1 container mx-auto px-4 py-6 pb-28 lg:pb-6">
-        <PropertyDetailBreadcrumb property={property} />
+        {property ? <PropertyDetailBreadcrumb property={property} /> : <Skeleton className="h-5 w-40" />}
 
         <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <div className="min-w-0 space-y-6">
-            <ImageGallery images={property.images} title={property.title} />
-            <PropertyHeader property={property} />
-            <QuickSpecsGrid property={property} />
-            <DescriptionSection description={property.description} />
-            <AmenitiesSection property={property} />
-            <LocationSection
-              address={property.address}
-              locationLink={property.location_link}
-              latitudeLongitude={property.latitude_longitude}
-            />
-            <PriceEstimateSection propertyId={String(propertyId || property.listing_id || property.id)} />
-            <KnowledgeGraphSection propertyId={String(propertyId || property.listing_id || property.id)} />
+            {property ? (
+              <>
+                <ImageGallery images={property.images} title={property.title} />
+                <PropertyHeader property={property} />
+                <QuickSpecsGrid property={property} />
+                <DescriptionSection description={property.description} />
+                <AmenitiesSection property={property} />
+                <LocationSection
+                  address={property.address}
+                  locationLink={property.location_link}
+                  latitudeLongitude={property.latitude_longitude}
+                />
+              </>
+            ) : (
+              <>
+                <Skeleton className="aspect-[16/10] w-full rounded-xl" />
+                <Skeleton className="h-40 w-full rounded-xl" />
+              </>
+            )}
+            {propertyId && (
+              <>
+                <PriceEstimateSection key={`price-estimate-${propertyId}`} propertyId={propertyId} />
+                <KnowledgeGraphSection key={`knowledge-graph-${propertyId}`} propertyId={propertyId} />
+              </>
+            )}
           </div>
 
           <aside className="lg:sticky lg:top-20 lg:self-start">
-            <ContactForm listingId={property.listing_id ?? property.id} />
+            {property ? (
+              <ContactForm listingId={property.listing_id ?? property.id} />
+            ) : (
+              <Skeleton className="h-80 w-full rounded-xl" />
+            )}
           </aside>
         </div>
 
         <div className="mt-10">
-          <SimilarProperties />
+          <SimilarProperties key={propertyId} />
         </div>
       </main>
 
       {/* Mobile: keep price and the contact action reachable while scrolling. */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 px-4 py-3 backdrop-blur lg:hidden">
-        <div className="flex items-center gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="text-lg font-bold leading-tight text-price">{formatPrice(property.price_range)}</p>
-            {pricePerM2 && <p className="text-xs text-muted-foreground">{pricePerM2}</p>}
+      {property && (
+        <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 px-4 py-3 backdrop-blur lg:hidden">
+          <div className="flex items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-lg font-bold leading-tight text-price">{formatPrice(property.price_range)}</p>
+              {pricePerM2 && <p className="text-xs text-muted-foreground">{pricePerM2}</p>}
+            </div>
+            <Button asChild className="h-11 px-5">
+              <a href="#lien-he">
+                <Phone className="h-4 w-4" />
+                Liên hệ tư vấn
+              </a>
+            </Button>
           </div>
-          <Button asChild className="h-11 px-5">
-            <a href="#lien-he">
-              <Phone className="h-4 w-4" />
-              Liên hệ tư vấn
-            </a>
-          </Button>
         </div>
-      </div>
+      )}
     </>,
   )
 }

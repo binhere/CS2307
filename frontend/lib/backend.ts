@@ -11,9 +11,31 @@ export function forwardAuthHeaders(request: Request): HeadersInit {
   return headers
 }
 
-// Shared proxy for every app/api/* route: forwards method + auth + body to the
-// backend and passes the backend's JSON body and status straight back. Network
-// failures return a consistent { error } shape so the client can surface them.
+/**
+ * Turn an upstream response body into a JSON-serialisable value without throwing.
+ * FastAPI answers unhandled exceptions with a plain-text "Internal Server Error", which
+ * must not be mistaken for a proxy failure.
+ * @param text - raw upstream body, possibly empty or not JSON.
+ * @returns the parsed JSON, null for an empty body, or `{ error: text }` for non-JSON text.
+ */
+function parseUpstreamBody(text: string): unknown {
+  if (!text) return null
+  try {
+    return JSON.parse(text)
+  } catch {
+    return { error: text }
+  }
+}
+
+/**
+ * Shared proxy for every app/api/* route: forwards method, auth and body to the backend
+ * and passes the backend's body and status straight back.
+ * @param request - the incoming route-handler request.
+ * @param backendPath - backend path including any query string, e.g. "/v1/properties?page=2".
+ * @param opts - `method` overrides the incoming request's method.
+ * @returns a JSON Response with the upstream status; `{ error }` with 502 when the backend
+ *   is unreachable.
+ */
 export async function proxyJson(
   request: Request,
   backendPath: string,
@@ -27,12 +49,15 @@ export async function proxyJson(
   }
   if (method !== "GET" && method !== "HEAD") {
     init.body = await request.text()
+  } else {
+    // A browser that drops a read (e.g. a superseded listing search) should stop the
+    // backend work too. Writes such as chat messages are left to finish so they are saved.
+    init.signal = request.signal
   }
   try {
-    const response = await fetch(`${BACKEND_URL}${backendPath}`, init)
-    const text = await response.text()
-    const data = text ? JSON.parse(text) : null
-    return Response.json(data, { status: response.status })
+    const upstream = await fetch(`${BACKEND_URL}${backendPath}`, init)
+    const text = await upstream.text()
+    return Response.json(parseUpstreamBody(text), { status: upstream.status })
   } catch (error) {
     return Response.json(
       { error: error instanceof Error ? error.message : "Upstream request failed" },

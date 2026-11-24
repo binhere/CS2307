@@ -26,9 +26,11 @@ interface PropertyCardProps {
     posted_date?: string | null
   }
   variant?: "list" | "compact"
+  /** Where the card is shown, recorded with save/unsave feedback (e.g. "search_bar", "chat", "similar"). */
+  source?: string
 }
 
-export function PropertyCard({ property, variant = "list" }: PropertyCardProps) {
+export function PropertyCard({ property, variant = "list", source = "search_bar" }: PropertyCardProps) {
   const hasPropertyImage = Boolean(property.images?.[0]?.trim())
   const imageUrl = getPropertyImageSrc(property.images?.[0])
   const badge = getListingBadge(property.listing_type)
@@ -62,7 +64,7 @@ export function PropertyCard({ property, variant = "list" }: PropertyCardProps) 
     e.stopPropagation()
     const next = !saved
     setSaved(next)
-    setSavedListing(listingId, next, "search_bar")
+    setSavedListing(listingId, next, source)
   }
 
   const specs = [
@@ -74,7 +76,7 @@ export function PropertyCard({ property, variant = "list" }: PropertyCardProps) 
   return (
     // The card adapts to its container (not the viewport) so it also fits inside chat bubbles.
     <Link href={`/chi-tiet/${property.id}`} onClick={handleCardClick} className="@container group block h-full">
-      <article className="h-full overflow-hidden rounded-xl border border-border bg-card transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg">
+      <article className="h-full overflow-hidden rounded-xl border border-border bg-card transition-[transform,border-color,box-shadow] hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg">
         <div className={cn("flex h-full flex-col", !isCompact && "@lg:flex-row")}>
           <div
             className={cn(

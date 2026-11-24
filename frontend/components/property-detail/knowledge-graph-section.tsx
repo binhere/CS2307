@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type cytoscape from 'cytoscape'
 import { ExternalLink, Info, Loader2, Maximize2, Minus, Plus, RefreshCw, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { fetchJson, isAbortError, type ApiEnvelope } from '@/lib/http'
 
 type GraphState = 'ready' | 'empty' | 'unavailable'
 type GraphNodeType = 'Listing' | 'RelatedListing' | 'Ward' | 'FormerAdminArea' | 'Street' | 'Amenity'
@@ -298,22 +299,18 @@ export function KnowledgeGraphSection({ propertyId }: KnowledgeGraphSectionProps
     setRelatedError(null)
     setLabelMode('clean')
 
-    fetch(`/api/properties/${encodeURIComponent(propertyId)}/graph`, {
-      signal: controller.signal,
-      cache: 'no-store',
-    })
-      .then(async (response) => {
-        const payload = await response.json().catch(() => ({}))
-        if (!response.ok) throw new Error(payload.detail || 'Không thể tải dữ liệu knowledge graph')
-        return payload
-      })
+    fetchJson<ApiEnvelope<PropertyGraph>>(
+      `/api/properties/${encodeURIComponent(propertyId)}/graph`,
+      { signal: controller.signal, cache: 'no-store' },
+      'Không thể tải dữ liệu knowledge graph',
+    )
       .then((payload) => {
-        const nextGraph: PropertyGraph = payload.data || EMPTY_GRAPH
+        const nextGraph: PropertyGraph = payload?.data || EMPTY_GRAPH
         setGraph(nextGraph)
         setVisibleCategories(nextGraph.amenity_categories || [])
       })
       .catch((requestError: unknown) => {
-        if (requestError instanceof DOMException && requestError.name === 'AbortError') return
+        if (isAbortError(requestError)) return
         setError(requestError instanceof Error ? requestError.message : 'Không thể tải knowledge graph')
       })
       .finally(() => {
@@ -426,18 +423,18 @@ export function KnowledgeGraphSection({ propertyId }: KnowledgeGraphSectionProps
     setRelatedLoading(true)
     setRelatedError(null)
     try {
-      const response = await fetch(`/api/properties/${encodeURIComponent(propertyId)}/similar?limit=5`, {
-        signal: controller.signal,
-        cache: 'no-store',
-      })
-      const payload = await response.json().catch(() => ({}))
-      if (!response.ok) throw new Error(payload.error || 'Không thể tải BĐS liên quan')
-      const results = Array.isArray(payload.data?.results) ? payload.data.results : []
+      const payload = await fetchJson<ApiEnvelope<{ results?: RelatedProperty[] }>>(
+        `/api/properties/${encodeURIComponent(propertyId)}/similar?limit=5`,
+        { signal: controller.signal, cache: 'no-store' },
+        'Không thể tải BĐS liên quan',
+      )
+      const fetchedResults = payload?.data?.results
+      const results = Array.isArray(fetchedResults) ? fetchedResults : []
       setRelatedProperties(results.slice(0, 5))
       setRelatedLoaded(true)
       setShowRelated(true)
     } catch (requestError: unknown) {
-      if (requestError instanceof DOMException && requestError.name === 'AbortError') return
+      if (isAbortError(requestError)) return
       setRelatedError(requestError instanceof Error ? requestError.message : 'Không thể tải BĐS liên quan')
     } finally {
       if (!controller.signal.aborted) setRelatedLoading(false)
@@ -737,7 +734,7 @@ export function KnowledgeGraphSection({ propertyId }: KnowledgeGraphSectionProps
       {loading && (
         <div className="h-[400px] sm:h-[480px] rounded-lg border border-border bg-muted/40 flex flex-col items-center justify-center gap-3">
           <Loader2 className="h-7 w-7 animate-spin text-primary" />
-          <p className="text-sm text-muted-foreground">Đang tải knowledge graph...</p>
+          <p className="text-sm text-muted-foreground">Đang tải knowledge graph…</p>
         </div>
       )}
 
