@@ -1,6 +1,6 @@
 # Hướng Dẫn Dựng & Truy Vấn Databases (`databases/`)
 
-Thư mục này chứa script Docker và cấu hình để nạp dữ liệu tầng **Gold** từ `../crawl_data/data/gold/` vào **Neo4j (Graph)** và **PostgreSQL (SQL)** phục vụ truy vấn và kiểm thử tại local.
+Thư mục này chứa script Docker và cấu hình để nạp dữ liệu tầng **Gold** từ `../crawl_data/data/gold/` và kho ảnh vào **Neo4j (Graph)**, **PostgreSQL (SQL)** và **MinIO (Object Storage)** phục vụ truy vấn và kiểm thử tại local.
 
 - **Schema chi tiết các bảng, node và edge:** Xem tại [crawl_data/docs/data_schema.md](../crawl_data/docs/data_schema.md).
 - **Yêu cầu duy nhất:** Máy đã cài và bật **Docker Desktop**.
@@ -78,6 +78,44 @@ Get-Content databases/sql/sample_queries.sql -Raw | docker exec -i cs2307-postgr
 
 ---
 
+## 3. Object Storage — MinIO (`databases/object_storage/`)
+
+### Khởi tạo & Nạp ảnh
+Chạy từ thư mục gốc project *(đọc ảnh đã scale từ `crawl_data/data/images_scaled/`)*:
+```powershell
+powershell -ExecutionPolicy Bypass -File databases/object_storage/start_minio.ps1
+```
+Script sẽ tự động:
+1. Khởi động container `cs2307-minio` (`cgr.dev/chainguard/minio:latest`).
+2. Tạo bucket `real-estate-images`.
+3. Chạy `cgr.dev/chainguard/minio-client:latest` (`mc mirror`) đồng bộ **33.882** ảnh (`4,08 GiB`).
+
+### Thông tin kết nối
+| Mục | Giá trị |
+|---|---|
+| MinIO Console (Web UI) | `http://localhost:9001` |
+| S3 API Endpoint | `http://localhost:9000` |
+| Bucket | `real-estate-images` |
+| Username / Password | `minioadmin` / `minioadmin` |
+
+### Vai trò từng file
+- `start_minio.ps1`: Script điều phối chính — dọn container cũ, bật MinIO, tạo bucket và đồng bộ ảnh.
+- `data/`: Thư mục chứa dữ liệu object local do MinIO sinh ra *(đã ignore trong `.gitignore`)*.
+
+### Cấu trúc thư mục & đặt tên file ảnh trong bucket `real-estate-images`
+```text
+real-estate-images/
+└── images/<property_type>/<district>/<listing_id>/<pt_code>_<dist_code>_<listing_id>_<stt>.jpg
+```
+- `<property_type>`, `<district>`, `<listing_id>`: lần lượt là loại BĐS, phường/xã và mã tin đăng.
+- `<pt_code>` *(property_type code)*: Mã loại BĐS 3 chữ số (VD: `001` = *Căn hộ chung cư*).
+- `<dist_code>` *(district code)*: Mã phường/xã 3 chữ số (VD: `003` = *Phường An Hội Tây*).
+  *(Cả 2 mã tra từ `crawl_data/data/mapping_dictionaries.json`, được sinh bởi `crawl_data/generate_mapping_dicts.py`).*
+- `<stt>`: Số thứ tự ảnh 3 chữ số (`001`, `002`, ...).
+- **Ví dụ:** `images/Căn hộ chung cư/Phường An Hội Tây/43636351/001_003_43636351_001.jpg`
+
+---
+
 ## Cấu trúc thư mục `databases/`
 
 ```text
@@ -88,6 +126,9 @@ databases/
 │   ├── create_indexes.cypher  # 6 unique constraints + 6 property indexes
 │   ├── sample_queries.cypher  # Bộ query Cypher mẫu
 │   └── data/                  # Dữ liệu DB local
+├── object_storage/
+│   ├── start_minio.ps1        # Dựng container + tạo bucket + mirror ảnh MinIO
+│   └── data/                  # Dữ liệu object local
 └── sql/
     ├── start_postgres.ps1     # Dựng container + tạo bảng + import + tạo index
     ├── create_tables.sql      # Schema 3 bảng listings, amenities, listing_amenities

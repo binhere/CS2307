@@ -55,3 +55,4 @@ gen_user_data/scratchpad/
 images/*
 databases/graph/data/
 databases/sql/data/
+databases/object_storage/data/
