@@ -1,14 +1,16 @@
 "use client"
 
 import { memo, useState, useRef, useEffect, useCallback } from "react"
-import { Send, Loader2, Sparkles, Plus, MessageSquare, ThumbsUp, ThumbsDown, SlidersHorizontal, Lightbulb, Scale } from "lucide-react"
+import Link from "next/link"
+import { Send, Loader2, Sparkles, Plus, MessageSquare, ThumbsUp, ThumbsDown, SlidersHorizontal, Lightbulb, Scale, KeyRound } from "lucide-react"
 import ReactMarkdown, { type Components } from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Button } from "@/components/ui/button"
 import { PropertyCard } from "@/components/property-card"
 import { useAuth, authHeaders } from "@/lib/auth-context"
 import { sendInteraction } from "@/lib/feedback"
-import { fetchJson, HttpError, readEnvelopeDetail, type ApiEnvelope } from "@/lib/http"
+import { fetchJson, HttpError, readEnvelopeCode, readEnvelopeDetail, type ApiEnvelope } from "@/lib/http"
+import { llmHeaders, useLlmSettingsStatus } from "@/lib/llm-settings"
 import { cn, getPreferredScrollBehavior } from "@/lib/utils"
 
 interface PropertyResult {
@@ -28,6 +30,8 @@ interface ChatMessage {
   timestamp: string
   // Client-side error notices are UI only and must not be replayed as history.
   isError?: boolean
+  /** True for an error the user fixes on the AI settings page; the bubble links there. */
+  isLlmSettingsError?: boolean
 }
 
 interface ConversationSummary {
@@ -110,6 +114,15 @@ const WELCOME_MESSAGE_ID = "welcome"
 /** Bubble text for a failed reply when the backend supplied no message of its own. */
 const CHAT_ERROR_MESSAGE = "Xin lỗi, đã xảy ra lỗi khi xử lý tin nhắn. Vui lòng thử lại sau."
 
+/** AI settings page, returning to this chat after the key is saved. */
+const LLM_SETTINGS_HREF = "/cai-dat-ai?next=/tim-kiem-chuyen-sau"
+
+/**
+ * Backend error codes caused by the user's own LLM settings (missing or rejected key,
+ * unknown provider, a model without tool calling), so the fix is on the settings page.
+ */
+const LLM_SETTINGS_ERROR_CODES = new Set(["LLM_KEY_REQUIRED", "LLM_KEY_INVALID", "LLM_PROVIDER_INVALID", "LLM_MODEL_NO_TOOLS"])
+
 /** Content held by a reply still being generated; the bubble shows a typing indicator instead. */
 const PENDING_REPLY_CONTENT = "Đang xử lý…"
 
@@ -169,15 +182,26 @@ function withMessageIds(messages: ChatMessage[]): ChatMessage[] {
   return messages.map((message) => (message.id ? message : { ...message, id: createMessageId() }))
 }
 
+/** What a failed reply shows: its bubble text and whether to link to the AI settings page. */
+interface ChatErrorDescription {
+  content: string
+  isLlmSettingsError: boolean
+}
+
 /**
- * Turn a failed chat request into the bubble text shown to the user.
+ * Turn a failed chat request into what its bubble shows.
  * @param error - value thrown by fetchJson or fetch.
  * @returns the message the backend wrote into its error envelope (Vietnamese, meant for end
- *   users), or CHAT_ERROR_MESSAGE for proxy, network and plain-text failures whose text is technical.
+ *   users) or CHAT_ERROR_MESSAGE for proxy, network and plain-text failures whose text is
+ *   technical, plus whether the error code points at the user's LLM settings.
  */
-function describeChatError(error: unknown): string {
-  if (error instanceof HttpError) return readEnvelopeDetail(error.payload) ?? CHAT_ERROR_MESSAGE
-  return CHAT_ERROR_MESSAGE
+function describeChatError(error: unknown): ChatErrorDescription {
+  if (!(error instanceof HttpError)) return { content: CHAT_ERROR_MESSAGE, isLlmSettingsError: false }
+  const errorCode = readEnvelopeCode(error.payload)
+  return {
+    content: readEnvelopeDetail(error.payload) ?? CHAT_ERROR_MESSAGE,
+    isLlmSettingsError: errorCode !== null && LLM_SETTINGS_ERROR_CODES.has(errorCode),
+  }
 }
 
 // `node` (the hast element react-markdown passes to every component) is pulled out of the
@@ -297,7 +321,17 @@ const ChatMessageRow = memo(function ChatMessageRow({ message, isPending, thumbs
               Đang tìm và phân tích…
             </span>
           ) : message.role === "ai" ? (
-            <MarkdownMessage content={message.content || ""} />
+            <>
+              <MarkdownMessage content={message.content || ""} />
+              {message.isLlmSettingsError && (
+                <Button asChild variant="outline" size="sm" className="mt-3">
+                  <Link href={LLM_SETTINGS_HREF}>
+                    <KeyRound className="h-4 w-4" aria-hidden />
+                    Cài đặt AI
+                  </Link>
+                </Button>
+              )}
+            </>
           ) : (
             <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
           )}
@@ -381,6 +415,8 @@ const ChatMessageRow = memo(function ChatMessageRow({ message, isPending, thumbs
 })
 
 interface ChatComposerProps {
+  /** True when chatting is impossible (no LLM key yet): the whole composer is disabled. */
+  isDisabled: boolean
   /** True while a reply or a stored conversation is loading: typing stays allowed, sending does not. */
   isSendBlocked: boolean
   /** True while a reply is being generated; swaps the send icon for a spinner. */
@@ -395,7 +431,7 @@ interface ChatComposerProps {
  * @param props - see ChatComposerProps.
  * @returns the composer area element.
  */
-function ChatComposer({ isSendBlocked, isWaitingForReply, onSend }: ChatComposerProps) {
+function ChatComposer({ isDisabled, isSendBlocked, isWaitingForReply, onSend }: ChatComposerProps) {
   const [inputValue, setInputValue] = useState("")
 
   const submitInput = () => {
@@ -425,16 +461,17 @@ function ChatComposer({ isSendBlocked, isWaitingForReply, onSend }: ChatComposer
           rows={1}
           aria-label="Tin nhắn cho trợ lý"
           placeholder="Ví dụ: căn hộ 2PN ở Thủ Đức dưới 4 tỷ, gần trường học…"
-          className="max-h-36 min-h-9 flex-1 resize-none bg-transparent py-2 text-sm outline-none [field-sizing:content] placeholder:text-muted-foreground"
+          className="max-h-36 min-h-9 flex-1 resize-none bg-transparent py-2 text-sm outline-none [field-sizing:content] placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
           value={inputValue}
           onChange={(event) => setInputValue(event.target.value)}
           onKeyDown={handleInputKeyDown}
+          disabled={isDisabled}
         />
         <Button
           type="submit"
           size="icon"
           className="h-9 w-9 rounded-xl flex-shrink-0"
-          disabled={isSendBlocked || !inputValue.trim()}
+          disabled={isDisabled || isSendBlocked || !inputValue.trim()}
           aria-label="Gửi"
         >
           {isWaitingForReply ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
@@ -469,6 +506,9 @@ export function AIChat({ filters: propFilters = {}, criteria = [], onEditCriteri
   // Per-listing thumbs state so the user sees their feedback was recorded.
   const [thumbs, setThumbs] = useState<Record<string, ThumbVote>>({})
   const isLoading = pendingMessageId !== null
+  // "unknown" until hydration: the composer stays disabled but no missing-key notice flashes.
+  const llmSettingsStatus = useLlmSettingsStatus()
+  const isLlmReady = llmSettingsStatus === "ready"
 
   // The greeting's time is filled in after mount: rendering it during SSR would bake the
   // build or server time into the HTML and break hydration.
@@ -641,7 +681,8 @@ export function AIChat({ filters: propFilters = {}, criteria = [], onEditCriteri
 
       const replyEnvelope = await fetchJson<ApiEnvelope<ChatReply>>("/api/chat", {
         method: "POST",
-        headers: authHeaders(),
+        // The user's own LLM key travels with this request only; the backend does not store it.
+        headers: { ...authHeaders(), ...llmHeaders() },
         body: JSON.stringify(requestBody),
       })
       if (threadVersionRef.current !== requestVersion) return
@@ -649,10 +690,18 @@ export function AIChat({ filters: propFilters = {}, criteria = [], onEditCriteri
       if (user) loadConversations()
     } catch (error) {
       if (threadVersionRef.current !== requestVersion) return
+      const errorDescription = describeChatError(error)
       setMessages((previous) =>
         previous.map((message): ChatMessage =>
           message.id === replyMessageId
-            ? { id: replyMessageId, role: "ai", content: describeChatError(error), timestamp: nowTime(), isError: true }
+            ? {
+                id: replyMessageId,
+                role: "ai",
+                content: errorDescription.content,
+                timestamp: nowTime(),
+                isError: true,
+                isLlmSettingsError: errorDescription.isLlmSettingsError,
+              }
             : message,
         ),
       )
@@ -663,7 +712,7 @@ export function AIChat({ filters: propFilters = {}, criteria = [], onEditCriteri
 
   // Returns whether the message was accepted, so the composer only clears accepted input.
   const sendMessage = (text: string): boolean => {
-    if (!text.trim() || isLoading || isConversationLoading) return false
+    if (!text.trim() || isLoading || isConversationLoading || !isLlmReady) return false
 
     const guestHistory = messages
       .filter((item) => item.content && !item.isError && !(item.role === "ai" && item.content === WELCOME_CONTENT))
@@ -697,7 +746,7 @@ export function AIChat({ filters: propFilters = {}, criteria = [], onEditCriteri
   )
 
   const isFreshChat = messages.length === 1 && messages[0].role === "ai" && messages[0].content === WELCOME_CONTENT
-  const isSendBlocked = isLoading || isConversationLoading
+  const isSendBlocked = isLoading || isConversationLoading || !isLlmReady
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
@@ -779,6 +828,21 @@ export function AIChat({ filters: propFilters = {}, criteria = [], onEditCriteri
             ))}
           </div>
 
+          {llmSettingsStatus === "missing" && (
+            <div className="flex flex-col gap-3 rounded-xl border border-primary/20 bg-accent/60 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <KeyRound className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden />
+                <div>
+                  <p className="font-semibold text-foreground">Cần API key để dùng Tư vấn AI</p>
+                  <p className="mt-0.5 text-sm text-muted-foreground">Key chỉ lưu trong trình duyệt của bạn.</p>
+                </div>
+              </div>
+              <Button asChild size="sm" className="shrink-0">
+                <Link href={LLM_SETTINGS_HREF}>Thêm API key</Link>
+              </Button>
+            </div>
+          )}
+
           {isFreshChat && (
             <div className="grid gap-2 pl-11 sm:grid-cols-2">
               {SUGGESTED_PROMPTS.map((prompt) => (
@@ -798,7 +862,12 @@ export function AIChat({ filters: propFilters = {}, criteria = [], onEditCriteri
       </div>
 
       {/* Input Area */}
-      <ChatComposer isSendBlocked={isSendBlocked} isWaitingForReply={isLoading} onSend={sendMessage} />
+      <ChatComposer
+        isDisabled={!isLlmReady}
+        isSendBlocked={isSendBlocked}
+        isWaitingForReply={isLoading}
+        onSend={sendMessage}
+      />
     </div>
   )
 }

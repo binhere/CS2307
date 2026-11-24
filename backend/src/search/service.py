@@ -22,6 +22,7 @@ from src.search.repository import search_repository
 from src.search.schemas import ParsedSearchQuery, SearchRequest
 from src.settings.config import config_value
 from src.settings.event import llm_model
+from src.services.llm.credentials import active_llm_client
 
 
 # Optional stages (LLM parse, embedding, LLM answer) get their own budget so a slow
@@ -138,7 +139,7 @@ class HybridSearchService:
         assistant_answer, llm_answer_generated = (None, False)
         # Skip the LLM round-trip (and its retries) when disabled or no key is set,
         # so keyless deployments fall back cleanly to the deterministic explanation.
-        if generate_llm_answer and self.llm_answer.enabled() and llm_model.has_credentials():
+        if generate_llm_answer and self.llm_answer.enabled() and active_llm_client(llm_model).has_credentials():
             try:
                 assistant_answer, llm_answer_generated = await asyncio.wait_for(
                     self.llm_answer.generate(

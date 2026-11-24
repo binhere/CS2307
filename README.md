@@ -39,25 +39,31 @@ Semantic retrieval is enabled only when every active listing has an embedding. U
 then `/v1/search` remains available in structured + PostgreSQL full-text mode and
 reports embedding coverage when `debug=true`.
 
-### Embedding provider
+### Embedding service (CPU)
 
-The backend uses an OpenAI-compatible embeddings API only; it does not download or
-load a Hugging Face model inside the API container. Configure a 1024-dimensional
-embedding model in LM Studio, OpenRouter, or another compatible server:
+Semantic search embeds catalog passages and user queries with one fixed model on the
+server: `qwen3-embedding:0.6b` served by Ollama. It runs on CPU (no GPU needed) and
+returns 1024-dimensional vectors, matching the pgvector schema (`vector(1024)`). The
+`embedding` service in `docker-compose.yml` downloads the model on first start.
 
 ```dotenv
-SEARCH_EMBEDDING_PROVIDER=lmstudio
-SEARCH_EMBEDDING_MODEL=qwen/qwen3-embedding-4b
-SEARCH_EMBEDDING_BASE_URL=http://127.0.0.1:1234/v1
-SEARCH_EMBEDDING_API_KEY=
-SEARCH_EMBEDDING_TIMEOUT=60
+SEARCH_EMBEDDING_MODEL=qwen3-embedding:0.6b
+SEARCH_EMBEDDING_BASE_URL=http://embedding:11434/v1
 ```
 
-When the backend runs in Docker, use
-`http://host.docker.internal:1234/v1`. Both index and query vectors must come from
-the same model; rebuild existing vectors with
-`python scripts/build_search_index.py --skip-catalog-import --skip-graph-metadata --force`.
-The API response is validated against the current pgvector schema (`vector(1024)`).
+Users' own API keys are never used for embeddings: query vectors must come from the
+model that embedded the catalog. Embedding the catalog is a one-time job; on a CPU-only
+server it takes a while, so it can also be run on a development machine (for example
+against a local Ollama via `http://host.docker.internal:11434/v1`) and the database
+copied over. Semantic retrieval switches on once every active listing has a vector.
+
+```bash
+docker compose exec backend python scripts/build_search_index.py \
+  --skip-catalog-import --skip-graph-metadata --batch-size 32
+```
+
+Changing the model or the query/passage prefixes requires re-embedding everything
+(add `--force`).
 
 ### Enable Neo4j graph search
 
@@ -126,8 +132,25 @@ search. Authenticated conversations use PostgreSQL LangGraph checkpoints in
 addition to the existing visible conversation history; guest conversations keep
 their bounded context in the browser tab.
 
-The configured OpenAI-compatible endpoint must return standard Chat Completions
-`tool_calls`. Verify it after changing model/server configuration:
+### Bring your own API key
+
+Each user enters their own LLM provider and API key on the **Cài đặt AI** page
+(`/cai-dat-ai`). The key stays in the browser (sessionStorage, or localStorage when
+"Nhớ trên thiết bị này" is ticked) and is sent with every AI request as
+`X-LLM-Provider`, `X-LLM-Api-Key` and optional `X-LLM-Model`. The backend binds it to
+that request only (a ContextVar read by the chat agent, the hybrid-search answer and
+the LLM parser); it is never stored in the database, the LangGraph checkpoint or the
+logs. Without a key the advisor chat is blocked (`LLM_KEY_REQUIRED`).
+
+Supported providers (all through their OpenAI-compatible Chat Completions API with
+tool calling): Google Gemini, OpenAI, Groq, OpenRouter and xAI Grok.
+`POST /v1/llm/check` verifies a key with one tool-calling request.
+`ALLOW_CUSTOM_LLM_BASE_URL=true` adds a "custom" provider with a user-supplied URL;
+keep it off on a public server, because it lets any user make the server call any host.
+
+For local development or a private deployment, a server-side key
+(`BACKEND_LLM_*` / `GEMINI_API_KEYS`) is used when a request brings none. The model
+must return standard Chat Completions `tool_calls`; verify it with:
 
 ```bash
 docker compose run --rm --no-deps backend python scripts/verify_tool_calling.py
@@ -140,7 +163,8 @@ docker compose run --rm --no-deps backend python scripts/verify_tool_calling.py
 | **Backend** | 8000 | FastAPI + Gunicorn | REST API with property search and AI recommendations |
 | **PostgreSQL** | 5432 | pgvector/pgvector:pg16 | Relational data + vector similarity search |
 | **Neo4j (optional)** | 7474, 7687 | neo4j:5-community | Online graph candidates, relationship evidence and similar-listing traversal |
-| **MinIO** | 9000, 9001 | minio/minio | S3-compatible object storage for property images |
+| **MinIO** | 9000, 9001 | MinIO | S3-compatible object storage for property images |
+| **Embedding** | — (internal) | ollama/ollama | `qwen3-embedding:0.6b` on CPU for semantic search |
 
 ## Getting Started
 
@@ -232,15 +256,15 @@ Copy `.env.example` to `.env`. Key variables:
 | Variable | Description |
 |----------|-------------|
 | `POSTGRES_PASSWORD` | PostgreSQL password |
-| `BACKEND_LLM_PROVIDER` | `gemini`, `openai`, `openai-compatible`, `groq`, or `grok` |
+| `BACKEND_LLM_PROVIDER` | Server fallback only (leave keys empty for bring-your-own-key): `gemini`, `openai`, `openai-compatible`, `groq`, or `grok` |
 | `BACKEND_LLM_MODEL` | Model name sent to the selected provider |
 | `BACKEND_LLM_BASE_URL` | Base URL for a custom OpenAI-compatible endpoint |
 | `BACKEND_LLM_API_KEY` | API key for an OpenAI-compatible endpoint |
 | `GEMINI_API_KEYS` | Gemini API key(s), comma-separated (Gemini only) |
 | `SEARCH_USE_LLM_ANSWER` | Generate the chat answer and per-listing insights from hybrid-search evidence |
-| `SEARCH_EMBEDDING_PROVIDER` | OpenAI-compatible embedding API mode (`lmstudio`) |
+| `ALLOW_CUSTOM_LLM_BASE_URL` | Let users target any OpenAI-compatible URL (local development only) |
 | `SEARCH_EMBEDDING_MODEL` | Model name sent to the embedding API |
-| `SEARCH_EMBEDDING_BASE_URL` | LM Studio base URL, normally ending in `/v1` |
+| `SEARCH_EMBEDDING_BASE_URL` | Embedding server, `http://embedding:11434/v1` in Docker |
 | `HOST_DB` | `postgres` (Docker) or `localhost` (local dev) |
 | `MINIO_END_POINT` | `minio:9000` (Docker) or `localhost:9000` (local dev) |
 | `NEO4J_AUTH` | Format: `neo4j/<password>` |

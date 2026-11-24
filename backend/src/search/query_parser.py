@@ -24,6 +24,7 @@ from src.search.schemas import (
     SoftPreference,
 )
 from src.settings.config import config_value
+from src.services.llm.credentials import active_llm_client
 
 
 MUST_WORDS = ("bat buoc", "phai co", "chi lay", "khong vuot qua", "khong qua")
@@ -336,7 +337,7 @@ class LLMQueryParser:
         )
         # Parsing is extraction: native JSON output and temperature 0 keep the
         # result schema-valid and the same for the same query.
-        ok, raw, _ = await self.llm_model.ask_llm(
+        ok, raw, _ = await active_llm_client(self.llm_model).ask_llm(
             system_prompt="You are a strict query parser. Return valid JSON only.",
             user_prompt=prompt,
             json_mode=True,

@@ -148,7 +148,7 @@ class PricePredictionService:
         coords = _COORDINATES.search(item.get("latitude_longitude") or "")
         area, bedrooms, asking = item.get("area"), item.get("bedrooms"), item.get("price_range")
         if not (coords and area and bedrooms and asking):
-            raise ValueError("Tin đăng thiếu diện tích, số phòng ngủ, giá hoặc toạ độ để định giá.")
+            raise ValueError("Tin đăng thiếu diện tích, số phòng ngủ, giá hoặc tọa độ để định giá.")
 
         latitude, longitude = float(coords.group(1)), float(coords.group(2))
         property_type = "Căn hộ" if item.get("property_type") in _APARTMENT_TYPES else "Nhà đất"

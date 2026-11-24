@@ -7,7 +7,7 @@
  */
 export interface ApiEnvelope<T> {
   data?: T | null
-  errors?: Array<{ detail?: string | null }>
+  errors?: Array<{ loc?: string | null; msg?: string | null; detail?: string | null }>
   status?: string
 }
 
@@ -44,6 +44,20 @@ export function readEnvelopeDetail(payload: unknown): string | null {
   if (!Array.isArray(errors)) return null
   const detail = (errors[0] as { detail?: unknown } | undefined)?.detail
   return typeof detail === "string" && detail.trim() !== "" ? detail : null
+}
+
+/**
+ * Read the machine-readable error code the backend put in its error envelope, e.g.
+ * "LLM_KEY_INVALID", so callers can react to a specific failure rather than its wording.
+ * @param payload - parsed JSON body; only `{ errors: [{ msg: string }] }` is recognised.
+ * @returns the first non-empty `errors[].msg`, or null when the body is not that envelope.
+ */
+export function readEnvelopeCode(payload: unknown): string | null {
+  if (!payload || typeof payload !== "object") return null
+  const errors = (payload as { errors?: unknown }).errors
+  if (!Array.isArray(errors)) return null
+  const code = (errors[0] as { msg?: unknown } | undefined)?.msg
+  return typeof code === "string" && code.trim() !== "" ? code : null
 }
 
 /**

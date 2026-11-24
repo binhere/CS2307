@@ -18,3 +18,19 @@ async def http_except_custom(request: Request, exc: HTTPException) -> JSONRespon
         status_code=exc.status_code,
         headers=getattr(exc, "headers", None),
     )
+
+
+def credential_error_response(error) -> JSONResponse:
+    """Answer a missing, malformed or rejected LLM key in the API envelope.
+
+    Args:
+        error: LlmCredentialError with a stable ``code`` and a user-facing ``detail``.
+
+    Returns:
+        JSONResponse: HTTP 400 with ``errors[0] = {"loc": "llm", "msg": code, "detail": detail}``,
+        which the frontend uses to send the user to the API key settings.
+    """
+    return JSONResponse(
+        content={"data": None, "errors": [{"loc": "llm", "msg": error.code, "detail": error.detail}]},
+        status_code=400,
+    )

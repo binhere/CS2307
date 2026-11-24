@@ -1,6 +1,7 @@
 import sys
 import types
 import unittest
+from contextlib import ExitStack
 from unittest.mock import patch
 
 from src.search.personalization import score_item
@@ -43,9 +44,20 @@ class BuildUserProfileTests(unittest.TestCase):
     ]
 
     def _with_repo(self, rows):
+        """Stub the feedback repository however personalization imports it.
+
+        ``from src.services.feedback import repository`` reads the package attribute once
+        another test has imported the real module, so patching sys.modules alone is not
+        enough; both are replaced for the duration of the test.
+        """
+        import src.services.feedback as feedback_package
+
         fake = types.ModuleType("src.services.feedback.repository")
         fake.get_recent_interactions = lambda user_id, limit=200: rows
-        return patch.dict(sys.modules, {"src.services.feedback.repository": fake})
+        stack = ExitStack()
+        stack.enter_context(patch.dict(sys.modules, {"src.services.feedback.repository": fake}))
+        stack.enter_context(patch.object(feedback_package, "repository", fake, create=True))
+        return stack
 
     def test_profile_aggregates_and_normalizes(self):
         from src.search.personalization import build_user_profile

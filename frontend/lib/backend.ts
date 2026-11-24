@@ -2,12 +2,27 @@
 // app/api/* proxy routes (avoids re-declaring BACKEND_URL in each file).
 export const BACKEND_URL = process.env.BACKEND_URL || "http://127.0.0.1:8001"
 
-// Forward the caller's Authorization header (if any) to the backend so
-// authenticated proxy calls carry the bearer token.
+/**
+ * Per-request LLM credentials the browser attaches to AI calls (bring-your-own-key).
+ * Only these exact names are forwarded; their values are secrets and are never logged.
+ */
+const FORWARDED_LLM_HEADERS = ["X-LLM-Provider", "X-LLM-Api-Key", "X-LLM-Model", "X-LLM-Base-Url"] as const
+
+/**
+ * Build the headers a proxy route sends upstream: JSON content type, the caller's bearer
+ * token for authenticated calls, and the X-LLM-* headers so the backend can use the
+ * user's own LLM key for this request only.
+ * @param request - the incoming route-handler request.
+ * @returns headers for the backend fetch; absent caller headers are omitted.
+ */
 export function forwardAuthHeaders(request: Request): HeadersInit {
   const headers: Record<string, string> = { "Content-Type": "application/json" }
   const auth = request.headers.get("authorization")
   if (auth) headers["Authorization"] = auth
+  for (const headerName of FORWARDED_LLM_HEADERS) {
+    const value = request.headers.get(headerName)
+    if (value) headers[headerName] = value
+  }
   return headers
 }
 

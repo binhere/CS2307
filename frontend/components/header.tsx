@@ -1,11 +1,15 @@
 "use client"
 
-import { Building2, LogIn, LogOut, Search, Sparkles } from "lucide-react"
+import { Building2, KeyRound, LogIn, LogOut, Search, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
+import { useLlmSettingsStatus } from "@/lib/llm-settings"
 import { cn } from "@/lib/utils"
+
+/** Route of the bring-your-own-key settings page. */
+const LLM_SETTINGS_PATH = "/cai-dat-ai"
 
 const NAV_ITEMS = [
   { href: "/", label: "Tìm nhà", icon: Search },
@@ -29,6 +33,12 @@ export function Logo() {
 export function Header() {
   const pathname = usePathname()
   const { user, logout, loading } = useAuth()
+  const hasLlmKey = useLlmSettingsStatus() === "ready"
+  const isOnLlmSettings = pathname === LLM_SETTINGS_PATH
+  // Return to the current page after saving a key.
+  const llmSettingsHref = isOnLlmSettings || !pathname
+    ? LLM_SETTINGS_PATH
+    : `${LLM_SETTINGS_PATH}?next=${encodeURIComponent(pathname)}`
 
   return (
     <div className="border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
@@ -58,6 +68,19 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2 shrink-0">
+          <Button asChild variant="ghost" size="icon-sm" className="relative">
+            <Link
+              href={llmSettingsHref}
+              aria-label={hasLlmKey ? "Cài đặt AI, đã lưu API key" : "Cài đặt AI"}
+              title="Cài đặt AI"
+              aria-current={isOnLlmSettings ? "page" : undefined}
+            >
+              <KeyRound className="h-4 w-4" aria-hidden />
+              {hasLlmKey && (
+                <span aria-hidden className="absolute right-1 top-1 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-card" />
+              )}
+            </Link>
+          </Button>
           {loading ? null : user ? (
             <>
               <span className="hidden md:flex items-center gap-2 text-sm text-foreground">

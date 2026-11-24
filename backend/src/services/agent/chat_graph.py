@@ -33,6 +33,7 @@ from src.search.repository import search_repository
 from src.services.inference.price_prediction import price_prediction_service
 from src.settings.config import APPLICATION, config_value
 from src.settings.event import llm_model
+from src.services.llm.credentials import active_credentials, credential_error_from_exception
 
 
 _MESSAGE_LIMIT = 20
@@ -248,7 +249,12 @@ class ChatAgentService:
         return [search_properties, inspect_previous_recommendations]
 
     def _model(self, temperature: float, *, with_tools: bool = False):
-        base_url, model_name, api_key = llm_model.chat_completions_endpoint()
+        # A bring-your-own-key request carries its own endpoint; otherwise use the server's.
+        credentials = active_credentials()
+        if credentials is not None:
+            base_url, model_name, api_key = credentials.base_url, credentials.model, credentials.api_key
+        else:
+            base_url, model_name, api_key = llm_model.chat_completions_endpoint()
         model = ChatOpenAI(
             model=model_name,
             base_url=base_url,
@@ -325,7 +331,13 @@ class ChatAgentService:
                 return decision
             return RouteDecision.model_validate(decision)
         except Exception as exc:  # noqa: BLE001
-            logger.warning("Chat supervisor failed; using safe fallback: {}", exc)
+            # The supervisor is the first LLM call of a turn: a rejected key, exhausted
+            # quota or unknown model surfaces here as an error the user can act on,
+            # instead of silently degrading to canned answers.
+            credential_error = credential_error_from_exception(exc)
+            if credential_error is not None:
+                raise credential_error from exc
+            logger.warning("Chat supervisor failed; using safe fallback: {}", type(exc).__name__)
             latest = _text(messages[-1]) if messages else ""
             return _fallback_route(latest)
 
