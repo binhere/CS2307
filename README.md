@@ -216,7 +216,7 @@ CS2307/
 │   ├── silver/            Cleaned and enriched listings, nearest POIs, driving routes
 │   ├── gold/              SQL tables and Neo4j node/edge CSVs built by pipeline/
 │   └── v3/                Dataset the backend imports today (6,703 listings) and its build inputs
-├── databases/             Local Neo4j + PostgreSQL loaders for data/gold (PowerShell)
+├── databases/             Local Neo4j, PostgreSQL and MinIO loaders for data/gold and images (PowerShell)
 ├── price_prediction/      Price model training (writes the model the backend serves)
 ├── scripts/               build_real_estate_graph.sh: bulk-load data/v3/graph into Neo4j
 ├── docs/                  System overview, data schema, crawler guide, plans

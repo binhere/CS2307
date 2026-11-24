@@ -125,6 +125,7 @@ pipeline/                            # Code
 ├── data_preprocessing.py            # Bước 1: Làm sạch dữ liệu thô
 ├── generate_mapping_dicts.py        # Bước 1: Tạo từ điển ánh xạ mã ID
 ├── download_images.py               # Tải ảnh tin đăng (tùy chọn)
+├── scale_images.py                  # Thu nhỏ ảnh về tối đa 1080 px để đưa lên MinIO
 ├── download_osm_poi.py              # Bước 2: Tải POI OSM
 ├── verify_listing_coordinates.py    # Bước 2: Kiểm chuẩn & sửa tọa độ
 ├── find_nearest_pois.py             # Bước 2: Tìm Top-5 POI gần nhất theo đường chim bay
@@ -138,7 +139,8 @@ data/                                # Dữ liệu (ở gốc repo)
 │   ├── ban-can-ho-chung-cu-tp-ho-chi-minh/data.jsonl
 │   ├── ban-nha-dat-tp-ho-chi-minh/data.jsonl
 │   ├── osm_poi_nodes.csv
-│   └── district_list_html.txt       # Danh sách 169 phường/xã chuẩn
+│   ├── district_list_html.txt       # Danh sách 169 phường/xã chuẩn
+│   └── images/                      # Ảnh gốc (không commit)
 ├── silver/
 │   ├── cleaned_can_ho.csv
 │   ├── cleaned_nha_dat.csv
@@ -146,7 +148,8 @@ data/                                # Dữ liệu (ở gốc repo)
 │   ├── mapping_dictionaries.json
 │   ├── listings_verified_coords.csv
 │   ├── listing_poi_top5_candidates.csv
-│   └── listing_poi_routes.csv
+│   ├── listing_poi_routes.csv
+│   └── images_scaled/               # Ảnh đã thu nhỏ (không commit)
 └── gold/
     ├── sql/                         # 3 bảng SQL (listings, amenities, listing_amenities)
     └── graph/                       # 6 file nodes + 6 file edges (graph_nodes_*, graph_edges_*)

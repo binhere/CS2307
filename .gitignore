@@ -47,6 +47,7 @@ data/bronze/images.zip
 data/bronze/*/*.xlsx
 data/bronze/*/*.json
 data/silver/*.xlsx
+data/silver/images_scaled/
 data/silver/*.json
 !data/silver/mapping_dictionaries.json
 
@@ -56,3 +57,4 @@ images/*
 # Local database volumes created by databases/ scripts
 databases/graph/data/
 databases/sql/data/
+databases/object_storage/data/
