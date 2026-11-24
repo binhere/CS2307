@@ -17,6 +17,18 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
     .map(getPropertyImageSrc)
   const imageList = propertyImages.length > 0 ? propertyImages : [PROPERTY_IMAGE_FALLBACK]
   const [mainImageIndex, setMainImageIndex] = useState(0)
+  // Photos that failed to load (e.g. not uploaded to MinIO yet) render the illustration instead;
+  // kept in state so a re-render cannot swap the broken URL back in.
+  const [failedImageIndexes, setFailedImageIndexes] = useState<ReadonlySet<number>>(new Set())
+
+  /**
+   * Resolve what a gallery slot displays.
+   * @param index - position in imageList.
+   * @returns the photo URL, or the fallback illustration when the photo is missing or failed.
+   */
+  const imageSourceAt = (index: number) =>
+    failedImageIndexes.has(index) ? PROPERTY_IMAGE_FALLBACK : imageList[index]
+  const isMainImageIllustration = imageSourceAt(mainImageIndex) === PROPERTY_IMAGE_FALLBACK
 
   const goToPrevious = () => {
     setMainImageIndex((prev) => (prev === 0 ? imageList.length - 1 : prev - 1))
@@ -26,8 +38,12 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
     setMainImageIndex((prev) => (prev === imageList.length - 1 ? 0 : prev + 1))
   }
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    e.currentTarget.src = PROPERTY_IMAGE_FALLBACK
+  /**
+   * Mark a photo as failed so its slot falls back to the illustration.
+   * @param index - position in imageList of the image that failed to load.
+   */
+  const markImageFailed = (index: number) => {
+    setFailedImageIndexes((previous) => (previous.has(index) ? previous : new Set(previous).add(index)))
   }
 
   return (
@@ -43,13 +59,17 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
         aria-label="Thư viện ảnh, dùng phím mũi tên để chuyển ảnh"
       >
         <Image
-          src={imageList[mainImageIndex]}
+          src={imageSourceAt(mainImageIndex)}
           alt={title}
           fill
           className="object-cover"
           priority
-          onError={handleImageError}
+          onError={() => markImageFailed(mainImageIndex)}
         />
+
+        {isMainImageIllustration && (
+          <span className="absolute bottom-3 left-3 rounded bg-black/60 px-2 py-0.5 text-xs text-white">Ảnh minh họa</span>
+        )}
 
         {imageList.length > 1 && (
           <>
@@ -80,7 +100,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
 
       {imageList.length > 1 && (
         <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
-          {imageList.map((img, index) => (
+          {imageList.map((_, index) => (
             <button
               key={index}
               type="button"
@@ -92,7 +112,7 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
                 mainImageIndex === index ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : 'opacity-70 hover:opacity-100',
               )}
             >
-              <Image src={img} alt="" fill className="object-cover" onError={handleImageError} />
+              <Image src={imageSourceAt(index)} alt="" fill className="object-cover" onError={() => markImageFailed(index)} />
             </button>
           ))}
         </div>

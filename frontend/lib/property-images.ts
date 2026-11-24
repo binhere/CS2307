@@ -1,4 +1,5 @@
-export const PROPERTY_IMAGE_FALLBACK = "/placeholder.jpg"
+// Shown when a listing has no photo or its photo cannot be loaded (e.g. not yet uploaded to MinIO).
+export const PROPERTY_IMAGE_FALLBACK = "/property-fallback.svg"
 
 const PROPERTY_IMAGE_MARKER = "/images/"
 
