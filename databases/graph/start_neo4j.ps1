@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoDir = Split-Path -Parent (Split-Path -Parent $ScriptDir)
-$GraphCsvDir = Join-Path $RepoDir "crawl_data\data\gold\graph"
+$GraphCsvDir = Join-Path $RepoDir "data\gold\graph"
 $DataDir = Join-Path $ScriptDir "data"
 $ContainerName = "cs2307-neo4j"
 $Neo4jAuth = "none"

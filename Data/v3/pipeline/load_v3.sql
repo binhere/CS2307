@@ -1,4 +1,4 @@
--- Load Data/v3 into PostgreSQL in one transaction. Run with psql after prepare_postgres.py:
+-- Load data/v3 into PostgreSQL in one transaction. Run with psql after prepare_postgres.py:
 --   psql -v ON_ERROR_STOP=1 -d real_estate -f load_v3.sql        (the CSVs must be at /tmp inside that host/container)
 --
 -- * Existing properties keep their primary key (id); matching is by listing_id.

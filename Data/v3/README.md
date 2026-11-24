@@ -4,8 +4,8 @@ Sinh bởi `pipeline/build_v3.py`. Không file nào trong hai gói nguồn bị 
 
 | Nguồn | Vai trò |
 |---|---|
-| `../osm_poi_graph_3857_live_osrm_complete_20261021/` | Tập **mới** (3.857 tin, POI live 12.340 điểm, snapshot 21/10/2026 03:07Z) |
-| `../Final_Data.csv` + `../real_estate_graph_ready_v2_address_mapping/` | Tập **cũ** (3.037 dòng = 3.030 mã tin) |
+| `inputs/osm_poi_graph_3857_live_osrm_complete_20261021/` | Tập **mới** (3.857 tin, POI live 12.340 điểm, snapshot 21/10/2026 03:07Z) |
+| `inputs/Final_Data.csv` + `inputs/real_estate_graph_ready_v2_address_mapping/` | Tập **cũ** (3.037 dòng = 3.030 mã tin) |
 | `../../images/` (+ `images 2/3/4`) | Ảnh của cả hai tập |
 
 ## Kết quả
@@ -44,7 +44,6 @@ Sinh bởi `pipeline/build_v3.py`. Không file nào trong hai gói nguồn bị 
 - `snapped_far` (200 cạnh) và các route có quãng đường lái xe ngắn hơn đường chim bay (~70 cạnh, do điểm snap) giữ nguyên để kiểm tra, không dùng cho cờ `within_*`.
 - 331 ảnh (và 61 webp) có đuôi `.jpg` nhưng nội dung là PNG/WebP: khi upload MinIO cần đặt `Content-Type` theo nội dung. 1 ảnh JPEG bị cắt cụt và 8 ảnh của mã tin `44329382` (không có trong cả hai tập) bị loại.
 - Các cột thống kê kế thừa theo từng tập (`listing_density_1km`, `nearest_listing_distance_m`, `road_snap_distance_m`, `distance_to_ben_thanh_km`) **không** được tính lại trên tập hợp nhất.
-- Kết quả đánh giá (Evaluation) chạy trên dữ liệu cũ không so sánh trực tiếp được với v3.
 
 ## Chạy lại
 
@@ -78,7 +77,6 @@ Lưu ý:
 ## Nguồn dữ liệu mặc định của repo
 
 Các chỗ sau đã trỏ sang v3, nên lần dựng mới (DB trống, volume mới) sẽ dùng đúng dữ liệu này:
-`docker-compose.yml` (service `neo4j-import-init` chép `Data/v3/graph`), `backend/scripts/build_search_index.py`
-(`Data/v3/master_v3.csv`, gồm cả cột `images`, và `Data/v3/graph`), `backend/scripts/import_neo4j_v2.py`,
+`docker-compose.yml` (service `neo4j-import-init` chép `data/v3/graph`), `backend/scripts/build_search_index.py`
+(`data/v3/master_v3.csv`, gồm cả cột `images`, và `data/v3/graph`), `backend/scripts/import_neo4j_v2.py`,
 `scripts/build_real_estate_graph.sh`. `import_search_graph.cypher` nạp cạnh `NEAR_AMENITY` theo lô 10.000 dòng.
-`gen_user_data/` và `Evaluation/` vẫn gắn với bộ 3.037 tin cũ (`Data/Final_Data.csv`) và không bị đổi.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Merge the legacy 3,037-listing dataset with the live-OSM 3,857-listing dataset into Data/v3.
+"""Merge the legacy 3,037-listing dataset with the live-OSM 3,857-listing dataset into data/v3.
 
 Policy
   * A listing present in both datasets takes the NEW (live) record; the legacy values of the
@@ -41,10 +41,11 @@ csv.field_size_limit(sys.maxsize)
 V3 = Path(__file__).resolve().parents[1]
 DATA = V3.parent
 REPO = DATA.parent
-NEW = DATA / "osm_poi_graph_3857_live_osrm_complete_20261021"
+INPUTS = V3 / "inputs"
+NEW = INPUTS / "osm_poi_graph_3857_live_osrm_complete_20261021"
 NEWG = NEW / "graph_live"
-OLD = DATA / "real_estate_graph_ready_v2_address_mapping"
-LEGACY_FINAL = DATA / "Final_Data.csv"
+OLD = INPUTS / "real_estate_graph_ready_v2_address_mapping"
+LEGACY_FINAL = INPUTS / "Final_Data.csv"
 IMAGES = REPO / "images"
 WORK = V3 / "work"
 GRAPH = V3 / "graph"

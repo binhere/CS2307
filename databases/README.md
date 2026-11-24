@@ -1,8 +1,8 @@
 # Hướng Dẫn Dựng & Truy Vấn Databases (`databases/`)
 
-Thư mục này chứa script Docker và cấu hình để nạp dữ liệu tầng **Gold** từ `../crawl_data/data/gold/` vào **Neo4j (Graph)** và **PostgreSQL (SQL)** phục vụ truy vấn và kiểm thử tại local.
+Thư mục này chứa script Docker và cấu hình để nạp dữ liệu tầng **Gold** từ `data/gold/` (do `pipeline/build_gold_data.py` sinh ra) vào **Neo4j (Graph)** và **PostgreSQL (SQL)** phục vụ truy vấn và kiểm thử tại local.
 
-- **Schema chi tiết các bảng, node và edge:** Xem tại [crawl_data/docs/data_schema.md](../crawl_data/docs/data_schema.md).
+- **Schema chi tiết các bảng, node và edge:** Xem tại [docs/data_schema.md](../docs/data_schema.md).
 - **Yêu cầu duy nhất:** Máy đã cài và bật **Docker Desktop**.
 
 ---
@@ -15,7 +15,7 @@ Chạy từ thư mục gốc project:
 powershell -ExecutionPolicy Bypass -File databases/graph/start_neo4j.ps1
 ```
 Script sẽ tự động:
-1. Nạp **17.242 nodes** (6 loại) và **165.752 relationships** (6 loại) từ `crawl_data/data/gold/graph/`.
+1. Nạp **17.242 nodes** (6 loại) và **165.752 relationships** (6 loại) từ `data/gold/graph/`.
 2. Khởi động container `cs2307-neo4j` (`neo4j:5-community`).
 3. Chạy `create_indexes.cypher` tạo 6 unique constraints và 6 indexes.
 
@@ -48,7 +48,7 @@ powershell -ExecutionPolicy Bypass -File databases/sql/start_postgres.ps1
 Script sẽ tự động:
 1. Khởi động container `cs2307-postgres` (`postgres:16-alpine`).
 2. Chạy `create_tables.sql` tạo 3 bảng `listings` (**3.857**), `amenities` (**10.775**), `listing_amenities` (**150.495**).
-3. Import dữ liệu từ `crawl_data/data/gold/sql/` bằng `\copy`.
+3. Import dữ liệu từ `data/gold/sql/` bằng `\copy`.
 4. Chạy `create_indexes.sql` tạo 11 indexes.
 
 ### Thông tin kết nối

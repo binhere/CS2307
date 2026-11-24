@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Write the staging CSVs that load_v3.sql copies into PostgreSQL (properties + listing_amenity_distances).
 
-Output goes to Data/v3/postgres/. Pure standard library.
+Output goes to data/v3/postgres/. Pure standard library.
 """
 import csv
 import re

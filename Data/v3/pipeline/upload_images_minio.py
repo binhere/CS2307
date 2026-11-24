@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Upload the images listed in Data/v3/images_manifest.csv to MinIO under their manifest key.
+"""Upload the images listed in data/v3/images_manifest.csv to MinIO under their manifest key.
 
 Runs inside the backend container (it has the minio SDK and the MinIO settings from .env):
 
   docker compose run --rm --no-deps \
-    -v "$PWD/images:/images:ro" -v "$PWD/Data/v3:/v3:ro" backend python /v3/pipeline/upload_images_minio.py
+    -v "$PWD/images:/images:ro" -v "$PWD/data/v3:/v3:ro" backend python /v3/pipeline/upload_images_minio.py
 
 Idempotent: objects that already exist with the same size are skipped, so an interrupted run can simply be repeated.
 Content-Type comes from the detected file content (some files named .jpg are really PNG/WebP).

@@ -25,7 +25,7 @@ Prepare a fresh local database (run from the repository root):
 ```bash
 docker compose up -d --build backend
 
-# Imports Data/v3/master_v3.csv (incl. image keys), Data/v3/graph amenity distances and builds search_text.
+# Imports data/v3/master_v3.csv (incl. image keys), data/v3/graph amenity distances and builds search_text.
 docker compose exec backend \
   python scripts/build_search_index.py --skip-embeddings
 
@@ -201,14 +201,25 @@ CS2307/
 │   ├── alembic.ini
 │   ├── migrations/        Versioned PostgreSQL schema changes
 │   ├── requirements.txt
+│   ├── scripts/           Search index build, Neo4j import, tool-calling check
 │   └── src/
 │       ├── main.py
 │       ├── api/v1/        REST endpoints
-│       ├── services/      Database, inference, LLM, MinIO, recommendation
-│       ├── settings/      Config, events, middleware
+│       ├── search/        Hybrid search: parser, retrieval, ranking, LLM answer
+│       ├── services/      Agent, auth, chat, database, feedback, inference, LLM, MinIO
+│       ├── settings/      Config, events, logging
 │       └── utils/
 ├── frontend/              Next.js application
-├── crawl_data/            Data scraping scripts
+├── pipeline/              Data pipeline code: crawl → clean → OSM/OSRM enrichment → gold export
+├── data/
+│   ├── bronze/            Raw crawl output (JSONL), OSM POIs, ward list
+│   ├── silver/            Cleaned and enriched listings, nearest POIs, driving routes
+│   ├── gold/              SQL tables and Neo4j node/edge CSVs built by pipeline/
+│   └── v3/                Dataset the backend imports today (6,703 listings) and its build inputs
+├── databases/             Local Neo4j + PostgreSQL loaders for data/gold (PowerShell)
+├── price_prediction/      Price model training (writes the model the backend serves)
+├── scripts/               build_real_estate_graph.sh: bulk-load data/v3/graph into Neo4j
+├── docs/                  System overview, data schema, crawler guide, plans
 ├── docker-compose.yml     All services
 ├── .env.example           Environment template
 └── .gitignore

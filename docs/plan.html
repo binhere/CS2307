@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kế hoạch</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --group: #f3f1ec;
+  --text: #1d1d1b;
+  --muted: #5f5d57;
+  --line: #d9d5cc;
+  --accent: #2f6f5e;
+  --key: #2f5f8a;
+  --value: #8a4b16;
+  --row-listing: #dcebe4;
+  --row-admin: #e6e4f3;
+  --row-amenity: #f4e8d6;
+  --row-text: #ecebe6;
+  --warn: #a4570e;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161715;
+    --surface: #1e201d;
+    --group: #232521;
+    --text: #e9e7e1;
+    --muted: #a9a69e;
+    --line: #3a3c37;
+    --accent: #7cc4ad;
+    --key: #8cb8e0;
+    --value: #e0a870;
+    --row-listing: #22392f;
+    --row-admin: #2c2a40;
+    --row-amenity: #3a2f1f;
+    --row-text: #2a2c28;
+    --warn: #e8a65a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161715;
+  --surface: #1e201d;
+  --group: #232521;
+  --text: #e9e7e1;
+  --muted: #a9a69e;
+  --line: #3a3c37;
+  --accent: #7cc4ad;
+  --key: #8cb8e0;
+  --value: #e0a870;
+  --row-listing: #22392f;
+  --row-admin: #2c2a40;
+  --row-amenity: #3a2f1f;
+  --row-text: #2a2c28;
+  --warn: #e8a65a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+main { max-width: 1000px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font-size: 26px; margin: 0 0 20px; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 14px; background: var(--group); padding: 1px 5px; border-radius: 4px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 10px 20px; margin: 0 0 20px; }
+.facts dt { font-weight: 600; color: var(--muted); }
+.facts dd { margin: 0; }
+.facts b { font-size: 20px; font-variant-numeric: tabular-nums; }
+.diagram { overflow-x: auto; }
+.diagram svg { display: block; min-width: 760px; width: 100%; height: auto; }
+.diagram text { fill: var(--text); font-family: inherit; }
+.diagram .json { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; }
+.diagram .k { fill: var(--key); }
+.diagram .v { fill: var(--value); }
+.diagram .p { fill: var(--muted); }
+.diagram .group { fill: var(--group); stroke: var(--line); stroke-dasharray: 5 4; }
+.diagram .inner { fill: none; stroke: var(--muted); stroke-dasharray: 4 3; }
+.diagram .group-label { fill: var(--muted); font-size: 12.5px; font-weight: 600; }
+.diagram .row-listing { fill: var(--row-listing); }
+.diagram .row-admin { fill: var(--row-admin); }
+.diagram .row-amenity { fill: var(--row-amenity); }
+.diagram .row-text { fill: var(--row-text); }
+.diagram .box { stroke: var(--line); }
+.diagram .box.dashed { fill: var(--surface); stroke-dasharray: 5 4; }
+.diagram .title { font-size: 13.5px; font-weight: 600; }
+.diagram .sub { fill: var(--muted); font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.diagram .sub.plain { font-family: inherit; font-size: 11.5px; }
+.diagram .edge { stroke: var(--muted); stroke-width: 1.4; fill: none; marker-end: url(#arrowhead); }
+.diagram .arrow-tip { fill: var(--muted); }
+.diagram .dot { fill: var(--muted); }
+.diagram .warn, .warn { fill: var(--warn); color: var(--warn); font-weight: 600; }
+.diagram .box.plain { fill: var(--surface); }
+h2 { font-size: 19px; margin: 0 0 16px; }
+.card + .card { margin-top: 24px; }
+.legend { margin: 12px 0 0; font-size: 14px; color: var(--muted); }
+@media (max-width: 600px) {
+  .facts { grid-template-columns: 1fr; gap: 2px; }
+  .facts dd { margin-bottom: 10px; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Kế hoạch</h1>
+
+<div class="card">
+<h2>1. Dữ liệu</h2>
+<dl class="facts">
+  <dt>Bài toán</dt>
+  <dd>Tìm và gợi ý bất động sản ở TP.HCM theo câu hỏi tiếng Việt, mỗi kết quả kèm lý do.</dd>
+  <dt>Số tài liệu</dt>
+  <dd><b>3.857</b> tin đăng bán crawl từ batdongsan.com.vn (ngày đăng 05/08 – 04/10/2026); mỗi tin là một tài liệu.</dd>
+  <dt>Định dạng chuẩn</dt>
+  <dd>Mỗi tài liệu là một bản ghi JSON. Trường ngoài <code>metadata</code> là bắt buộc: cả 3.857 tài liệu đều có. Trường trong <code>metadata</code> có thể thiếu.</dd>
+</dl>
+
+<div class="diagram" role="img" aria-label="Một tài liệu JSON. Trường bắt buộc: listing_id, title, description, ward, former_district, property_type, price_billion_vnd, area_m2, posted_date. Trường trong metadata có thể thiếu: bedroom_count, bathroom_count, legal_status, furnishing, latitude, longitude, street, project, nearby_amenities. Title và description được nạp vào PostgreSQL; ward, former_district, street, project thành node riêng; nearby_amenities thành node Amenity; các trường còn lại là property của node Listing.">
+<svg viewBox="0 0 960 590" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-tip"/>
+    </marker>
+  </defs>
+
+  <rect class="group" x="12" y="34" width="408" height="544" rx="10"/>
+  <text class="group-label" x="24" y="26">Một tài liệu (JSON)</text>
+
+  <rect class="row-listing" x="22" y="57" width="388" height="19" rx="4"/>
+  <rect class="row-text" x="22" y="76" width="388" height="38" rx="4"/>
+  <rect class="row-admin" x="22" y="114" width="388" height="38" rx="4"/>
+  <rect class="row-listing" x="22" y="152" width="388" height="76" rx="4"/>
+  <rect class="inner" x="30" y="231" width="384" height="321" rx="6"/>
+  <rect class="row-listing" x="38" y="247" width="368" height="114" rx="4"/>
+  <rect class="row-admin" x="38" y="361" width="368" height="38" rx="4"/>
+  <rect class="row-amenity" x="38" y="399" width="368" height="133" rx="4"/>
+
+  <g class="json">
+    <text x="28" y="52" class="p">{</text>
+    <text x="44" y="71"><tspan class="k">"listing_id"</tspan>: <tspan class="v">"45633671"</tspan>,</text>
+    <text x="44" y="90"><tspan class="k">"title"</tspan>: <tspan class="v">"Kim Ngân Define - Bán căn…"</tspan>,</text>
+    <text x="44" y="109"><tspan class="k">"description"</tspan>: <tspan class="v">"Bán căn hộ có hồ bơi riêng…"</tspan>,</text>
+    <text x="44" y="128"><tspan class="k">"ward"</tspan>: <tspan class="v">"Phường Cát Lái"</tspan>,</text>
+    <text x="44" y="147"><tspan class="k">"former_district"</tspan>: <tspan class="v">"Quận 2"</tspan>,</text>
+    <text x="44" y="166"><tspan class="k">"property_type"</tspan>: <tspan class="v">"can_ho_chung_cu"</tspan>,</text>
+    <text x="44" y="185"><tspan class="k">"price_billion_vnd"</tspan>: <tspan class="v">43.9</tspan>,</text>
+    <text x="44" y="204"><tspan class="k">"area_m2"</tspan>: <tspan class="v">325</tspan>,</text>
+    <text x="44" y="223"><tspan class="k">"posted_date"</tspan>: <tspan class="v">"2026-10-02"</tspan>,</text>
+    <text x="44" y="242"><tspan class="k">"metadata"</tspan>: {</text>
+    <text x="60" y="261"><tspan class="k">"bedroom_count"</tspan>: <tspan class="v">4</tspan>,</text>
+    <text x="60" y="280"><tspan class="k">"bathroom_count"</tspan>: <tspan class="v">5</tspan>,</text>
+    <text x="60" y="299"><tspan class="k">"legal_status"</tspan>: <tspan class="v">"hop_dong_mua_ban"</tspan>,</text>
+    <text x="60" y="318"><tspan class="k">"furnishing"</tspan>: <tspan class="v">"co_ban"</tspan>,</text>
+    <text x="60" y="337"><tspan class="k">"latitude"</tspan>: <tspan class="v">10.7792</tspan>,</text>
+    <text x="60" y="356"><tspan class="k">"longitude"</tspan>: <tspan class="v">106.7571</tspan>,</text>
+    <text x="60" y="375"><tspan class="k">"street"</tspan>: <tspan class="v">"Đường Số 60 - TML"</tspan>,</text>
+    <text x="60" y="394"><tspan class="k">"project"</tspan>: <tspan class="v">"Căn hộ DEFINE"</tspan>,</text>
+    <text x="60" y="413"><tspan class="k">"nearby_amenities"</tspan>: [</text>
+    <text x="76" y="432">{ <tspan class="k">"category"</tspan>: <tspan class="v">"metro"</tspan>,</text>
+    <text x="90" y="451"><tspan class="k">"name"</tspan>: <tspan class="v">"Rạch Chiếc"</tspan>,</text>
+    <text x="90" y="470"><tspan class="k">"driving_distance_km"</tspan>: <tspan class="v">4.92</tspan>,</text>
+    <text x="90" y="489"><tspan class="k">"driving_duration_minutes"</tspan>: <tspan class="v">5.9</tspan> },</text>
+    <text x="76" y="508" class="p">… tối đa 5 tiện ích × 9 nhóm</text>
+    <text x="60" y="527">]</text>
+    <text x="44" y="546">}</text>
+    <text x="28" y="565" class="p">}</text>
+
+    <text x="400" y="242" class="p" text-anchor="end">tỷ lệ có</text>
+    <text x="400" y="261" class="p" text-anchor="end">87%</text>
+    <text x="400" y="280" class="p" text-anchor="end">84%</text>
+    <text x="400" y="299" class="p" text-anchor="end">99%</text>
+    <text x="400" y="318" class="p" text-anchor="end">68%</text>
+    <text x="400" y="337" class="p" text-anchor="end">99,5%</text>
+    <text x="400" y="356" class="p" text-anchor="end">99,5%</text>
+    <text x="400" y="375" class="p" text-anchor="end">93%</text>
+    <text x="400" y="394" class="p" text-anchor="end">39%</text>
+    <text x="400" y="413" class="p" text-anchor="end">99%</text>
+  </g>
+
+  <rect class="box dashed" x="598" y="78" width="332" height="44" rx="7"/>
+  <text class="title" x="612" y="96">PostgreSQL</text>
+  <text class="sub plain" x="612" y="113">văn bản để tìm kiếm full-text và tạo embedding</text>
+
+  <rect class="group" x="582" y="150" width="364" height="358" rx="10"/>
+  <text class="group-label" x="594" y="142">Graph (Neo4j)</text>
+
+  <rect class="box row-admin" x="598" y="160" width="332" height="44" rx="7"/>
+  <text class="title" x="612" y="178">Ward · 114</text>
+  <text class="sub" x="612" y="195">Listing -[:IN_WARD]-&gt;</text>
+
+  <rect class="box row-admin" x="598" y="216" width="332" height="44" rx="7"/>
+  <text class="title" x="612" y="234">FormerDistrict · 32</text>
+  <text class="sub" x="612" y="251">Listing -[:IN_FORMER_DISTRICT]-&gt;</text>
+
+  <rect class="box row-listing" x="598" y="278" width="332" height="44" rx="7"/>
+  <text class="title" x="612" y="296">Listing · 3.857</text>
+  <text class="sub plain" x="612" y="313">ID là listing_id; property là các dòng cùng màu</text>
+
+  <rect class="box row-admin" x="598" y="340" width="332" height="44" rx="7"/>
+  <text class="title" x="612" y="358">Street · ≈1.200</text>
+  <text class="sub" x="612" y="375">Listing -[:ON_STREET]-&gt;</text>
+
+  <rect class="box row-admin" x="598" y="396" width="332" height="44" rx="7"/>
+  <text class="title" x="612" y="414">Project · 338</text>
+  <text class="sub" x="612" y="431">Listing -[:IN_PROJECT]-&gt;</text>
+
+  <rect class="box row-amenity" x="598" y="452" width="332" height="44" rx="7"/>
+  <text class="title" x="612" y="470">Amenity · 10.775</text>
+  <text class="sub" x="612" y="487">Listing -[:NEAR_AMENITY {km, phút}]-&gt;</text>
+
+  <circle class="dot" cx="410" cy="95" r="3"/>
+  <circle class="dot" cx="410" cy="123.5" r="3"/>
+  <circle class="dot" cx="410" cy="142.5" r="3"/>
+  <circle class="dot" cx="410" cy="190" r="3"/>
+  <circle class="dot" cx="410" cy="304" r="3"/>
+  <circle class="dot" cx="410" cy="370.5" r="3"/>
+  <circle class="dot" cx="410" cy="389.5" r="3"/>
+  <circle class="dot" cx="410" cy="465.5" r="3"/>
+  <path class="edge" d="M410,95 L596,100"/>
+  <path class="edge" d="M410,123.5 L596,182"/>
+  <path class="edge" d="M410,142.5 L596,238"/>
+  <path class="edge" d="M410,190 L596,292"/>
+  <path class="edge" d="M410,304 L596,306"/>
+  <path class="edge" d="M410,370.5 L596,362"/>
+  <path class="edge" d="M410,389.5 L596,418"/>
+  <path class="edge" d="M410,465.5 L596,474"/>
+</svg>
+</div>
+</div>
+
+<div class="card">
+<h2>2. RAG</h2>
+<dl class="facts">
+  <dt>Cách làm</dt>
+  <dd>Không có bước training. Embedding model và LLM là model có sẵn, gọi qua API; trọng số xếp hạng được đặt thủ công.</dd>
+</dl>
+
+<div class="diagram" role="img" aria-label="RAG trong code. Tạo index (chạy một lần): tài liệu thành search_text, embedding model qwen3-embedding-4b biến search_text thành vector 1024 chiều, cả hai lưu vào PostgreSQL; graph lưu ở Neo4j. Mỗi câu hỏi: phân tích bằng regex, truy xuất song song từ PostgreSQL (500 vector gần nhất cộng điểm full-text) và Neo4j, xếp hạng lại bằng 8 thành phần điểm có trọng số đặt thủ công, rồi LLM viết câu trả lời kèm lý do.">
+<svg viewBox="0 0 960 396" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead-rag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" class="arrow-tip"/>
+    </marker>
+  </defs>
+
+  <rect class="group" x="10" y="30" width="572" height="98" rx="10"/>
+  <text class="group-label" x="22" y="22">Tạo index · chạy một lần (backend/scripts/build_search_index.py)</text>
+
+  <rect class="box plain" x="24" y="46" width="150" height="66" rx="7"/>
+  <text class="title" x="36" y="68">Tài liệu</text>
+  <text class="sub plain" x="36" y="86">đọc data/v3 <tspan class="warn">⚠</tspan></text>
+  <text class="sub plain" x="36" y="102">chưa theo mục 1</text>
+
+  <rect class="box plain" x="194" y="46" width="140" height="66" rx="7"/>
+  <text class="title" x="206" y="68">search_text</text>
+  <text class="sub plain" x="206" y="86">tiêu đề, mô tả, vị trí,</text>
+  <text class="sub plain" x="206" y="102">thông số, tiện ích</text>
+
+  <rect class="box plain" x="354" y="46" width="214" height="66" rx="7"/>
+  <text class="title" x="366" y="68">Embedding API</text>
+  <text class="sub plain" x="366" y="86">qwen3-embedding-4b</text>
+  <text class="sub plain" x="366" y="102">1024 chiều · prefix kiểu E5 <tspan class="warn">⚠</tspan></text>
+
+  <rect class="box row-listing" x="354" y="150" width="200" height="62" rx="7"/>
+  <text class="title" x="366" y="170">PostgreSQL</text>
+  <text class="sub plain" x="366" y="187">search_text · index full-text</text>
+  <text class="sub plain" x="366" y="202">embedding · index HNSW</text>
+
+  <rect class="box row-admin" x="600" y="150" width="170" height="62" rx="7"/>
+  <text class="title" x="612" y="170">Neo4j</text>
+  <text class="sub plain" x="612" y="187">graph từ mục 1</text>
+  <text class="sub plain" x="612" y="202">tùy chọn, tắt được</text>
+
+  <rect class="group" x="10" y="244" width="940" height="140" rx="10"/>
+  <text class="group-label" x="22" y="236">Mỗi câu hỏi · POST /v1/search</text>
+
+  <rect class="box plain" x="24" y="262" width="110" height="104" rx="7"/>
+  <text class="title" x="36" y="284">Câu hỏi</text>
+  <text class="sub plain" x="36" y="302">tiếng Việt,</text>
+  <text class="sub plain" x="36" y="318">từ chatbot</text>
+  <text class="sub plain" x="36" y="334">hoặc qua API</text>
+
+  <rect class="box plain" x="154" y="262" width="170" height="104" rx="7"/>
+  <text class="title" x="166" y="284">1. Phân tích</text>
+  <text class="sub plain" x="166" y="302">regex + từ đồng nghĩa</text>
+  <text class="sub plain" x="166" y="318">→ tiêu chí mềm, profile</text>
+  <text class="sub plain" x="166" y="334"><tspan class="warn">⚠</tspan> bắt nhầm cụm từ,</text>
+  <text class="sub plain" x="166" y="350">bỏ qua phủ định</text>
+
+  <rect class="box plain" x="344" y="262" width="210" height="104" rx="7"/>
+  <text class="title" x="356" y="284">2. Truy xuất song song</text>
+  <text class="sub plain" x="356" y="302">PostgreSQL: 500 vector gần nhất</text>
+  <text class="sub plain" x="356" y="318">+ điểm full-text <tspan class="warn">⚠</tspan> cần đủ mọi từ</text>
+  <text class="sub plain" x="356" y="334">Neo4j: <tspan class="warn">⚠</tspan> 500 tin mới nhất,</text>
+  <text class="sub plain" x="356" y="350">không lọc theo câu hỏi</text>
+
+  <rect class="box plain" x="574" y="262" width="180" height="104" rx="7"/>
+  <text class="title" x="586" y="284">3. Xếp hạng lại</text>
+  <text class="sub plain" x="586" y="302">8 thành phần điểm,</text>
+  <text class="sub plain" x="586" y="318">trọng số đặt thủ công</text>
+  <text class="sub plain" x="586" y="334">+15% cá nhân hóa</text>
+  <text class="sub plain" x="586" y="350">tối đa 3 tin mỗi cụm 150 m</text>
+
+  <rect class="box plain" x="774" y="262" width="166" height="104" rx="7"/>
+  <text class="title" x="786" y="284">4. LLM viết trả lời</text>
+  <text class="sub plain" x="786" y="302">model có sẵn, qua API</text>
+  <text class="sub plain" x="786" y="318">temperature 0.15</text>
+  <text class="sub plain" x="786" y="334">ứng viên trong &lt;du_lieu&gt;</text>
+  <text class="sub plain" x="786" y="350">→ JSON: trả lời + lý do</text>
+
+  <path class="edge" style="marker-end:url(#arrowhead-rag)" d="M174,79 H192"/>
+  <path class="edge" style="marker-end:url(#arrowhead-rag)" d="M334,79 H352"/>
+  <path class="edge" style="marker-end:url(#arrowhead-rag)" d="M454,112 V148"/>
+  <path class="edge" style="marker-end:url(#arrowhead-rag)" d="M264,112 V181 H352"/>
+  <path class="edge" style="marker-end:url(#arrowhead-rag)" d="M454,212 V260"/>
+  <path class="edge" style="marker-end:url(#arrowhead-rag)" d="M685,212 L536,260"/>
+  <path class="edge" style="marker-end:url(#arrowhead-rag)" d="M134,314 H152"/>
+  <path class="edge" style="marker-end:url(#arrowhead-rag)" d="M324,314 H342"/>
+  <path class="edge" style="marker-end:url(#arrowhead-rag)" d="M554,314 H572"/>
+  <path class="edge" style="marker-end:url(#arrowhead-rag)" d="M754,314 H772"/>
+</svg>
+</div>
+<p class="legend"><span class="warn">⚠</span> điểm yếu đã kiểm chứng trong code.</p>
+</div>
+
+</main>
+</body>
+</html>

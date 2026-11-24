@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $RepoDir = Split-Path -Parent (Split-Path -Parent $ScriptDir)
-$SqlCsvDir = Join-Path $RepoDir "crawl_data\data\gold\sql"
+$SqlCsvDir = Join-Path $RepoDir "data\gold\sql"
 $DataDir = Join-Path $ScriptDir "data"
 $ContainerName = "cs2307-postgres"
 $DbName = "postgres"
