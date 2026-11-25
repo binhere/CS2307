@@ -4,6 +4,7 @@ import json
 from datetime import date, datetime
 from typing import Dict, List, Optional, Tuple
 
+from src.search.normalizer import expand_property_types
 from src.search.schemas import DEFAULT_NUMERIC_TOLERANCE, ParsedSearchQuery, numeric_bounds
 from src.settings.event import postgres_client
 
@@ -96,7 +97,8 @@ class SearchRepository:
                 params[f"{key}_max"] = upper
 
         list_filters = (
-            ("property_type", hard.property_types),
+            # Group names ("Căn hộ") stand for the catalog's own types ("Căn hộ chung cư").
+            ("property_type", expand_property_types(hard.property_types)),
             ("district", [] if graph_validated else hard.districts),
             ("legal_status", hard.legal_statuses),
             ("furnishing", hard.furnishings), ("house_direction", hard.house_directions),
@@ -112,7 +114,7 @@ class SearchRepository:
             params["former_admin_area_values"] = [value.lower() for value in hard.former_admin_areas]
         if hard.excluded_property_types:
             where.append("NOT (LOWER(p.property_type) = ANY(:excluded_property_types))")
-            params["excluded_property_types"] = [x.lower() for x in hard.excluded_property_types]
+            params["excluded_property_types"] = [x.lower() for x in expand_property_types(hard.excluded_property_types)]
 
         for feature in hard.required_features:
             if graph_validated and feature in GRAPH_RELATIONSHIP_FEATURES:

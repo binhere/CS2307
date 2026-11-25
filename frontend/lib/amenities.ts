@@ -4,12 +4,6 @@
 // draws them, to keep lucide icons out of the search-page bundle.
 
 /**
- * Value sent as `property_type` when the user picks "Tất cả": the listing API takes a
- * comma-joined list, and an unchanged default does not count as an active filter.
- */
-export const DEFAULT_PROPERTY_TYPE = "Căn hộ,Nhà đất"
-
-/**
  * Every amenity flag, in display order. `key` is the boolean column / query parameter
  * name used by the backend; `label` is the text shown to the user.
  */

@@ -51,6 +51,14 @@ PROPERTY_TYPE_ALIASES = {
     "Nhà đất": ("nha dat", "nha pho", "nha rieng", "biet thu", "dat nen"),
 }
 
+# The two groups the filter UI and the query parser speak, and the listing types each covers. The
+# catalog stores the crawl's own types; the older dataset stored the group names themselves, so each
+# group also covers its own name. A listing type missing here is found only by its exact name.
+PROPERTY_TYPE_GROUPS = {
+    "Căn hộ": ("Căn hộ", "Căn hộ chung cư"),
+    "Nhà đất": ("Nhà đất", "Nhà riêng", "Nhà mặt phố", "Nhà biệt thự, liền kề", "Shophouse, nhà phố thương mại"),
+}
+
 
 def remove_accents(value: str) -> str:
     normalized = unicodedata.normalize("NFKD", value or "")
@@ -60,6 +68,30 @@ def remove_accents(value: str) -> str:
 def normalize_text(value: str) -> str:
     value = remove_accents(value).lower().replace("đ", "d")
     return re.sub(r"\s+", " ", value).strip()
+
+
+def expand_property_types(values: Iterable[str]) -> List[str]:
+    """Replace property-type group names by the listing types they cover.
+
+    The filter UI sends "Căn hộ" or "Nhà đất" and the query parser yields the same names, while
+    the catalog stores types such as "Căn hộ chung cư" or "Nhà riêng"; matching the group name
+    itself found no listing.
+
+    Args:
+        values: Group names (any letter case) or exact listing types.
+
+    Returns:
+        list: The listing types to match, without duplicates, in the order given. A value that is
+        not a group name is kept as it is.
+    """
+    groups = {name.casefold(): members for name, members in PROPERTY_TYPE_GROUPS.items()}
+    expanded: List[str] = []
+    for value in values:
+        cleaned = str(value).strip()
+        for listing_type in groups.get(cleaned.casefold(), (cleaned,)):
+            if listing_type and listing_type not in expanded:
+                expanded.append(listing_type)
+    return expanded
 
 
 def csv_values(value) -> List[str]:

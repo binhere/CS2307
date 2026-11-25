@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Header } from "@/components/header"
 import { SidebarFilter } from "@/components/SidebarFilter"
 import { AIChat } from "@/components/ai-chat"
-import { AMENITIES, DEFAULT_PROPERTY_TYPE } from "@/lib/amenities"
+import { AMENITIES } from "@/lib/amenities"
 import { cn } from "@/lib/utils"
 
 export default function AdvancedSearchPage() {
@@ -50,7 +50,7 @@ export default function AdvancedSearchPage() {
     }
 
     // Property type
-    if (filters.property_type && filters.property_type.trim() !== "" && filters.property_type !== DEFAULT_PROPERTY_TYPE) {
+    if (filters.property_type && filters.property_type.trim() !== "") {
       summary.push(`Loại BĐS: ${filters.property_type}`)
     }
 

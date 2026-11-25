@@ -2,6 +2,7 @@ import math
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
+from src.search.normalizer import expand_property_types
 from src.settings.event import postgres_client
 
 
@@ -116,7 +117,29 @@ def _add_csv_filter(where_clauses: List[str], params: Dict, column: str, raw_val
     """
     if _is_blank(raw_value):
         return
-    values = [part.strip() for part in str(raw_value).split(",") if not _is_blank(part)]
+    _add_values_filter(where_clauses, params, column, _split_csv(raw_value))
+
+
+def _split_csv(raw_value: Optional[str]) -> List[str]:
+    """Split a comma-separated query-string value into its non-blank, trimmed parts."""
+    if _is_blank(raw_value):
+        return []
+    return [part.strip() for part in str(raw_value).split(",") if not _is_blank(part)]
+
+
+def _add_values_filter(where_clauses: List[str], params: Dict, column: str, values: List[str]) -> None:
+    """Add a case-insensitive match of one column against a list of values.
+
+    Args:
+        where_clauses: SQL conditions collected so far; one is appended when values is not empty.
+        params: Bound parameters collected so far; the values are added under ``column`` (one
+            value) or ``column_0``, ``column_1``, ... (several).
+        column: Column name from a fixed list in this module, never user input.
+        values: The values to match; they may contain commas.
+
+    Returns:
+        None. ``where_clauses`` and ``params`` are updated in place.
+    """
     if len(values) == 1:
         where_clauses.append(f"LOWER({column}) = LOWER(:{column})")
         params[column] = values[0]
@@ -224,7 +247,9 @@ def repo_get_properties(
         where_clauses.append("access_road >= :min_road_width")
         params["min_road_width"] = min_road_width
 
-    _add_csv_filter(where_clauses, params, "property_type", property_type)
+    # The UI sends group names ("Căn hộ", "Nhà đất"); expanded after splitting, because some listing
+    # types contain a comma themselves ("Nhà biệt thự, liền kề").
+    _add_values_filter(where_clauses, params, "property_type", expand_property_types(_split_csv(property_type)))
     _add_csv_filter(where_clauses, params, "district", district)
 
     amenity_filters = amenity_filters or {}

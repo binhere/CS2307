@@ -8,7 +8,6 @@ import { SearchBar } from "@/components/search-bar"
 import { SidebarFilter } from "@/components/SidebarFilter"
 import { PropertyListings } from "@/components/property-listings"
 import { Footer } from "@/components/footer"
-import { DEFAULT_PROPERTY_TYPE } from "@/lib/amenities"
 import { cn } from "@/lib/utils"
 
 const VALUE_FILTER_KEYS = ["district", "bedrooms", "bathrooms", "legal_status", "furniture", "house_direction", "balcony_direction"]
@@ -17,7 +16,7 @@ const VALUE_FILTER_KEYS = ["district", "bedrooms", "bathrooms", "legal_status", 
 function countActiveFilters(filters: Record<string, unknown>) {
   const has = (key: string) => filters[key] !== undefined && filters[key] !== ""
   const groups = [
-    filters.property_type !== undefined && filters.property_type !== DEFAULT_PROPERTY_TYPE,
+    has("property_type"),
     has("min_price") || has("max_price"),
     has("min_area") || has("max_area"),
     // Amenities are sent as individual boolean flags.

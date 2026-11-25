@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import date, datetime
 from typing import Any, Dict, Iterable, List, Optional
 
-from src.search.normalizer import location_terms, normalize_text
+from src.search.normalizer import expand_property_types, location_terms, normalize_text
 from src.search.personalization import score_item as personalization_score
 from src.search.schemas import ParsedSearchQuery, RankingProfile
 
@@ -123,7 +123,7 @@ def _criteria_score(item: dict, parsed: ParsedSearchQuery) -> float:
             scores.append(soft_range_fit(item.get(item_key), rng.min, rng.max, rng.target))
 
     categorical = (
-        ("property_type", preferred.property_types),
+        ("property_type", expand_property_types(preferred.property_types)),
         ("legal_status", preferred.legal_statuses),
         ("furnishing", preferred.furnishings),
         ("house_direction", preferred.house_directions),
@@ -136,7 +136,7 @@ def _criteria_score(item: dict, parsed: ParsedSearchQuery) -> float:
 
     if preferred.excluded_property_types:
         actual = normalize_text(str(item.get("property_type") or ""))
-        excluded = {normalize_text(value) for value in preferred.excluded_property_types}
+        excluded = {normalize_text(value) for value in expand_property_types(preferred.excluded_property_types)}
         scores.append(float(actual not in excluded))
     return sum(scores) / len(scores) if scores else .5
 

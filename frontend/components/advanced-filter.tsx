@@ -11,7 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { AMENITIES, DEFAULT_PROPERTY_TYPE } from "@/lib/amenities"
+import { AMENITIES } from "@/lib/amenities"
 import { cn } from "@/lib/utils"
 
 const WARDS = [
@@ -156,7 +156,8 @@ export function AdvancedFilter({
     if (selectedBedrooms) filters.bedrooms = parseInt(selectedBedrooms)
     if (selectedBathrooms) filters.bathrooms = parseInt(selectedBathrooms)
 
-    filters.property_type = propertyType === "Tất cả" ? DEFAULT_PROPERTY_TYPE : propertyType
+    // "Tất cả" sends no property_type at all: every listing type, including ones the groups do not name.
+    if (propertyType !== "Tất cả") filters.property_type = propertyType
 
     // Multi-value fields are sent as the exact Vietnamese strings joined by commas.
     if (selectedLegalStatus.length > 0) filters.legal_status = selectedLegalStatus.join(",")
@@ -193,7 +194,7 @@ export function AdvancedFilter({
     setSelectedHouseDirection([])
     setSelectedBalconyDirection([])
     setSelectedAmenities([])
-    onApplyFilters({ property_type: DEFAULT_PROPERTY_TYPE })
+    onApplyFilters({})
   }
 
   const extraGroups = [
