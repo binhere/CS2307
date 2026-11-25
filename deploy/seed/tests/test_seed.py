@@ -71,6 +71,51 @@ class CsvBatchTests(unittest.TestCase):
         self.assertIsNone(batches[0][1]["name"])
 
 
+class ContentDigestTests(unittest.TestCase):
+    """The digests decide whether a run replaces a store, so only content may change them."""
+
+    def write_files(self, directory: Path, contents: dict) -> list:
+        """Write {file name: text} into directory; return the paths in the dict's order."""
+        paths = []
+        for name, text in contents.items():
+            path = directory / name
+            path.write_text(text, encoding="utf-8")
+            paths.append(path)
+        return paths
+
+    def test_same_content_gives_the_same_digest_and_any_change_another(self):
+        with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
+            original = seed.content_digest(self.write_files(Path(first), {"a.csv": "id\n1\n", "b.csv": "x\n"}))
+            copy = seed.content_digest(self.write_files(Path(second), {"a.csv": "id\n1\n", "b.csv": "x\n"}))
+            self.assertEqual(original, copy)
+            changed = seed.content_digest(self.write_files(Path(second), {"a.csv": "id\n2\n", "b.csv": "x\n"}))
+            self.assertNotEqual(original, changed)
+
+    def test_bytes_moved_between_files_change_the_digest(self):
+        with tempfile.TemporaryDirectory() as first, tempfile.TemporaryDirectory() as second:
+            original = seed.content_digest(self.write_files(Path(first), {"a.csv": "ab", "b.csv": "c"}))
+            moved = seed.content_digest(self.write_files(Path(second), {"a.csv": "a", "b.csv": "bc"}))
+        self.assertNotEqual(original, moved)
+
+    def test_graph_digest_covers_the_graph_and_import_script_but_not_the_seed_version(self):
+        with tempfile.TemporaryDirectory() as directory:
+            data_directory = Path(directory)
+            (data_directory / "graph").mkdir()
+            self.write_files(data_directory / "graph", {"b_nodes.csv": "id\n1\n", "a_edges.csv": "from,to\n"})
+            self.write_files(data_directory, {"import_search_graph.cypher": "RETURN 1;\n", "SEED_VERSION": "one\n"})
+            original_data_directory = seed.DATA_DIR
+            seed.DATA_DIR = data_directory
+            try:
+                files = seed.graph_files()
+                before = seed.content_digest(files)
+                (data_directory / "SEED_VERSION").write_text("two\n", encoding="utf-8")
+                after_new_version = seed.content_digest(seed.graph_files())
+            finally:
+                seed.DATA_DIR = original_data_directory
+        self.assertEqual([path.name for path in files], ["a_edges.csv", "b_nodes.csv", "import_search_graph.cypher"])
+        self.assertEqual(before, after_new_version)
+
+
 class ListingSelectionTests(unittest.TestCase):
     PHOTO_FOLDER = "images/Căn hộ chung cư/Phường Tân Định"
 

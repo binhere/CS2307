@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Purpose: prove a seed image works the way the cluster runs it, before it is pushed: on an empty
 #   PostgreSQL (after the backend migrations) and an empty Neo4j, the first run loads everything
-#   (vectors included), the second run changes nothing, and the backend answers a search that uses
-#   semantic (query embedded by the embedding image) and graph retrieval.
+#   (vectors included) and the second run changes nothing. A changed catalog then replaces only
+#   PostgreSQL, a changed graph replaces Neo4j, and the image's own data puts both back. Finally the
+#   backend answers a search that uses semantic (query embedded by the embedding image) and graph
+#   retrieval.
 # Input (environment):
 #   SEED_IMAGE       the seed image to check
 #   BACKEND_IMAGE    an image built from backend/ (migrations, then the API)
@@ -29,9 +31,12 @@ backend_container="$run_id-backend"
 database_password="$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')"
 graph_password="$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')"
 
+changed_data_directories=()
+
 cleanup() {
   docker rm -f "$postgres_container" "$neo4j_container" "$embedding_container" "$backend_container" > /dev/null 2>&1 || true
   docker network rm "$network" > /dev/null 2>&1 || true
+  rm -rf ${changed_data_directories[@]+"${changed_data_directories[@]}"}
 }
 trap cleanup EXIT
 
@@ -80,24 +85,93 @@ wait_for "PostgreSQL" docker exec "$postgres_container" pg_isready -U app -d app
 echo "[check] migrations"
 docker run --rm --network "$network" "${hardened[@]}" "${database_settings[@]}" "$BACKEND_IMAGE" alembic upgrade head
 
+# Runs the seed image the way the CronJob does; extra arguments go to docker run.
+run_seed() {
+  docker run --rm --network "$network" "${hardened[@]}" "${database_settings[@]}" "$@" "$SEED_IMAGE"
+}
+
+# Prints a new directory holding the seed image's data with the last row of one CSV file removed,
+# readable by the seed's user, so a run with it as SEED_DATA_DIR sees a changed catalog or graph.
+data_without_last_row() {
+  local relative_path="$1" directory container_id
+  directory="$(mktemp -d)"
+  container_id="$(docker create "$SEED_IMAGE")"
+  docker cp "$container_id:/seed/data/." "$directory/" > /dev/null
+  docker rm "$container_id" > /dev/null
+  python3 - "$directory/$relative_path" <<'EOF'
+import csv, sys
+csv.field_size_limit(sys.maxsize)
+path = sys.argv[1]
+with open(path, encoding="utf-8-sig", newline="") as stream:
+    rows = list(csv.reader(stream))
+with open(path, "w", encoding="utf-8", newline="") as stream:
+    csv.writer(stream, lineterminator="\n").writerows(rows[:-1])
+EOF
+  chmod -R a+rX "$directory"
+  echo "$directory"
+}
+
+expect_in_log() {
+  local run_log="$1" expected="$2" message="$3"
+  grep -q "$expected" <<< "$run_log" || fail "$message"
+}
+
+count_rows() {
+  psql_query "SELECT count(*) FROM $1"
+}
+
+count_listing_nodes() {
+  cypher_query "MATCH (listing:Listing) RETURN count(listing)"
+}
+
+count_amenity_edges() {
+  cypher_query "MATCH ()-[edge:NEAR_AMENITY]->() RETURN count(edge)"
+}
+
 echo "[check] first seed run (loads)"
-docker run --rm --network "$network" "${hardened[@]}" "${database_settings[@]}" "$SEED_IMAGE"
+run_seed
 wait_for "Neo4j" docker exec "$neo4j_container" cypher-shell -u neo4j -p "$graph_password" "RETURN 1"
 
-[[ "$(psql_query "SELECT count(*) FROM properties")" == "$EXPECTED_LISTINGS" ]] || fail "properties row count"
+[[ "$(count_rows properties)" == "$EXPECTED_LISTINGS" ]] || fail "properties row count"
 [[ "$(psql_query "SELECT count(search_text) FROM properties")" == "$EXPECTED_LISTINGS" ]] || fail "missing search text"
 [[ "$(psql_query "SELECT count(embedding) FROM properties")" == "$EXPECTED_LISTINGS" ]] || fail "missing vectors"
-[[ "$(psql_query "SELECT count(*) FROM listing_amenity_distances")" == "$EXPECTED_AMENITY_EDGES" ]] || fail "distance row count"
-[[ "$(cypher_query "MATCH (l:Listing) RETURN count(l)")" == "$EXPECTED_LISTINGS" ]] || fail "Neo4j listing count"
-[[ "$(cypher_query "MATCH ()-[r:NEAR_AMENITY]->() RETURN count(r)")" == "$EXPECTED_AMENITY_EDGES" ]] || fail "Neo4j NEAR_AMENITY count"
+[[ "$(count_rows listing_amenity_distances)" == "$EXPECTED_AMENITY_EDGES" ]] || fail "distance row count"
+[[ "$(count_rows catalog_imports)" == "1" ]] || fail "catalog record"
+[[ "$(count_listing_nodes)" == "$EXPECTED_LISTINGS" ]] || fail "Neo4j listing count"
+[[ "$(count_amenity_edges)" == "$EXPECTED_AMENITY_EDGES" ]] || fail "Neo4j NEAR_AMENITY count"
 [[ "$(cypher_query "MATCH (m:SeedImport) RETURN count(m)")" == "1" ]] || fail "seed marker"
 
 echo "[check] second seed run (must skip both stores)"
-second_run_log="$(docker run --rm --network "$network" "${hardened[@]}" "${database_settings[@]}" "$SEED_IMAGE")"
-echo "$second_run_log"
-grep -q "PostgreSQL: properties already has rows; skipping" <<< "$second_run_log" || fail "PostgreSQL was not skipped"
-grep -q "Neo4j: catalog already imported" <<< "$second_run_log" || fail "Neo4j was not skipped"
-[[ "$(psql_query "SELECT count(*) FROM properties")" == "$EXPECTED_LISTINGS" ]] || fail "second run changed properties"
+run_log="$(run_seed)"; echo "$run_log"
+expect_in_log "$run_log" "PostgreSQL: catalog .* already loaded; skipping" "PostgreSQL was not skipped"
+expect_in_log "$run_log" "Neo4j: graph .* already imported; skipping" "Neo4j was not skipped"
+[[ "$(count_rows properties)" == "$EXPECTED_LISTINGS" ]] || fail "second run changed properties"
+
+echo "[check] changed catalog (one listing less): replaces PostgreSQL, skips Neo4j"
+changed_catalog="$(data_without_last_row catalog/properties.csv)"
+changed_data_directories+=("$changed_catalog")
+run_log="$(run_seed -v "$changed_catalog:/seed/changed:ro" -e SEED_DATA_DIR=/seed/changed)"; echo "$run_log"
+expect_in_log "$run_log" "PostgreSQL: replacing catalog" "PostgreSQL was not replaced"
+expect_in_log "$run_log" "Neo4j: graph .* already imported; skipping" "Neo4j was replaced for a catalog-only change"
+[[ "$(count_rows properties)" == "$((EXPECTED_LISTINGS - 1))" ]] || fail "the changed catalog was not loaded"
+[[ "$(count_rows catalog_imports)" == "1" ]] || fail "catalog record after a replacement"
+
+echo "[check] changed graph (one listing node less), original catalog: replaces both stores"
+changed_graph="$(data_without_last_row graph/neo4j_listing_nodes.csv)"
+changed_data_directories+=("$changed_graph")
+run_log="$(run_seed -v "$changed_graph:/seed/changed:ro" -e SEED_DATA_DIR=/seed/changed)"; echo "$run_log"
+expect_in_log "$run_log" "PostgreSQL: replacing catalog" "PostgreSQL was not put back"
+expect_in_log "$run_log" "Neo4j: replacing graph" "Neo4j was not replaced"
+[[ "$(count_rows properties)" == "$EXPECTED_LISTINGS" ]] || fail "the original catalog was not put back"
+[[ "$(count_listing_nodes)" == "$((EXPECTED_LISTINGS - 1))" ]] || fail "the changed graph was not loaded"
+
+echo "[check] the image's own data again: skips PostgreSQL, puts the graph back"
+run_log="$(run_seed)"; echo "$run_log"
+expect_in_log "$run_log" "PostgreSQL: catalog .* already loaded; skipping" "PostgreSQL was not skipped"
+expect_in_log "$run_log" "Neo4j: replacing graph" "the original graph was not put back"
+[[ "$(count_listing_nodes)" == "$EXPECTED_LISTINGS" ]] || fail "Neo4j listing count after putting the graph back"
+[[ "$(count_amenity_edges)" == "$EXPECTED_AMENITY_EDGES" ]] || fail "Neo4j NEAR_AMENITY count after putting the graph back"
+[[ "$(cypher_query "MATCH (m:SeedImport) RETURN count(m)")" == "1" ]] || fail "seed marker after putting the graph back"
 
 echo "[check] backend search on the seeded stores"
 embedding_model="$(docker exec "$embedding_container" cat /opt/ollama/EMBEDDING_MODEL)"

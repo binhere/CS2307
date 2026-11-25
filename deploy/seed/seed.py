@@ -1,29 +1,36 @@
-"""Load the catalog into an empty deployment: PostgreSQL first, then Neo4j.
+"""Bring the deployment's catalog to the one in this image: PostgreSQL first, then Neo4j.
 
-Runs as a Kubernetes Job after the backend's migrations. Safe to run any number of times:
-- PostgreSQL: skipped when `properties` has rows. Otherwise both catalog tables are loaded
-  in one transaction (all or nothing) under an advisory lock, so two concurrent runs never
-  load twice.
-- Neo4j: skipped when the completion marker (:SeedImport {name: "catalog"}) exists. Every
-  import statement MERGEs, so a run interrupted half way is simply repeated in full.
+Runs as the cluster's catalog CronJob (and as a Job created from it), after the backend's
+migrations. Safe to run any number of times; each store is compared with the image by the
+SHA-256 of its files (its content digest):
+- PostgreSQL: the digest of catalog/*.csv is kept in the table catalog_imports. Same digest:
+  skipped. Different or none: both catalog tables are replaced in one transaction (all or
+  nothing); the backend keeps reading the old catalog until the commit.
+- Neo4j: the digest of graph/*.csv and the import script is kept on the marker node
+  (:SeedImport {name: "catalog"}). Same digest: skipped. Different or no marker: the marker is
+  removed, every node is deleted (the graph holds only what the seed imported) and the graph
+  is imported again; the marker is written last, so an interrupted run starts over next time.
+  Graph search returns partial results while that runs (about a minute).
+Only one run works at a time: a PostgreSQL advisory lock is held for the whole run.
 
 Input: environment variables HOST_DB, PORT_DB, USERNAME_DB, PASSWORD_DB, DATABASE (the
     backend's PostgreSQL settings) and NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD,
     NEO4J_DATABASE; optional SEED_DATA_DIR (default /seed/data) holding catalog/*.csv,
     graph/*.csv, import_search_graph.cypher and SEED_VERSION.
-Output: exit code 0 when both stores hold the catalog (loaded now or before); non-zero on
-    any failure, so the Job retries. Progress goes to stdout.
+Output: exit code 0 when both stores hold this image's catalog (loaded now or before);
+    non-zero on any failure, so the Job retries. Progress goes to stdout.
 """
 
 from __future__ import annotations
 
 import csv
+import hashlib
 import os
 import re
 import sys
 import time
 from pathlib import Path
-from typing import Dict, Iterator, List, Optional
+from typing import Dict, Iterator, List, Optional, Sequence
 
 import psycopg2
 from psycopg2 import sql
@@ -35,11 +42,15 @@ DATA_DIR = Path(os.environ.get("SEED_DATA_DIR", "/seed/data"))
 # Catalog tables in load order, each read from catalog/<table>.csv.
 CATALOG_TABLES = ("properties", "listing_amenity_distances")
 # Any constant works; it only has to be the same for every seed run.
-ADVISORY_LOCK_KEY = 2307_0001
+RUN_LOCK_KEY = 2307_0001
 NEO4J_BATCH_SIZE = 2000
+# Nodes deleted per transaction when the graph is replaced; small enough for a 512 MB heap.
+NEO4J_DELETE_BATCH_SIZE = 1000
 NEO4J_CONNECT_ATTEMPTS = 60
 NEO4J_CONNECT_INTERVAL_SECONDS = 5
-SEED_MARKER_NAME = "catalog"
+# Name of the catalog_imports row and of the Neo4j marker node.
+CATALOG_RECORD_NAME = "catalog"
+DIGEST_READ_SIZE = 1 << 20
 
 LOAD_CSV_CLAUSE = re.compile(
     r"LOAD CSV WITH HEADERS FROM 'file:///real_estate_graph_ready/(?P<file>[^']+)' AS row",
@@ -70,14 +81,49 @@ def seed_version() -> str:
     return path.read_text(encoding="utf-8").strip() if path.exists() else "unknown"
 
 
-def load_postgres() -> None:
-    """Load the catalog tables into an empty PostgreSQL database.
+def content_digest(paths: Sequence[Path]) -> str:
+    """Hash a list of files into one content digest.
 
-    Raises:
-        SystemExit: The schema is missing (migrations have not run yet).
-        psycopg2.Error: Any database failure; the transaction is rolled back.
+    Each file contributes its name, its size and its bytes, so renaming, moving bytes from
+    one file to another or reordering the list all change the digest.
+
+    Args:
+        paths: Files in a fixed order.
+
+    Returns:
+        str: 64 lowercase hex characters (SHA-256).
     """
-    connection = psycopg2.connect(
+    digest = hashlib.sha256()
+    for path in paths:
+        digest.update(f"{path.name}\0{path.stat().st_size}\0".encode("utf-8"))
+        with path.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(DIGEST_READ_SIZE), b""):
+                digest.update(chunk)
+    return digest.hexdigest()
+
+
+def catalog_files() -> List[Path]:
+    """The PostgreSQL catalog files, in load order."""
+    return [DATA_DIR / "catalog" / f"{table}.csv" for table in CATALOG_TABLES]
+
+
+def graph_files() -> List[Path]:
+    """The graph CSV files (sorted by name), then the Cypher import script that reads them."""
+    return sorted((DATA_DIR / "graph").glob("*.csv")) + [DATA_DIR / "import_search_graph.cypher"]
+
+
+def short(digest: Optional[str]) -> str:
+    """The first 12 characters of a digest for log lines, or "none"."""
+    return digest[:12] if digest else "none"
+
+
+def connect_postgres():
+    """Open a PostgreSQL connection with the backend's settings.
+
+    Returns:
+        psycopg2.extensions.connection: An open connection.
+    """
+    return psycopg2.connect(
         host=required_setting("HOST_DB"),
         port=os.environ.get("PORT_DB", "5432"),
         user=required_setting("USERNAME_DB"),
@@ -85,18 +131,40 @@ def load_postgres() -> None:
         dbname=required_setting("DATABASE"),
         connect_timeout=10,
     )
+
+
+def load_postgres(digest: str) -> None:
+    """Make the catalog tables hold this image's catalog.
+
+    Args:
+        digest: content_digest(catalog_files()).
+
+    Raises:
+        SystemExit: The schema is missing (migrations have not run yet).
+        psycopg2.Error: Any database failure; the transaction is rolled back and the old
+            catalog stays.
+    """
+    connection = connect_postgres()
     try:
         with connection, connection.cursor() as cursor:
-            cursor.execute("SELECT to_regclass('public.properties') IS NOT NULL")
-            if not cursor.fetchone()[0]:
-                raise SystemExit("[seed] table properties does not exist; run the backend migrations first")
-            cursor.execute("SELECT pg_advisory_xact_lock(%s)", (ADVISORY_LOCK_KEY,))
+            for table in ("properties", "catalog_imports"):
+                cursor.execute("SELECT to_regclass(%s) IS NOT NULL", (f"public.{table}",))
+                if not cursor.fetchone()[0]:
+                    raise SystemExit(f"[seed] table {table} does not exist; run the backend migrations first")
+            cursor.execute("SELECT content_sha256 FROM catalog_imports WHERE name = %s", (CATALOG_RECORD_NAME,))
+            record = cursor.fetchone()
+            loaded_digest = record[0] if record else None
+            if loaded_digest == digest:
+                log(f"PostgreSQL: catalog {short(digest)} already loaded; skipping")
+                return
             cursor.execute("SELECT EXISTS (SELECT 1 FROM properties)")
             if cursor.fetchone()[0]:
-                log("PostgreSQL: properties already has rows; skipping")
-                return
-            for table in CATALOG_TABLES:
-                path = DATA_DIR / "catalog" / f"{table}.csv"
+                log(f"PostgreSQL: replacing catalog {short(loaded_digest)} with {short(digest)}")
+                # DELETE rather than TRUNCATE: TRUNCATE would block the backend's reads until the
+                # commit, while with DELETE they keep seeing the old catalog.
+                for table in CATALOG_TABLES:
+                    cursor.execute(sql.SQL("DELETE FROM {table}").format(table=sql.Identifier(table)))
+            for table, path in zip(CATALOG_TABLES, catalog_files()):
                 with path.open(encoding="utf-8", newline="") as stream:
                     columns = next(csv.reader(stream))
                     stream.seek(0)
@@ -110,9 +178,17 @@ def load_postgres() -> None:
             cursor.execute(
                 "SELECT setval(pg_get_serial_sequence('properties', 'id'), (SELECT max(id) FROM properties))"
             )
+            cursor.execute(
+                "INSERT INTO catalog_imports (name, content_sha256, seed_version) VALUES (%s, %s, %s) "
+                "ON CONFLICT (name) DO UPDATE SET content_sha256 = EXCLUDED.content_sha256, "
+                "seed_version = EXCLUDED.seed_version, loaded_at = now()",
+                (CATALOG_RECORD_NAME, digest, seed_version()),
+            )
         connection.autocommit = True
         with connection.cursor() as cursor:
-            cursor.execute("ANALYZE properties; ANALYZE listing_amenity_distances;")
+            # VACUUM also reclaims the rows a replacement deleted; it cannot run inside a transaction.
+            cursor.execute("VACUUM (ANALYZE) properties, listing_amenity_distances")
+        log(f"PostgreSQL: catalog {short(digest)} loaded")
     finally:
         connection.close()
 
@@ -201,24 +277,38 @@ def connect_neo4j():
     raise AssertionError("unreachable")
 
 
-def load_neo4j() -> None:
-    """Import the graph unless a previous run completed it.
+def load_neo4j(digest: str) -> None:
+    """Make the graph hold this image's graph, unless the marker says it already does.
+
+    Args:
+        digest: content_digest(graph_files()).
 
     Raises:
         neo4j.exceptions.Neo4jError: Any statement failed; the marker is not written,
-            so the next run repeats the import.
+            so the next run replaces the graph again.
     """
     database = os.environ.get("NEO4J_DATABASE", "neo4j")
     driver = connect_neo4j()
     try:
         with driver.session(database=database) as session:
             marker = session.run(
-                "MATCH (marker:SeedImport {name: $name}) RETURN marker.seed_version AS version",
-                name=SEED_MARKER_NAME,
+                "MATCH (marker:SeedImport {name: $name}) RETURN marker.content_sha256 AS digest",
+                name=CATALOG_RECORD_NAME,
             ).single()
-            if marker is not None:
-                log(f"Neo4j: catalog already imported (seed {marker['version']}); skipping")
+            loaded_digest = marker["digest"] if marker is not None else None
+            if loaded_digest == digest:
+                log(f"Neo4j: graph {short(digest)} already imported; skipping")
                 return
+            if marker is None:
+                log(f"Neo4j: importing graph {short(digest)} (no completed import found)")
+            else:
+                log(f"Neo4j: replacing graph {short(loaded_digest)} with {short(digest)}")
+            # The marker goes first, so a run that stops half way leaves none and the next run starts over.
+            session.run("MATCH (marker:SeedImport {name: $name}) DELETE marker", name=CATALOG_RECORD_NAME).consume()
+            # The backend never writes to Neo4j: every node came from a seed, so all of them go.
+            session.run(
+                f"MATCH (node) CALL (node) {{ DETACH DELETE node }} IN TRANSACTIONS OF {NEO4J_DELETE_BATCH_SIZE} ROWS"
+            ).consume()
             cypher_text = (DATA_DIR / "import_search_graph.cypher").read_text(encoding="utf-8")
             for statement in split_statements(cypher_text):
                 file_name, query = as_parameterized(statement)
@@ -231,21 +321,33 @@ def load_neo4j() -> None:
                     total += len(batch)
                 log(f"Neo4j: {file_name}: {total} rows")
             session.run(
-                "MERGE (marker:SeedImport {name: $name}) SET marker.seed_version = $version, "
-                "marker.completed_at = datetime()",
-                name=SEED_MARKER_NAME,
+                "MERGE (marker:SeedImport {name: $name}) SET marker.content_sha256 = $digest, "
+                "marker.seed_version = $version, marker.completed_at = datetime()",
+                name=CATALOG_RECORD_NAME,
+                digest=digest,
                 version=seed_version(),
             ).consume()
-            log("Neo4j: import complete")
+            log(f"Neo4j: graph {short(digest)} imported")
     finally:
         driver.close()
 
 
 def main() -> None:
-    """Seed PostgreSQL, then Neo4j; any exception exits non-zero so the Job retries."""
+    """Sync PostgreSQL, then Neo4j, holding the run lock; any exception exits non-zero so the Job retries."""
     log(f"seed version {seed_version()}")
-    load_postgres()
-    load_neo4j()
+    catalog_digest = content_digest(catalog_files())
+    graph_digest = content_digest(graph_files())
+    lock_connection = connect_postgres()
+    try:
+        lock_connection.autocommit = True
+        with lock_connection.cursor() as cursor:
+            # A session lock, released when the connection closes, so it spans both stores: a Job
+            # created by hand while the CronJob runs waits here, then finds nothing left to do.
+            cursor.execute("SELECT pg_advisory_lock(%s)", (RUN_LOCK_KEY,))
+        load_postgres(catalog_digest)
+        load_neo4j(graph_digest)
+    finally:
+        lock_connection.close()
     log("done")
 
 

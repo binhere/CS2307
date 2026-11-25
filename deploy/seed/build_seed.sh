@@ -70,10 +70,13 @@ context="$WORK_DIR/context"
 rm -rf "$context"
 mkdir -p "$context/data/catalog" "$context/data/graph"
 for table in properties listing_amenity_distances; do
-  # Generated columns cannot be loaded with COPY, so only stored columns are exported.
+  # Generated columns cannot be loaded with COPY, so only stored columns are exported. created_at and
+  # updated_at hold this build's clock; left out, they take the load time, and the same data exports
+  # to the same bytes, so the seed's content digest changes only when the catalog does.
   columns="$(psql_query "SELECT string_agg(quote_ident(column_name), ', ' ORDER BY ordinal_position)
     FROM information_schema.columns
-    WHERE table_schema = 'public' AND table_name = '$table' AND is_generated = 'NEVER'")"
+    WHERE table_schema = 'public' AND table_name = '$table' AND is_generated = 'NEVER'
+      AND column_name NOT IN ('created_at', 'updated_at')")"
   docker exec "$postgres_container" psql -U seed -d catalog -v ON_ERROR_STOP=1 \
     -c "\\copy (SELECT $columns FROM $table ORDER BY 1, 2) TO STDOUT WITH (FORMAT csv, HEADER true)" \
     > "$context/data/catalog/$table.csv"

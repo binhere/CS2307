@@ -21,7 +21,7 @@ deploy: the workflow runs the backend tests and starts both images before pushin
 | backend | 8000 | liveness `GET /health`, readiness `GET /ready` (PostgreSQL answers) | `/tmp` | run `alembic upgrade head` with the same image first (initContainer); logs on stderr |
 | frontend | 3000 | `GET /` | `/tmp`, `/app/.next/cache` | `BACKEND_URL` at runtime; no domain or key in the image |
 | embedding | 11434 | `GET /` | `/tmp` | embeds search queries only; model baked in; stays loaded |
-| seed (Job) | none | exit code | `/tmp` | runs after the migrations; safe to rerun |
+| seed (CronJob) | none | exit code | `/tmp` | runs after the migrations; replaces the catalog when its own differs, otherwise does nothing |
 
 All four run as user and group `10001` with a read-only root filesystem and no capabilities. The
 backend starts without Neo4j (search falls back to PostgreSQL), without MinIO (leave
@@ -52,21 +52,31 @@ git add data/gold/listing_embeddings.csv.gz data/gold/listing_embeddings.json
 - Semantic search turns on only when every listing has a vector, which the seed guarantees.
 - The deployed embedding tag must stay on the model and Ollama version the vectors were made with. To
   change either: edit `deploy/embedding/Dockerfile`, re-run `embed_catalog.sh`, commit, and deploy the
-  new embedding and seed tags together (a database that already has data needs a re-import).
+  new embedding and seed tags together; the seed's next run replaces the vectors in the database.
 
 ## The seed
 
 `build_seed.sh` selects the 3,857 current-crawl listings (the listings of `data/gold`) from
 `data/v3` (which also has the columns the backend imports), takes each listing's photos from
 `data/gold/images_manifest.csv`, imports them with the backend image, attaches the committed vectors,
-and exports the catalog tables to CSV. `seed.py` loads that into a new deployment:
+and exports the catalog tables to CSV. `seed.py` makes a deployment hold that catalog. It compares each
+store with the image by a content digest (the SHA-256 of the store's files) and does nothing when they
+match, so the cluster runs it every hour:
 
-- PostgreSQL: `properties` (vectors included) and `listing_amenity_distances` in one transaction,
-  skipped when `properties` already has rows.
+- PostgreSQL: `properties` (vectors included) and `listing_amenity_distances`. The digest of
+  `catalog/*.csv` is kept in the table `catalog_imports`. When it differs, both tables are replaced in
+  one transaction; the backend reads the old catalog until the commit.
 - Neo4j: the statements of `backend/scripts/neo4j/import_search_graph.cypher`, with the CSV rows sent
-  over Bolt, so the Job needs no access to the Neo4j import directory. Skipped once the marker node
-  `(:SeedImport {name: "catalog"})` exists; an interrupted import is repeated in full (every statement
-  MERGEs).
+  over Bolt, so the Job needs no access to the Neo4j import directory. The digest of `graph/*.csv` and
+  the script is kept on the marker node `(:SeedImport {name: "catalog"})`. When it differs, every node
+  is deleted (the backend never writes to Neo4j) and the graph is imported again, which takes about a
+  minute of partial graph results; the marker is written last, so an interrupted run starts over.
+- A new embedding model changes only the vectors, so it replaces PostgreSQL and leaves the graph.
+- The exported rows leave out `created_at` and `updated_at` (they take the load time), so rebuilding
+  the same data gives the same digest and replaces nothing.
+- One run at a time: a PostgreSQL advisory lock is held for the whole run.
+- The catalog tables belong to the seed: the API never writes them, and no other table has a foreign
+  key to them. `interactions` and `recommendation_events` keep a `listing_id` without one.
 
 Build and check it locally (Docker; a few minutes):
 

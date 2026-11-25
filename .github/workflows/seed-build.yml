@@ -1,14 +1,14 @@
-# Purpose: publish the seed image (the catalog a new deployment starts from) whenever its content can
+# Purpose: publish the seed image (the catalog the deployment should hold) whenever its content can
 #   change: the dataset, the photo list, the committed vectors, the seed code or the import code. Not
-#   deployed automatically: the cluster pins the seed tag by hand, and the seed only fills an empty
-#   deployment.
+#   deployed automatically: the cluster pins the seed tag by hand; once a new tag is pinned, the seed's
+#   next run replaces whichever store's catalog differs.
 # Input: a push to main that touches the paths below. The vectors are not computed here: a developer
 #   computes them on a powerful machine (deploy/seed/embed_catalog.sh) and commits them; this run fails
 #   when they are stale or were made by another model than deploy/embedding/Dockerfile.
 # Output: ghcr.io/binhere/cs2307-seed:main-<committer date, UTC, YYYYMMDDHHMMSS>-<first 7 characters
 #   of the commit sha>, linux/amd64. Pushed only after the image loaded an empty PostgreSQL and Neo4j,
-#   skipped both on a second run, and the backend answered a search that used semantic and graph
-#   retrieval. Takes a few minutes.
+#   skipped both on a second run, replaced each store when given a changed catalog or graph, and the
+#   backend answered a search that used semantic and graph retrieval. Takes a few minutes.
 
 name: seed-build
 
@@ -130,5 +130,5 @@ jobs:
           {
             echo "Published \`$IMAGE_NAME:$SEED_TAG\` (\`$SEED_REFERENCE\`, linux/amd64)"
             echo
-            echo "Not deployed automatically; it only fills an empty deployment."
+            echo "Not deployed automatically: pin this tag in iac-homelab; the next seed run replaces the catalog where it differs."
           } >> "$GITHUB_STEP_SUMMARY"
