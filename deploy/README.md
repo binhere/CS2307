@@ -97,13 +97,23 @@ The photos are the archive `images.zip` (33,882 files for the 3,857 listings, la
 Lộc's Google Drive, shared with anyone who has the link, and never in git or in an image.
 `data/gold/images_manifest.csv` lists the archive's files, and the seed image carries that list.
 
-`photos.py` in the seed image makes MinIO hold every photo of the manifest; the cluster runs it as its own
-CronJob. Each run lists the bucket's `images/` prefix and stops when nothing is missing. Otherwise it
-downloads the archive anonymously (continuing a partial download with range requests), uploads exactly
-the missing files under their manifest key, checks that none is still missing and deletes the archive.
-It reads the backend's `MINIO_*` settings, with a key that may write the bucket, and needs about 10 GB in
-`PHOTO_WORK_DIR` (default `/tmp`) only while it uploads; it uses about 30 MiB of memory. The backend only
-reads photos, so its own key can be read-only.
+`photos.py` in the seed image makes the photo store (Garage in the cluster, MinIO locally) hold every
+photo of the manifest; the cluster runs it as its own CronJob.
+- Each run lists the bucket's `images/` prefix and stops when nothing is missing.
+- Otherwise it reads the archive's table of contents from Google Drive with range requests and uploads
+  exactly the missing files under their manifest key:
+  - more than 1,000 missing: it downloads the archive once (continuing a partial download) and deletes it
+    afterwards;
+  - fewer: it reads each photo from the URL with range requests.
+- Every photo is checked against the archive's CRC-32 when read, and again after upload by reading the
+  stored copy back. A mismatch is retried from fresh bytes up to 3 times: a damaged local copy falls back
+  to the URL. Photos that still fail are reported after all others are uploaded.
+- `PHOTO_VERIFY_EXISTING=true` also reads back every stored photo and replaces the damaged ones; run it
+  once after a hardware fault.
+- Settings: it reads the backend's `MINIO_*` settings, with a key that may write the bucket.
+- Resources: it needs about 10 GB in `PHOTO_WORK_DIR` (default `/tmp`) only for a full download, and
+  about 80 MiB of memory.
+- The backend only reads photos, so its own key can be read-only.
 
 To publish a new archive:
 1. Upload it to Google Drive, shared with anyone who has the link.

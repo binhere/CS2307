@@ -37,8 +37,9 @@ A bigger model therefore needs room in the tenant quota and on the node first. T
 decision: hand it over before any tag is pinned.
 
 Photos ride along with the seed. The seed image carries `images_manifest.csv`, and the cluster's photos
-CronJob runs `python /seed/photos.py` from the pinned seed image. It uploads whatever MinIO lacks from
-the Google Drive archive named in `deploy/seed/photos.py`.
+CronJob runs `python /seed/photos.py` from the pinned seed image. It uploads whatever the photo store
+lacks from the Google Drive archive named in `deploy/seed/photos.py`, and checks every photo against its
+CRC-32 before and after upload.
 
 ## 2. Repository side (any developer)
 
