@@ -89,9 +89,9 @@ SET n.centroid_latitude = toFloatOrNull(row.`centroid_latitude:float`),
                       THEN null ELSE point({latitude: toFloat(row.`centroid_latitude:float`), longitude: toFloat(row.`centroid_longitude:float`)}) END;
 
 // Top-5 edges are ~260k rows: commit in batches to stay under dbms.memory.transaction.total.max.
+// CALL (row) { ... } needs Neo4j 5.23 or newer.
 LOAD CSV WITH HEADERS FROM 'file:///real_estate_graph_ready/neo4j_listing_near_amenity_relationships.csv' AS row
-CALL {
-  WITH row
+CALL (row) {
   MATCH (l:Listing {listing_node_id: row.`:START_ID(Listing)`})
   MATCH (a:Amenity {amenity_id: row.`:END_ID(Amenity)`})
   MERGE (l)-[r:NEAR_AMENITY]->(a)
