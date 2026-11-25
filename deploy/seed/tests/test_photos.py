@@ -112,11 +112,13 @@ class StoredObject:
 
 
 class FakeMinio:
-    """Stands in for minio.Minio: keeps objects in a dict and can flip a bit in what it stores."""
+    """Stands in for minio.Minio: keeps objects in a dict, can flip a bit in what it stores, and can
+    break off reading an object the way Garage does when a block on its disk fails its hash."""
 
-    def __init__(self, existing=None, damaged_puts=None):
+    def __init__(self, existing=None, damaged_puts=None, unreadable=None):
         self.objects = dict(existing or {})
         self.damaged_puts = dict(damaged_puts or {})
+        self.unreadable = set(unreadable or ())
         self.put_counts = {}
         self.has_bucket = True
 
@@ -139,7 +141,12 @@ class FakeMinio:
         self.objects[key] = data
 
     def get_object(self, bucket, key):
+        if key in self.unreadable:
+            raise urllib3.exceptions.ProtocolError("Connection broken: IncompleteRead(0 bytes read, 255024 more expected)")
         return StoredObject(self.objects[key])
+
+    def remove_object(self, bucket, key):
+        self.objects.pop(key, None)
 
 
 def plain_http() -> urllib3.PoolManager:
@@ -290,6 +297,8 @@ class SyncTests(unittest.TestCase):
             self.sync(client)
         self.assert_intact(client, PHOTO_KEYS[1:])
         self.assertEqual(client.put_counts[PHOTO_KEYS[0]], photos.UPLOAD_ATTEMPTS)
+        # The damaged copy is gone, so the next run sees the photo as missing and tries again.
+        self.assertNotIn(PHOTO_KEYS[0], client.objects)
 
     def test_nothing_missing_touches_neither_the_url_nor_the_photos(self):
         client = FakeMinio(existing={key: b"" for key in PHOTO_KEYS})
@@ -304,6 +313,32 @@ class SyncTests(unittest.TestCase):
         self.sync(client, verify_existing=True)
         self.assert_intact(client)
         self.assertEqual(client.put_counts, {PHOTO_KEYS[1]: 1})
+
+    def test_verify_existing_counts_an_unreadable_stored_photo_as_damaged(self):
+        existing = {key: archive_content(self.body, key) for key in PHOTO_KEYS}
+        client = FakeMinio(existing=existing, unreadable={PHOTO_KEYS[0]})
+        original_get_object = client.get_object
+
+        def get_object_after_reupload(bucket, key):
+            # The re-uploaded copy reads back fine; only the copy damaged on disk is unreadable.
+            if key in client.unreadable and client.put_counts.get(key):
+                client.unreadable.discard(key)
+            return original_get_object(bucket, key)
+
+        client.get_object = get_object_after_reupload
+        self.sync(client, verify_existing=True)
+        self.assert_intact(client)
+        self.assertEqual(client.put_counts, {PHOTO_KEYS[0]: 1})
+
+    def test_photos_that_needed_a_retry_are_counted_in_the_log(self):
+        messages = []
+        original_log = photos.log
+        photos.log = messages.append
+        try:
+            self.sync(FakeMinio(damaged_puts={PHOTO_KEYS[2]: 1}))
+        finally:
+            photos.log = original_log
+        self.assertIn("1 of 3 photos needed more than one attempt", messages)
 
     def test_a_manifest_key_the_archive_lacks_stops_the_run_before_any_upload(self):
         client = FakeMinio()

@@ -288,17 +288,34 @@ def stored_crc(client: Minio, bucket: str, key: str) -> int:
         response.release_conn()
 
 
+def is_stored_intact(client: Minio, bucket: str, key: str, expected_crc: int) -> bool:
+    """Whether the stored copy of a photo reads back completely and matches its CRC-32.
+
+    A stored copy that cannot be read counts as damaged: Garage breaks off the response when a
+    block on its disk no longer matches the block's hash, so the client sees a cut-off read.
+    """
+    try:
+        return stored_crc(client, bucket, key) == expected_crc
+    except (S3Error, urllib3.exceptions.HTTPError, OSError) as error:
+        log(f"cannot read the stored copy of {key!r} ({type(error).__name__}); counting it as damaged")
+        return False
+
+
 def upload_verified(client: Minio, bucket: str, key: str, info: zipfile.ZipInfo,
-                    read_local: Optional[Callable[[int, int], bytes]], read_remote: Callable[[int, int], bytes]) -> None:
+                    read_local: Optional[Callable[[int, int], bytes]], read_remote: Callable[[int, int], bytes]) -> int:
     """Upload one photo and read it back, retrying until the stored copy matches the archive's CRC-32.
 
     Each attempt reads the photo again (the local archive first, then straight from the URL),
     checks its CRC-32, uploads it and compares the stored copy's CRC-32. A bit flipped anywhere
     on the way fails that attempt, and the next one starts from fresh bytes.
 
+    Returns:
+        int: The number of attempts it took (1 when nothing went wrong).
+
     Raises:
         PhotoIntegrityError: No attempt of UPLOAD_ATTEMPTS produced an intact stored copy; the
-            message lists each attempt's error.
+            message lists each attempt's error. The damaged copy is removed first, so the next
+            run sees the photo as missing instead of present.
     """
     errors = []
     for attempt in range(UPLOAD_ATTEMPTS):
@@ -308,10 +325,14 @@ def upload_verified(client: Minio, bucket: str, key: str, info: zipfile.ZipInfo,
             client.put_object(bucket, key, io.BytesIO(content), length=len(content),
                               content_type=mimetypes.guess_type(key)[0] or "application/octet-stream")
             if stored_crc(client, bucket, key) == info.CRC:
-                return
+                return attempt + 1
             raise PhotoIntegrityError("the stored copy does not match its CRC-32")
         except (PhotoIntegrityError, ArchiveDownloadError, S3Error, urllib3.exceptions.HTTPError, OSError) as error:
             errors.append(f"{'local' if source is read_local else 'remote'}: {error}")
+    try:
+        client.remove_object(bucket, key)
+    except (S3Error, urllib3.exceptions.HTTPError, OSError) as error:
+        errors.append(f"removing the damaged copy failed: {error}")
     raise PhotoIntegrityError("; ".join(errors))
 
 
@@ -352,8 +373,14 @@ def sync_photos(client: Minio, bucket: str, manifest_keys: Set[str], archive_url
         raise SystemExit(f"[photos] {len(absent):,} photos of the manifest are not in the archive "
                          f"(e.g. {sorted(absent)[0]!r}); the archive and data/gold/images_manifest.csv disagree")
     if verify_existing:
-        damaged = {key for key in present if stored_crc(client, bucket, key) != members[key].CRC}
-        log(f"verified {len(present):,} stored photos: {len(damaged):,} differ from the archive")
+        damaged = set()
+        for count, key in enumerate(sorted(present), start=1):
+            if not is_stored_intact(client, bucket, key, members[key].CRC):
+                damaged.add(key)
+            if count % UPLOAD_LOG_EVERY == 0:
+                log(f"verified {count:,} of {len(present):,} stored photos; {len(damaged):,} damaged so far")
+        log(f"verified {len(present):,} stored photos: {len(damaged):,} differ from the archive"
+            + (f" (e.g. {sorted(damaged)[:3]})" if damaged else ""))
         to_upload |= damaged
     if not to_upload:
         log(f"all {len(manifest_keys):,} photos are in bucket {bucket} and intact; nothing to do")
@@ -374,11 +401,16 @@ def sync_photos(client: Minio, bucket: str, manifest_keys: Set[str], archive_url
         return read_remote_range(http, archive_url, offset, length)
 
     failures = {}
+    retried = 0
     try:
         # Archive order keeps the reads of the local copy sequential.
         for count, key in enumerate(sorted(to_upload, key=lambda name: members[name].header_offset), start=1):
             try:
-                upload_verified(client, bucket, key, members[key], read_local if local_archive else None, read_remote)
+                attempts = upload_verified(client, bucket, key, members[key],
+                                           read_local if local_archive else None, read_remote)
+                if attempts > 1:
+                    retried += 1
+                    log(f"{key!r} needed {attempts} attempts")
             except PhotoIntegrityError as error:
                 failures[key] = str(error)
                 log(f"could not store {key!r} intact: {error}")
@@ -389,6 +421,7 @@ def sync_photos(client: Minio, bucket: str, manifest_keys: Set[str], archive_url
             local_archive.close()
     if local_archive is not None:
         archive_path.unlink()
+    log(f"{retried:,} of {len(to_upload):,} photos needed more than one attempt")
     if failures:
         raise SystemExit(f"[photos] {len(failures):,} of {len(to_upload):,} photos could not be stored intact "
                          f"after {UPLOAD_ATTEMPTS} attempts each (e.g. {sorted(failures)[0]!r}); the rest are uploaded")
