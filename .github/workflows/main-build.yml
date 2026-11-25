@@ -1,0 +1,175 @@
+# Purpose: publish the backend and frontend images on every push to main that changes them. The
+#   homelab's Flux image automation deploys the newest pair, so a push to main is a deploy.
+# Input: a push to main that touches backend/**, frontend/** or this file.
+# Output: ghcr.io/binhere/cs2307-backend and ghcr.io/binhere/cs2307-frontend, both tagged
+#   main-<committer date, UTC, YYYYMMDDHHMMSS>-<first 7 characters of the commit sha>, linux/amd64 only
+#   (the server is x86_64). Both images get the same tag on every run so the pair always matches; the
+#   backend is pushed first and the frontend last. The tag carries the commit date rather than the
+#   build time, so a slow build of an older commit never outranks a newer one. No "latest" tag.
+# Nothing is pushed unless the backend tests pass and both images start as the cluster runs them
+#   (unprivileged user, read-only root filesystem, no capabilities).
+
+name: main-build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - ".github/workflows/main-build.yml"
+
+# A newer push makes an unfinished build of an older one useless: the newest commit wins anyway.
+concurrency:
+  group: cs2307-main-build
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  # GHCR rejects upper-case owner names.
+  BACKEND_IMAGE: ghcr.io/binhere/cs2307-backend
+  FRONTEND_IMAGE: ghcr.io/binhere/cs2307-frontend
+  SOURCE_URL: https://github.com/binhere/CS2307
+
+defaults:
+  run:
+    # An explicit bash runs with -e and -o pipefail, so a failing command inside a pipe fails the step.
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out the pushed commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Name the image tag after the commit
+        id: tag
+        run: |
+          commit_time=$(TZ=UTC git show --no-patch --format=%cd --date=format-local:%Y%m%d%H%M%S "$GITHUB_SHA")
+          image_tag="main-${commit_time}-${GITHUB_SHA:0:7}"
+          if ! [[ "$image_tag" =~ ^main-[0-9]{14}-[0-9a-f]{7}$ ]]; then
+            echo "::error::The tag $image_tag does not match the pattern the homelab's image policy reads."
+            exit 1
+          fi
+          echo "tag=$image_tag" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      # Each image is built once into the local Docker engine to be tested and started before anything
+      # is pushed; the push steps below reuse its layers from the builder's cache.
+      - name: Build the backend image for the checks
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: backend
+          platforms: linux/amd64
+          load: true
+          tags: cs2307-backend:check
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
+
+      # The tests run inside the image that ships, with its exact dependencies. The image has no .env,
+      # so the results cannot depend on someone's local settings.
+      - name: Run the backend tests in the image
+        run: |
+          docker run --rm --user 0 -e PYTHONDONTWRITEBYTECODE=1 \
+            -v "$PWD/backend/tests:/app/tests:ro" cs2307-backend:check \
+            sh -c "pip install --quiet --no-cache-dir pytest==8.3.5 && python -m pytest -q -p no:cacheprovider tests"
+
+      - name: Start the backend as the cluster does
+        run: |
+          docker run --detach --name backend-check --publish 8000:8000 \
+            --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges \
+            -e MINIO_END_POINT= cs2307-backend:check
+          for attempt in $(seq 60); do
+            if curl --silent --fail --output /dev/null http://127.0.0.1:8000/health; then break; fi
+            sleep 1
+          done
+          curl --silent --show-error --fail http://127.0.0.1:8000/health
+          echo
+          # Without a database the readiness probe must say so instead of passing.
+          test "$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:8000/ready)" = 503
+
+      - name: Build the frontend image for the check
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: frontend
+          platforms: linux/amd64
+          load: true
+          tags: cs2307-frontend:check
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+
+      - name: Start the frontend as the cluster does
+        run: |
+          docker run --detach --name frontend-check --publish 3000:3000 \
+            --read-only --tmpfs /tmp --tmpfs /app/.next/cache:uid=10001,gid=10001 \
+            --cap-drop ALL --security-opt no-new-privileges \
+            -e BACKEND_URL=http://127.0.0.1:1 cs2307-frontend:check
+          for attempt in $(seq 30); do
+            if curl --silent --fail --output /dev/null http://127.0.0.1:3000/; then break; fi
+            sleep 1
+          done
+          curl --silent --show-error --fail --output /dev/null http://127.0.0.1:3000/
+          curl --silent --show-error --fail --output /dev/null http://127.0.0.1:3000/tim-kiem-chuyen-sau
+
+      - name: Show the checked containers' logs
+        if: failure()
+        run: |
+          docker logs backend-check || true
+          docker logs frontend-check || true
+
+      - name: Log in to GHCR
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push the backend
+        id: push_backend
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: backend
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.BACKEND_IMAGE }}:${{ steps.tag.outputs.tag }}
+          cache-from: type=gha,scope=backend
+          labels: |
+            org.opencontainers.image.source=${{ env.SOURCE_URL }}
+            org.opencontainers.image.version=${{ steps.tag.outputs.tag }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Push the frontend
+        id: push_frontend
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: frontend
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.FRONTEND_IMAGE }}:${{ steps.tag.outputs.tag }}
+          cache-from: type=gha,scope=frontend
+          labels: |
+            org.opencontainers.image.source=${{ env.SOURCE_URL }}
+            org.opencontainers.image.version=${{ steps.tag.outputs.tag }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Write the image references to the run summary
+        env:
+          BACKEND_REFERENCE: ${{ env.BACKEND_IMAGE }}:${{ steps.tag.outputs.tag }}@${{ steps.push_backend.outputs.digest }}
+          FRONTEND_REFERENCE: ${{ env.FRONTEND_IMAGE }}:${{ steps.tag.outputs.tag }}@${{ steps.push_frontend.outputs.digest }}
+        run: |
+          {
+            echo "Published (linux/amd64):"
+            echo
+            echo "- \`$BACKEND_REFERENCE\`"
+            echo "- \`$FRONTEND_REFERENCE\`"
+          } >> "$GITHUB_STEP_SUMMARY"

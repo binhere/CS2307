@@ -1,0 +1,134 @@
+# Purpose: publish the seed image (the catalog a new deployment starts from) whenever its content can
+#   change: the dataset, the photo list, the committed vectors, the seed code or the import code. Not
+#   deployed automatically: the cluster pins the seed tag by hand, and the seed only fills an empty
+#   deployment.
+# Input: a push to main that touches the paths below. The vectors are not computed here: a developer
+#   computes them on a powerful machine (deploy/seed/embed_catalog.sh) and commits them; this run fails
+#   when they are stale or were made by another model than deploy/embedding/Dockerfile.
+# Output: ghcr.io/binhere/cs2307-seed:main-<committer date, UTC, YYYYMMDDHHMMSS>-<first 7 characters
+#   of the commit sha>, linux/amd64. Pushed only after the image loaded an empty PostgreSQL and Neo4j,
+#   skipped both on a second run, and the backend answered a search that used semantic and graph
+#   retrieval. Takes a few minutes.
+
+name: seed-build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "data/v3/master_v3.csv"
+      - "data/v3/graph/**"
+      - "data/gold/images_manifest.csv"
+      - "data/gold/listing_embeddings.*"
+      - "deploy/embedding/Dockerfile"
+      - "deploy/seed/**"
+      - "backend/scripts/build_search_index.py"
+      - "backend/scripts/neo4j/import_search_graph.cypher"
+      - "backend/src/search/text_builder.py"
+      - ".github/workflows/seed-build.yml"
+
+concurrency:
+  group: cs2307-seed-build
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/binhere/cs2307-seed
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out the pushed commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run the seed unit tests
+        run: |
+          python3 -m venv "$RUNNER_TEMP/seed-tests"
+          "$RUNNER_TEMP/seed-tests/bin/pip" install --quiet -r deploy/seed/requirements.txt pytest==8.3.5
+          "$RUNNER_TEMP/seed-tests/bin/python" -m pytest -q -p no:cacheprovider deploy/seed/tests
+
+      - name: Name the image tag after the commit
+        id: tag
+        run: |
+          commit_time=$(TZ=UTC git show --no-patch --format=%cd --date=format-local:%Y%m%d%H%M%S "$GITHUB_SHA")
+          image_tag="main-${commit_time}-${GITHUB_SHA:0:7}"
+          if ! [[ "$image_tag" =~ ^main-[0-9]{14}-[0-9a-f]{7}$ ]]; then
+            echo "::error::The tag $image_tag does not match the expected pattern."
+            exit 1
+          fi
+          echo "tag=$image_tag" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      # Same Dockerfiles and caches as main-build.yml and embedding-build.yml, so these are mostly
+      # cache hits. The embedding image embeds the check's search query.
+      - name: Build the backend image that imports the catalog
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: backend
+          platforms: linux/amd64
+          load: true
+          tags: cs2307-backend:seed-build
+          cache-from: type=gha,scope=backend
+
+      - name: Build the embedding image for the check
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: deploy/embedding
+          platforms: linux/amd64
+          load: true
+          tags: cs2307-embedding:seed-build
+          cache-from: type=gha,scope=embedding
+
+      - name: Build the seed image
+        env:
+          BACKEND_IMAGE: cs2307-backend:seed-build
+          SEED_IMAGE: ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
+          WORK_DIR: ${{ runner.temp }}/seed
+        run: deploy/seed/build_seed.sh
+
+      - name: Check the seed image on empty stores
+        env:
+          BACKEND_IMAGE: cs2307-backend:seed-build
+          EMBEDDING_IMAGE: cs2307-embedding:seed-build
+          SEED_IMAGE: ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
+        run: deploy/seed/check_seed.sh
+
+      - name: Log in to GHCR
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push
+        id: push
+        env:
+          SEED_IMAGE: ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
+        run: |
+          docker push "$SEED_IMAGE"
+          echo "reference=$(docker image inspect "$SEED_IMAGE" --format '{{index .RepoDigests 0}}')" >> "$GITHUB_OUTPUT"
+
+      - name: Write the image reference to the run summary
+        env:
+          SEED_REFERENCE: ${{ steps.push.outputs.reference }}
+          SEED_TAG: ${{ steps.tag.outputs.tag }}
+        run: |
+          {
+            echo "Published \`$IMAGE_NAME:$SEED_TAG\` (\`$SEED_REFERENCE\`, linux/amd64)"
+            echo
+            echo "Not deployed automatically; it only fills an empty deployment."
+          } >> "$GITHUB_STEP_SUMMARY"

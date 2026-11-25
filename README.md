@@ -95,9 +95,10 @@ ward, street, geo-cluster and amenity relationships.
 
 ## Database migrations
 
-PostgreSQL schema changes are versioned with Alembic. The backend Docker container
-automatically applies pending migrations before starting Gunicorn. For local
-development, migrate before starting the API:
+PostgreSQL schema changes are versioned with Alembic. The backend container does not
+migrate on start: Docker Compose runs the one-shot `migrate` service (same image,
+`alembic upgrade head`) before the backend, and the cluster runs it as an initContainer.
+For local development, migrate before starting the API:
 
 ```bash
 cd backend
@@ -215,6 +216,13 @@ uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 | http://localhost:7474 | Neo4j Browser |
 | http://localhost:9001 | MinIO Console |
 
+## Deployment
+
+`main` is deployed to https://cs2307.reais.codes: a push that changes `backend/` or
+`frontend/` builds, tests and publishes both images, and the homelab cluster rolls them out.
+Images, runtime requirements, the seed and the photo archive are described in
+[deploy/README.md](deploy/README.md).
+
 ## Project Structure
 
 ```
@@ -238,8 +246,10 @@ CS2307/
 ├── data/
 │   ├── bronze/            Raw crawl output (JSONL), OSM POIs, ward list
 │   ├── silver/            Cleaned and enriched listings, nearest POIs, driving routes
-│   ├── gold/              SQL tables and Neo4j node/edge CSVs built by pipeline/
+│   ├── gold/              SQL tables and Neo4j node/edge CSVs built by pipeline/; photo list and catalog vectors
 │   └── v3/                Dataset the backend imports today (6,703 listings) and its build inputs
+├── deploy/                Embedding and seed images for the homelab deployment
+├── .github/workflows/     Image builds on push to main
 ├── databases/             Local Neo4j, PostgreSQL and MinIO loaders for data/gold and images (PowerShell)
 ├── price_prediction/      Price model training (writes the model the backend serves)
 ├── scripts/               build_real_estate_graph.sh: bulk-load data/v3/graph into Neo4j

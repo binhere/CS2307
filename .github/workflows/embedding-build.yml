@@ -1,0 +1,117 @@
+# Purpose: publish the CPU embedding image (Ollama with qwen3-embedding:0.6b baked in) when its
+#   definition changes. Not deployed automatically: the cluster pins this image by hand, because the
+#   live catalog's vectors are only valid for the image that produced them (see deploy/README.md).
+# Input: a push to main that touches deploy/embedding/** or this file.
+# Output: ghcr.io/binhere/cs2307-embedding:main-<committer date, UTC, YYYYMMDDHHMMSS>-<first 7
+#   characters of the commit sha>, linux/amd64 only. No "latest" tag.
+
+name: embedding-build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "deploy/embedding/**"
+      - ".github/workflows/embedding-build.yml"
+
+concurrency:
+  group: cs2307-embedding-build
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/binhere/cs2307-embedding
+  SOURCE_URL: https://github.com/binhere/CS2307
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out the pushed commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Name the image tag after the commit
+        id: tag
+        run: |
+          commit_time=$(TZ=UTC git show --no-patch --format=%cd --date=format-local:%Y%m%d%H%M%S "$GITHUB_SHA")
+          image_tag="main-${commit_time}-${GITHUB_SHA:0:7}"
+          if ! [[ "$image_tag" =~ ^main-[0-9]{14}-[0-9a-f]{7}$ ]]; then
+            echo "::error::The tag $image_tag does not match the expected pattern."
+            exit 1
+          fi
+          echo "tag=$image_tag" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      # The build fails if the model registry serves different weights under the pinned tag.
+      - name: Build the image for the check
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: deploy/embedding
+          platforms: linux/amd64
+          load: true
+          tags: cs2307-embedding:check
+          cache-from: type=gha,scope=embedding
+          cache-to: type=gha,mode=max,scope=embedding
+
+      - name: Embed a query as the cluster runs the image
+        run: |
+          docker run --detach --name embedding-check --publish 11434:11434 \
+            --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges cs2307-embedding:check
+          for attempt in $(seq 60); do
+            if curl --silent --fail --output /dev/null http://127.0.0.1:11434/; then break; fi
+            sleep 1
+          done
+          model=$(docker exec embedding-check cat /opt/ollama/EMBEDDING_MODEL)
+          curl --silent --show-error --fail http://127.0.0.1:11434/v1/embeddings \
+            -H 'Content-Type: application/json' \
+            -d "{\"model\": \"$model\", \"input\": [\"căn hộ 2 phòng ngủ quận 7\"]}" \
+            | python3 -c "import json, sys; vector = json.load(sys.stdin)['data'][0]['embedding']; assert len(vector) == 1024, len(vector); print('dimensions:', len(vector))"
+
+      - name: Show the checked container's log
+        if: failure()
+        run: docker logs embedding-check || true
+
+      - name: Log in to GHCR
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push
+        id: push
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: deploy/embedding
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
+          cache-from: type=gha,scope=embedding
+          labels: |
+            org.opencontainers.image.source=${{ env.SOURCE_URL }}
+            org.opencontainers.image.version=${{ steps.tag.outputs.tag }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Write the image reference to the run summary
+        env:
+          IMAGE_REFERENCE: ${{ env.IMAGE_NAME }}:${{ steps.tag.outputs.tag }}
+          IMAGE_DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          {
+            echo "Published \`$IMAGE_REFERENCE\` (digest \`$IMAGE_DIGEST\`, linux/amd64)"
+            echo
+            echo "Not deployed automatically: deploying it means re-embedding the live catalog (deploy/README.md)."
+          } >> "$GITHUB_STEP_SUMMARY"
