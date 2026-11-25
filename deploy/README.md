@@ -22,6 +22,7 @@ deploy: the workflow runs the backend tests and starts both images before pushin
 | frontend | 3000 | `GET /` | `/tmp`, `/app/.next/cache` | `BACKEND_URL` at runtime; no domain or key in the image |
 | embedding | 11434 | `GET /` | `/tmp` | embeds search queries only; model baked in; stays loaded |
 | seed (CronJob) | none | exit code | `/tmp` | runs after the migrations; replaces the catalog when its own differs, otherwise does nothing |
+| photos (CronJob, seed image, `python /seed/photos.py`) | none | exit code | `/tmp`, or `PHOTO_WORK_DIR` with about 10 GB free | uploads the listing photos MinIO lacks; otherwise does nothing |
 
 All four run as user and group `10001` with a read-only root filesystem and no capabilities. The
 backend starts without Neo4j (search falls back to PostgreSQL), without MinIO (leave
@@ -92,9 +93,23 @@ python -m pytest deploy/seed/tests      # needs deploy/seed/requirements.txt
 ## Listing photos
 
 The photos are the archive `images.zip` (33,882 files for the 3,857 listings, laid out as
-`images/<property type>/<ward>/<listing id>/<file>`; Unicode NFC names). They are not in git and not
-in any image. `data/gold/images_manifest.csv` lists the archive's files; regenerate it after the
-archive changes:
+`images/<property type>/<ward>/<listing id>/<file>`; Unicode NFC names; 9,523,350,576 bytes). It is on
+Lộc's Google Drive, shared with anyone who has the link, and never in git or in an image.
+`data/gold/images_manifest.csv` lists the archive's files, and the seed image carries that list.
+
+`photos.py` in the seed image makes MinIO hold every photo of the manifest; the cluster runs it as its own
+CronJob. Each run lists the bucket's `images/` prefix and stops when nothing is missing. Otherwise it
+downloads the archive anonymously (continuing a partial download with range requests), uploads exactly
+the missing files under their manifest key, checks that none is still missing and deletes the archive.
+It reads the backend's `MINIO_*` settings, with a key that may write the bucket, and needs about 10 GB in
+`PHOTO_WORK_DIR` (default `/tmp`) only while it uploads; it uses about 30 MiB of memory. The backend only
+reads photos, so its own key can be read-only.
+
+To publish a new archive:
+1. Upload it to Google Drive, shared with anyone who has the link.
+2. Set `DEFAULT_ARCHIVE_URL` (the `drive.usercontent.google.com/download?id=…&export=download&confirm=t`
+   form) and `DEFAULT_ARCHIVE_SIZE` in `deploy/seed/photos.py`.
+3. Regenerate the manifest:
 
 ```bash
 unzip -Z1 images.zip | python3 -c "
@@ -105,6 +120,5 @@ writer = csv.writer(sys.stdout); writer.writerow(['listing_id', 'object_key']); 
 " > data/gold/images_manifest.csv
 ```
 
-MinIO object keys must equal the manifest keys, so upload the extracted `images/` directory as is
-(for example `mc mirror images local/<bucket>/images`). The keys in `data/v3/master_v3.csv` are NFD
-and include 1,484 photos of the old dataset that the archive does not have; the seed never uses them.
+The keys in `data/v3/master_v3.csv` are NFD and include 1,484 photos of the old dataset that the archive
+does not have; the seed never uses them.

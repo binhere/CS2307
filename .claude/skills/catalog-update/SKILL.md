@@ -1,6 +1,6 @@
 ---
 name: catalog-update
-description: Carry a change to the listing catalog, the embedding model or the Ollama version from re-embedding through to the live homelab deployment (cs2307.reais.codes). Use when listings in data/v3 or data/gold, the graph CSVs in data/v3/graph, data/gold/images_manifest.csv, backend/src/search/text_builder.py, backend/scripts/build_search_index.py or backend/scripts/neo4j/import_search_graph.cypher change; when re-embedding the catalog; when deploy/embedding/Dockerfile changes or a different embedding model is proposed; when seed-build fails with "listings changed since their vectors were made" or "does not match deploy/embedding/Dockerfile"; or when asked to deploy a new seed or embedding image. Not for uploading listing photos to MinIO, nor for Neo4j or cluster resource settings on their own.
+description: Carry a change to the listing catalog, the embedding model or the Ollama version from re-embedding through to the live homelab deployment (cs2307.reais.codes). Use when listings in data/v3 or data/gold, the graph CSVs in data/v3/graph, data/gold/images_manifest.csv, backend/src/search/text_builder.py, backend/scripts/build_search_index.py or backend/scripts/neo4j/import_search_graph.cypher change; when re-embedding the catalog; when deploy/embedding/Dockerfile changes or a different embedding model is proposed; when seed-build fails with "listings changed since their vectors were made" or "does not match deploy/embedding/Dockerfile"; or when asked to deploy a new seed or embedding image, including a new photo archive. Not for MinIO, Neo4j or cluster resource settings on their own.
 ---
 
 # Catalog update: from a changed catalog or model to the live site
@@ -36,8 +36,9 @@ model that does not fit is OOM-killed after the old pod is already gone, and sem
 A bigger model therefore needs room in the tenant quota and on the node first. That is an iac-homelab
 decision: hand it over before any tag is pinned.
 
-Listing photos in MinIO are a separate task: this skill does not upload them, and the cluster has no
-MinIO yet.
+Photos ride along with the seed. The seed image carries `images_manifest.csv`, and the cluster's photos
+CronJob runs `python /seed/photos.py` from the pinned seed image. It uploads whatever MinIO lacks from
+the Google Drive archive named in `deploy/seed/photos.py`.
 
 ## 2. Repository side (any developer)
 
@@ -53,8 +54,11 @@ MinIO yet.
 2. **Listing count changes:** update `EXPECTED_LISTING_COUNT` in `deploy/seed/prepare_seed_input.py`,
    `EXPECTED_LISTINGS` in `deploy/seed/catalog_lib.sh` and `deploy/seed/check_seed.sh`,
    `EXPECTED_AMENITY_EDGES` in `deploy/seed/check_seed.sh`, and the counts in `deploy/README.md`.
-   If photos changed, regenerate `data/gold/images_manifest.csv` (see "Listing photos" in
-   `deploy/README.md`).
+   If photos changed, follow "Listing photos" in `deploy/README.md`:
+   - upload the new `images.zip` to Google Drive, shared with anyone who has the link;
+   - set `DEFAULT_ARCHIVE_URL` and `DEFAULT_ARCHIVE_SIZE` in `deploy/seed/photos.py`;
+   - regenerate `data/gold/images_manifest.csv`.
+   Once the new seed tag is pinned, the photos CronJob uploads the missing photos on its next run.
 3. **Re-embed on a powerful developer machine,** never on the server or in CI. It takes about 10 minutes
    on an Apple GPU and about 1.5 hours on 8 CPU cores.
    ```bash

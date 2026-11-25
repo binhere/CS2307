@@ -84,9 +84,11 @@ done
 
 cp "$WORK_DIR"/input/v3/graph/*.csv "$context/data/graph/"
 cp "$repository_root/backend/scripts/neo4j/import_search_graph.cypher" "$context/data/"
+# photos.py uploads the photos this manifest lists (deploy/README.md, "Listing photos").
+cp "$repository_root/data/gold/images_manifest.csv" "$context/data/"
 seed_version="${SEED_IMAGE##*:}"
 echo "$seed_version" > "$context/data/SEED_VERSION"
-cp "$seed_directory/seed.py" "$seed_directory/requirements.txt" "$context/"
+cp "$seed_directory/seed.py" "$seed_directory/photos.py" "$seed_directory/requirements.txt" "$context/"
 
 # --load keeps the image in the local engine even when a docker-container Buildx builder is the default.
 docker build --load --quiet --file "$seed_directory/Dockerfile" \
