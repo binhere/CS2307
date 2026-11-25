@@ -1,6 +1,43 @@
+"""Read property images from the private MinIO bucket.
+
+MinIO is optional: a deployment without images leaves MINIO_END_POINT empty, and the
+frontend then shows its illustration for every listing.
+"""
+
+from typing import Optional
 from urllib.parse import unquote, urlparse
 
+import certifi
+import urllib3
+from loguru import logger
 from minio import Minio
+
+# The SDK's own default waits 5 minutes to connect and retries 5 times, so an
+# unreachable MinIO would hold a worker thread for minutes per image. Images are
+# optional, so fail within seconds and let the frontend show its fallback.
+CONNECT_TIMEOUT_SECONDS = 2
+READ_TIMEOUT_SECONDS = 15
+RETRY_COUNT = 1
+
+
+class ImageStorageUnavailableError(RuntimeError):
+    """MinIO is not configured for this deployment."""
+
+
+def build_http_client() -> urllib3.PoolManager:
+    """Create the connection pool MinIO requests go through.
+
+    Returns:
+        urllib3.PoolManager: Short connect/read timeouts and a single retry with backoff
+        for 5xx answers, in place of the SDK's minutes-long defaults.
+    """
+    return urllib3.PoolManager(
+        timeout=urllib3.util.Timeout(connect=CONNECT_TIMEOUT_SECONDS, read=READ_TIMEOUT_SECONDS),
+        maxsize=10,
+        cert_reqs="CERT_REQUIRED",
+        ca_certs=certifi.where(),
+        retries=urllib3.Retry(total=RETRY_COUNT, backoff_factor=0.2, status_forcelist=[500, 502, 503, 504]),
+    )
 
 
 class MinioClient:
@@ -11,14 +48,24 @@ class MinioClient:
         self.secret_key = config.get("minio_secret_access_key")
         self.minio_bucket_name = config.get("minio_bucket_name")
         self.secure = True if config.get("minio_secure") in ["True", "True", "TRUE", '1', 1] else False
-        self._minio_client = None
+        self._minio_client: Optional[Minio] = None
 
-    def start(self):
+    @property
+    def is_configured(self) -> bool:
+        """Whether this deployment has an image store (MINIO_END_POINT is set)."""
+        return bool(self.minio_url and str(self.minio_url).strip())
+
+    def start(self) -> None:
+        """Create the SDK client, or leave images disabled when MinIO is not configured."""
+        if not self.is_configured:
+            logger.warning("MINIO_END_POINT is not set; property images are unavailable")
+            return
         self._minio_client = Minio(
-            self.minio_url,
+            str(self.minio_url).strip(),
             access_key=self.access_key,
             secret_key=self.secret_key,
-            secure=self.secure
+            secure=self.secure,
+            http_client=build_http_client(),
         )
 
     def normalize_object_key(self, image_path: str) -> str:
@@ -41,10 +88,23 @@ class MinioClient:
         return path
 
     def minio_get_object(self, image_path: str):
-        """Open an image stored in the configured private property bucket."""
-        if self._minio_client is None:
-            raise RuntimeError("MinIO client is not started")
+        """Open an image stored in the configured private property bucket.
+
+        Args:
+            image_path: Object key ("images/...") or a URL whose path holds one.
+
+        Returns:
+            urllib3.BaseHTTPResponse: The object's streaming response.
+
+        Raises:
+            ValueError: The path is not a property image key.
+            ImageStorageUnavailableError: MinIO is not configured or not started.
+            minio.S3Error: MinIO answered with an error (e.g. NoSuchKey).
+            urllib3.exceptions.HTTPError: MinIO could not be reached in time.
+        """
         object_key = self.normalize_object_key(image_path)
+        if self._minio_client is None:
+            raise ImageStorageUnavailableError("MinIO is not configured")
         return self._minio_client.get_object(
             bucket_name=self.minio_bucket_name,
             object_name=object_key,

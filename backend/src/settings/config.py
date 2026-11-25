@@ -1,10 +1,7 @@
-import logging
 import os
-import sys
 from dotenv import dotenv_values, find_dotenv
-from loguru import logger
 
-from src.settings.logging_config import InterceptHandler
+from src.settings.logging_config import configure_logging
 # load config from .env file
 config = dotenv_values(find_dotenv())
 
@@ -61,9 +58,5 @@ APPLICATION = {
 # Containers only surface stderr (docker logs), so warnings and errors must reach
 # it in every environment; DEBUG adds INFO for local development.
 STDERR_LOG_LEVEL = "INFO" if APPLICATION["debug"] else "WARNING"
-# Rotated log files to keep next to the active one; bounds disk use to ~60 MB.
-LOG_FILE_RETENTION = 5
 
-logging.getLogger().handlers = [InterceptHandler()]
-logger.configure(handlers=[{"sink": sys.stderr, "level": STDERR_LOG_LEVEL}])
-logger.add("./logs/app.log", rotation="10 MB", retention=LOG_FILE_RETENTION)
+configure_logging(STDERR_LOG_LEVEL, config_value("LOG_FILE_PATH"))

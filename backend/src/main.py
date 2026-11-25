@@ -3,6 +3,8 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.openapi import utils
 from fastapi.responses import ORJSONResponse
+from loguru import logger
+from starlette.concurrency import run_in_threadpool
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
@@ -11,7 +13,7 @@ from src.api.v1.endpoints import router as v1_router
 
 from src.settings.config import APPLICATION
 from src.settings.event import (
-    create_start_app_handler, create_stop_app_handler,
+    create_start_app_handler, create_stop_app_handler, postgres_client,
 )
 from src.utils.error_messages import VALIDATE_ERROR
 
@@ -42,7 +44,7 @@ app.include_router(router=v1_router.router, prefix="/v1")
 
 @app.get("/health", include_in_schema=False)
 async def report_health() -> dict:
-    """Liveness probe for the Docker Compose healthcheck.
+    """Liveness probe for the Docker Compose healthcheck and the cluster.
 
     The Swagger page at "/" is disabled when DEBUG is false, so the healthcheck
     cannot rely on it.
@@ -51,6 +53,32 @@ async def report_health() -> dict:
         dict: {"status": "ok"} with HTTP 200 while the process serves requests.
     """
     return {"status": "ok"}
+
+
+@app.get("/ready", include_in_schema=False)
+async def report_readiness():
+    """Readiness probe: the API can serve requests only while PostgreSQL answers.
+
+    Neo4j, MinIO and the embedding service are optional (search falls back to
+    PostgreSQL, images to the frontend illustration), so they are not checked here.
+
+    Returns:
+        dict | JSONResponse: 200 envelope {"data": {"status": "ready"}} when a trivial
+        query succeeds; 503 envelope with DATABASE_UNAVAILABLE otherwise.
+    """
+    try:
+        await run_in_threadpool(postgres_client.fetch_mappings, "SELECT 1 AS ready")
+    except Exception as error:  # noqa: BLE001 - any failure means not ready
+        # Probes repeat every few seconds; one line without a traceback is enough.
+        logger.warning("Readiness check failed: PostgreSQL is unavailable ({})", type(error).__name__)
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={
+                "data": None,
+                "errors": [{"loc": "postgres", "msg": "DATABASE_UNAVAILABLE", "detail": "Cơ sở dữ liệu chưa sẵn sàng."}],
+            },
+        )
+    return {"data": {"status": "ready"}, "errors": [], "status": "success"}
 
 # handler exception
 @app.exception_handler(RequestValidationError)

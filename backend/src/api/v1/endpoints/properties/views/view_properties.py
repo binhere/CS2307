@@ -1,3 +1,4 @@
+import urllib3
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from loguru import logger
@@ -13,6 +14,7 @@ from src.api.v1.endpoints.properties.schemas.properties import (
 )
 from src.search.service import hybrid_search_service
 from src.services.inference.price_prediction import price_prediction_service
+from src.services.minio.minio_client import ImageStorageUnavailableError
 from src.settings.event import minio_client
 
 router = APIRouter()
@@ -26,6 +28,9 @@ async def view_get_property_image(path: str = Query(..., min_length=1)):
         image = await run_in_threadpool(minio_client.minio_get_object, path)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except (ImageStorageUnavailableError, urllib3.exceptions.HTTPError) as exc:
+        # Images are optional; the frontend shows its illustration for any non-200.
+        raise HTTPException(status_code=503, detail="Property image is unavailable") from exc
     except S3Error as exc:
         status_code = 404 if exc.code in {"NoSuchKey", "NoSuchObject"} else 502
         raise HTTPException(

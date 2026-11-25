@@ -90,6 +90,18 @@ services:
       timeout: 5s
       retries: 5
 
+  # Applies database migrations once before the API starts, as the cluster's initContainer does.
+  migrate:
+    build: ./backend
+    env_file: .env
+    volumes:
+      - ./.env:/app/.env:ro
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
   backend:
     build: ./backend
     restart: unless-stopped
@@ -102,8 +114,11 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      # The image has no curl; Python's standard library is enough for one GET.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/ready', timeout=5)"]
       interval: 30s
       timeout: 10s
       start_period: 60s
