@@ -25,6 +25,10 @@ def create_start_app_handler(app: FastAPI) -> Callable:  # noqa
         from src.services.agent import chat_agent_service
         from src.services.inference.price_prediction import price_prediction_service
         graph_repository.start()
+        from starlette.concurrency import run_in_threadpool
+        from src.services.auth.demo_account import ensure_demo_account_at_startup
+        # bcrypt and the database are blocking; the demo account is optional at startup.
+        await run_in_threadpool(ensure_demo_account_at_startup)
         await chat_agent_service.start()
         price_prediction_service.warm_up()
     return start_app

@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from starlette.concurrency import run_in_threadpool
 
 from src.services.auth import repository
+from src.services.auth.demo_account import ensure_demo_account, is_demo_username
 from src.services.auth.dependencies import get_current_user
 from src.services.auth.schemas import (
     AuthResponse,
@@ -47,7 +48,8 @@ async def register(data: RegisterRequest):
         registration claims it between the existence check and the insert.
     """
     existing = await run_in_threadpool(repository.get_by_username, data.username)
-    if existing:
+    # The demo account's username is reserved even before the account exists.
+    if existing or is_demo_username(data.username):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=_USERNAME_TAKEN)
     # bcrypt takes ~200 ms of CPU; hashing on the event loop would stall every
     # other request in this single-worker process.
@@ -78,6 +80,9 @@ async def login(data: LoginRequest):
         HTTPException: 401 for an unknown username or wrong password (same
         message and similar timing for both), 403 for a disabled account.
     """
+    if is_demo_username(data.username):
+        # The shared demo account must always accept its published password.
+        await run_in_threadpool(ensure_demo_account)
     user = await run_in_threadpool(repository.get_by_username, data.username)
     password_hash = user["password_hash"] if user else DUMMY_PASSWORD_HASH
     password_matches = await run_in_threadpool(verify_password, data.password, password_hash)

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/lib/auth-context"
 import { AuthShell } from "@/components/auth-shell"
+import { DEMO_ACCOUNT } from "@/lib/demo-account"
 import { safeRedirectPath } from "@/lib/listing-submission"
 
 export default function LoginPage() {
@@ -16,22 +17,31 @@ export default function LoginPage() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState<"form" | "demo" | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  /**
+   * Sign in and go where the visitor was headed.
+   * @param account - username and password.
+   * @param source - which button is waiting, for its spinner.
+   */
+  const signIn = async (account: { username: string; password: string }, source: "form" | "demo") => {
     setError(null)
-    setLoading(true)
+    setLoading(source)
     try {
-      await login(username.trim(), password)
+      await login(account.username, account.password)
       // Pages that need an account send visitors here with ?next=<their path>.
       const next = safeRedirectPath(new URLSearchParams(window.location.search).get("next"))
       router.push(next ?? "/tim-kiem-chuyen-sau")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Đăng nhập thất bại")
     } finally {
-      setLoading(false)
+      setLoading(null)
     }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    void signIn({ username: username.trim(), password }, "form")
   }
 
   return (
@@ -70,10 +80,20 @@ export default function LoginPage() {
           />
         </label>
         {error && <p role="alert" className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive">{error}</p>}
-        <Button type="submit" disabled={loading || !username.trim() || !password} className="h-11 w-full">
-          {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Đăng nhập"}
+        <Button type="submit" disabled={loading !== null || !username.trim() || !password} className="h-11 w-full">
+          {loading === "form" ? <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" /> : "Đăng nhập"}
         </Button>
       </form>
+      <div className="mt-6 space-y-2 border-t border-border pt-6">
+        <Button type="button" variant="outline" disabled={loading !== null} className="h-11 w-full"
+          onClick={() => void signIn(DEMO_ACCOUNT, "demo")}>
+          {loading === "demo" ? <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" /> : "Dùng tài khoản demo"}
+        </Button>
+        <p className="text-center text-xs text-muted-foreground">
+          {DEMO_ACCOUNT.username} · mật khẩu {DEMO_ACCOUNT.password}
+          <span className="block">Tài khoản dùng chung: ai cũng thấy lịch sử chat và tin đã lưu của nó.</span>
+        </p>
+      </div>
     </AuthShell>
   )
 }

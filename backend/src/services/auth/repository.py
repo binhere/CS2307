@@ -39,3 +39,17 @@ def create_user(username: str, password_hash: str, display_name: Optional[str]) 
         display_name=display_name,
     )
     return rows[0]
+
+
+def restore_account(user_id: int, password_hash: str) -> None:
+    """Give an account a new password hash and make it active again (used for the demo account).
+
+    Args:
+        user_id: The account's id.
+        password_hash: bcrypt hash of the password the account must accept.
+    """
+    postgres_client.execute_write(
+        "UPDATE users SET password_hash = :password_hash, is_active = true WHERE id = :user_id",
+        password_hash=password_hash,
+        user_id=user_id,
+    )
