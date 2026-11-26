@@ -23,8 +23,8 @@ export default function LlmSettingsPage() {
         <div className="mx-auto w-full max-w-md">
           <h1 className="text-2xl font-bold text-foreground">Cài đặt AI</h1>
           <p className="mt-1 mb-6 text-sm text-muted-foreground text-pretty">
-            Tư vấn AI dùng API key của bạn. Key chỉ lưu trong trình duyệt này và chỉ được gửi kèm các yêu cầu AI;
-            máy chủ không lưu key.
+            Tư vấn AI dùng API key của bạn. Key chỉ lưu trong trình duyệt này, tự xóa sau 24 giờ và chỉ được gửi
+            kèm các yêu cầu AI; máy chủ không lưu key.
           </p>
           <LlmSettingsForm />
         </div>

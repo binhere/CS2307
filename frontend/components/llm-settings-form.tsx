@@ -47,6 +47,17 @@ interface FormNotice {
   text: string
 }
 
+/**
+ * Format the moment the saved key expires in the reader's time zone.
+ * @param expiresAt - epoch milliseconds.
+ * @returns text such as "14:30 ngày 27/11".
+ */
+function formatExpiry(expiresAt: number): string {
+  const moment = new Date(expiresAt)
+  const twoDigits = (value: number) => String(value).padStart(2, "0")
+  return `${twoDigits(moment.getHours())}:${twoDigits(moment.getMinutes())} ngày ${twoDigits(moment.getDate())}/${twoDigits(moment.getMonth() + 1)}`
+}
+
 /** Form state for a first-time user: nothing chosen, not remembered on this device. */
 const EMPTY_FORM: LlmSettings = { provider: "", apiKey: "", model: "", baseUrl: "", remember: false }
 
@@ -154,6 +165,17 @@ export function LlmSettingsForm() {
     const storedSettings = readLlmSettings()
     if (storedSettings) setForm(storedSettings)
   }, [])
+
+  // When the saved key expires while this page is open, the input must not keep showing it.
+  const previousExpiryRef = useRef<number | null>(null)
+  useEffect(() => {
+    const previousExpiry = previousExpiryRef.current
+    previousExpiryRef.current = savedSettings?.expiresAt ?? null
+    if (!savedSettings && previousExpiry !== null && Date.now() >= previousExpiry) {
+      setForm((current) => ({ ...current, apiKey: "" }))
+      setNotice({ tone: "info", text: "Key đã hết hạn sau 24 giờ. Vui lòng nhập lại." })
+    }
+  }, [savedSettings])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -380,7 +402,14 @@ export function LlmSettingsForm() {
         />
         <div>
           <Label htmlFor="llm-remember">Nhớ trên thiết bị này</Label>
-          <p className="mt-1 text-xs text-muted-foreground">Nếu không chọn, key sẽ bị xóa khi bạn đóng tab.</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Nếu không chọn, key sẽ bị xóa khi bạn đóng tab. Dù chọn hay không, key tự xóa sau 24 giờ.
+          </p>
+          {savedSettings && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              Key đang lưu sẽ tự xóa lúc {formatExpiry(savedSettings.expiresAt)}.
+            </p>
+          )}
         </div>
       </div>
 

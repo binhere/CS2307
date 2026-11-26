@@ -1,6 +1,7 @@
 // Bring-your-own-key LLM settings. The key never leaves the browser except as request
-// headers on AI calls, so it is kept in Web Storage: localStorage when the user asks to be
-// remembered on this device, sessionStorage (gone when the tab closes) otherwise.
+// headers on AI calls (the server never stores it), so it is kept in Web Storage:
+// localStorage when the user asks to be remembered on this device, sessionStorage (gone when
+// the tab closes) otherwise. Either way it expires 24 hours after it was saved.
 import { useSyncExternalStore } from "react"
 
 /** LLM credentials and options the user entered on the "Cài đặt AI" page. */
@@ -15,6 +16,15 @@ export interface LlmSettings {
   /** True keeps the settings in localStorage across browser restarts. */
   remember: boolean
 }
+
+/** Saved settings together with the moment they stop being usable. */
+export interface StoredLlmSettings extends LlmSettings {
+  /** Epoch milliseconds; from this moment on the settings, key included, are removed. */
+  expiresAt: number
+}
+
+/** How long saved settings stay usable: the key is forgotten 24 hours after it was saved. */
+export const LLM_SETTINGS_LIFETIME_MS = 24 * 60 * 60 * 1000
 
 /** Whether usable settings exist: unknown until the client has hydrated, since the server cannot read Web Storage. */
 export type LlmSettingsStatus = "unknown" | "missing" | "ready"
@@ -31,7 +41,7 @@ const LLM_SETTINGS_CHANGE_EVENT = "cs2307:llm-settings-change"
 // useSyncExternalStore needs the same object back while nothing changed, so the parsed
 // settings are cached against the raw stored string they came from.
 let cachedRawSettings: string | null = null
-let cachedSettings: LlmSettings | null = null
+let cachedSettings: StoredLlmSettings | null = null
 
 /**
  * Read one Web Storage area without throwing (storage can be blocked or unavailable).
@@ -65,14 +75,15 @@ function writeStorageItem(area: "local" | "session", value: string | null): bool
 }
 
 /**
- * Parse stored JSON into LlmSettings, tolerating missing optional fields.
+ * Parse stored JSON into StoredLlmSettings, tolerating missing optional fields.
  * @param raw - stored string, possibly malformed or from an older version.
- * @returns the settings, or null when the string is not a usable settings object.
+ * @returns the settings, or null when the string is not a usable settings object. A copy
+ *   saved before expiry existed has expiresAt 0, so it counts as expired.
  */
-function parseLlmSettings(raw: string | null): LlmSettings | null {
+function parseLlmSettings(raw: string | null): StoredLlmSettings | null {
   if (!raw) return null
   try {
-    const value = JSON.parse(raw) as Partial<Record<keyof LlmSettings, unknown>> | null
+    const value = JSON.parse(raw) as Partial<Record<keyof StoredLlmSettings, unknown>> | null
     if (!value || typeof value !== "object") return null
     const readText = (field: unknown) => (typeof field === "string" ? field : "")
     return {
@@ -81,6 +92,7 @@ function parseLlmSettings(raw: string | null): LlmSettings | null {
       model: readText(value.model),
       baseUrl: readText(value.baseUrl),
       remember: value.remember === true,
+      expiresAt: typeof value.expiresAt === "number" && Number.isFinite(value.expiresAt) ? value.expiresAt : 0,
     }
   } catch {
     return null
@@ -100,28 +112,43 @@ function notifyLlmSettingsChange(): void {
 
 /**
  * Read the saved settings; a remembered (localStorage) copy wins over a session one.
- * @returns the saved settings, or null on the server or when nothing usable is stored.
+ * Expired settings are removed from both stores on the spot, so an expired key is never sent.
+ * @param now - current time in epoch milliseconds; tests pass a fixed value.
+ * @returns the saved settings, or null on the server, when nothing usable is stored, or when
+ *   they have expired.
  */
-export function readLlmSettings(): LlmSettings | null {
+export function readLlmSettings(now: number = Date.now()): StoredLlmSettings | null {
   if (typeof window === "undefined") return null
   const raw = readStorageItem("local") ?? readStorageItem("session")
   if (raw !== cachedRawSettings) {
     cachedRawSettings = raw
     cachedSettings = parseLlmSettings(raw)
   }
+  if (cachedSettings && now >= cachedSettings.expiresAt) {
+    // Removing here, not only hiding, keeps the key from outliving its 24 hours on the device.
+    // No change event is fired: this also runs as React's snapshot read, and every later read
+    // already returns null.
+    writeStorageItem("local", null)
+    writeStorageItem("session", null)
+    cachedRawSettings = null
+    cachedSettings = null
+  }
   return cachedSettings
 }
 
 /**
  * Save the settings to exactly one store, chosen by `remember`, and remove any copy from
- * the other store so an unticked "remember" really forgets the key on this device.
+ * the other store so an unticked "remember" really forgets the key on this device. Every
+ * save starts a new 24-hour lifetime.
  * @param settings - settings to store.
+ * @param now - current time in epoch milliseconds; tests pass a fixed value.
  * @returns true when the settings were written.
  */
-export function saveLlmSettings(settings: LlmSettings): boolean {
+export function saveLlmSettings(settings: LlmSettings, now: number = Date.now()): boolean {
   const targetArea = settings.remember ? "local" : "session"
   const otherArea = settings.remember ? "session" : "local"
-  const isSaved = writeStorageItem(targetArea, JSON.stringify(settings))
+  const stored: StoredLlmSettings = { ...settings, expiresAt: now + LLM_SETTINGS_LIFETIME_MS }
+  const isSaved = writeStorageItem(targetArea, JSON.stringify(stored))
   if (isSaved) writeStorageItem(otherArea, null)
   notifyLlmSettingsChange()
   return isSaved
@@ -166,19 +193,34 @@ export function llmHeaders(settings: LlmSettings | null = readLlmSettings()): Re
 }
 
 /**
- * Subscribe to settings changes from this tab (custom event) and other tabs (`storage`).
- * @param onChange - called after any change.
- * @returns a function that removes both listeners.
+ * Subscribe to settings changes from this tab (custom event), other tabs (`storage`) and the
+ * clock: a timer fires when the saved settings expire, so an open page drops the key on time.
+ * @param onChange - called after any change, including expiry.
+ * @returns a function that removes both listeners and the timer.
  */
 function subscribeToLlmSettings(onChange: () => void): () => void {
+  let expiryTimer: ReturnType<typeof setTimeout> | undefined
+  const scheduleExpiry = () => {
+    clearTimeout(expiryTimer)
+    const settings = readLlmSettings()
+    if (!settings) return
+    // One second of margin, so the read inside onChange already sees the settings as expired.
+    expiryTimer = setTimeout(handleChange, Math.max(0, settings.expiresAt - Date.now()) + 1000)
+  }
+  const handleChange = () => {
+    onChange()
+    scheduleExpiry()
+  }
   const handleStorage = (event: StorageEvent) => {
     // A null key means another tab called storage.clear().
-    if (event.key === null || event.key === LLM_SETTINGS_STORAGE_KEY) onChange()
+    if (event.key === null || event.key === LLM_SETTINGS_STORAGE_KEY) handleChange()
   }
-  window.addEventListener(LLM_SETTINGS_CHANGE_EVENT, onChange)
+  window.addEventListener(LLM_SETTINGS_CHANGE_EVENT, handleChange)
   window.addEventListener("storage", handleStorage)
+  scheduleExpiry()
   return () => {
-    window.removeEventListener(LLM_SETTINGS_CHANGE_EVENT, onChange)
+    clearTimeout(expiryTimer)
+    window.removeEventListener(LLM_SETTINGS_CHANGE_EVENT, handleChange)
     window.removeEventListener("storage", handleStorage)
   }
 }
@@ -188,16 +230,16 @@ function subscribeToLlmSettings(onChange: () => void): () => void {
  * as if nothing were saved.
  * @returns null.
  */
-function getServerLlmSettings(): LlmSettings | null {
+function getServerLlmSettings(): StoredLlmSettings | null {
   return null
 }
 
 /**
- * Current saved settings, re-rendering the caller whenever they change in any tab.
- * @returns the saved settings, or null on the server, during hydration, or when none are saved.
+ * Current saved settings, re-rendering the caller whenever they change in any tab or expire.
+ * @returns the saved settings, or null on the server, during hydration, or when none are usable.
  */
-export function useLlmSettings(): LlmSettings | null {
-  return useSyncExternalStore(subscribeToLlmSettings, readLlmSettings, getServerLlmSettings)
+export function useLlmSettings(): StoredLlmSettings | null {
+  return useSyncExternalStore(subscribeToLlmSettings, () => readLlmSettings(), getServerLlmSettings)
 }
 
 /**
