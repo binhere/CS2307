@@ -7,10 +7,12 @@ from sqlalchemy.exc import OperationalError
 
 from src.services.inference import price_prediction
 from src.services.inference.price_prediction import (
+    PriceModelUnavailableError,
     PricePredictionService,
     normalize_legal_status,
 )
 from src.services.price_training.service import ServedModel
+from tests.price_model_fixture import fixture_served_model, price_service_with_fixture
 
 LISTING = {
     "property_type": "Căn hộ chung cư",
@@ -38,7 +40,7 @@ class LegalStatusTests(unittest.TestCase):
 
 class EstimateListingTests(unittest.TestCase):
     def setUp(self):
-        self.service = PricePredictionService()
+        self.service = price_service_with_fixture()
 
     def test_scores_listing_and_classifies_verdict(self):
         result = self.service.estimate_listing(LISTING)
@@ -69,11 +71,11 @@ class EstimateListingTests(unittest.TestCase):
         self.assertTrue(10.3 <= ward_point["latitude"] <= 11.6)
 
     def test_missing_bedrooms_are_filled_only_by_a_model_that_learnt_how(self):
-        self.assertEqual(self.service.assess_listing({**LISTING, "bedrooms": None}).reason_code, "missing_fields")
-        shipped = self.service.served_model()
-        imputation = {"area_band_edges": [40, 60, 80], "bedrooms": {"Căn hộ": [1, 1, 2, 3]}, "fallback": {"Căn hộ": 2}}
-        self.service._served = ServedModel({**shipped.bundle, "imputation": imputation}, shipped.report, None)
-        self.assertEqual(self.service.assess_listing({**LISTING, "bedrooms": None}).inputs["bedrooms"], 2)
+        served = fixture_served_model()
+        self.assertGreaterEqual(self.service.assess_listing({**LISTING, "bedrooms": None}).inputs["bedrooms"], 1)
+        without = {key: value for key, value in served.bundle.items() if key != "imputation"}
+        unlearnt = price_service_with_fixture(ServedModel(without, served.report, served.run_id))
+        self.assertEqual(unlearnt.assess_listing({**LISTING, "bedrooms": None}).reason_code, "missing_fields")
 
 
 class FakeTrainingRepository:
@@ -96,43 +98,55 @@ class FakeTrainingRepository:
 
 class ServedModelTests(unittest.TestCase):
     def setUp(self):
-        self.shipped = joblib.load(price_prediction.SHIPPED_MODEL_FILE)
+        self.repository = FakeTrainingRepository(fixture_served_model().bundle)
 
-    def test_the_shipped_model_is_served_until_a_run_deploys_one(self):
-        repository = FakeTrainingRepository(self.shipped)
+    def test_nothing_is_served_until_a_run_deploys_a_model(self):
         service = PricePredictionService(model_check_seconds=0)
-        with patch.object(price_prediction, "training_repository", repository):
-            self.assertIsNone(service.served_model().run_id)
-            repository.active_id = 7
+        with patch.object(price_prediction, "training_repository", self.repository):
+            with self.assertRaises(PriceModelUnavailableError) as raised:
+                service.served_model()
+            self.assertIn("Chưa có mô hình định giá", str(raised.exception))
+            self.assertIsNone(service.served_model_or_none())
+            self.repository.active_id = 7
             served = service.served_model()
             self.assertEqual((served.run_id, served.bundle["model_name"], served.report), (7, "run 7", {"run": 7}))
             service.served_model()
-            self.assertEqual(repository.fetches, 1)  # the same run is not loaded twice
-            repository.is_down = True
+            self.assertEqual(self.repository.fetches, 1)  # the same run is not loaded twice
+            self.repository.is_down = True
             self.assertEqual(service.served_model().run_id, 7)  # a database error keeps the model held
+            self.repository.is_down, self.repository.active_id = False, None
+            self.assertIsNone(service.served_model_or_none())  # runs wiped: the model goes too
 
     def test_a_newer_model_is_looked_for_only_after_the_check_interval(self):
-        repository = FakeTrainingRepository(self.shipped)
         service = PricePredictionService(model_check_seconds=3600)
-        with patch.object(price_prediction, "training_repository", repository):
+        self.repository.active_id = 7
+        with patch.object(price_prediction, "training_repository", self.repository):
             service.served_model()
-            repository.active_id = 8
-            self.assertIsNone(service.served_model().run_id)
+            self.repository.active_id = 8
+            self.assertEqual(service.served_model().run_id, 7)
             self.assertEqual(service.served_model(is_forced=True).run_id, 8)
+
+    def test_pricing_without_a_model_says_so(self):
+        service = PricePredictionService(model_check_seconds=0)
+        with patch.object(price_prediction, "training_repository", self.repository):
+            with self.assertRaises(PriceModelUnavailableError):
+                service.estimate_listing(LISTING)
 
 
 class WarmUpTests(unittest.TestCase):
     def test_warm_up_loads_the_model_once(self):
+        repository = FakeTrainingRepository(fixture_served_model().bundle)
+        repository.active_id = 3
         service = PricePredictionService()
-        self.assertTrue(service.warm_up())
-        served = service._served
-        self.assertIsNotNone(served)
-        service.warm_up()
+        with patch.object(price_prediction, "training_repository", repository):
+            self.assertTrue(service.warm_up())
+            served = service._served
+            service.warm_up()
         self.assertIs(service._served, served)
 
-    def test_missing_model_does_not_break_startup(self):
+    def test_no_model_yet_does_not_break_startup(self):
         service = PricePredictionService()
-        with patch.object(price_prediction, "SHIPPED_MODEL_FILE", price_prediction.ARTIFACT_DIRECTORY / "missing.joblib"):
+        with patch.object(price_prediction, "training_repository", FakeTrainingRepository({})):
             self.assertFalse(service.warm_up())
 
 

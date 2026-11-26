@@ -3,7 +3,8 @@
 A run: prepare every listing (preparation.py), set the fixed holdout set aside, fit the three
 candidates on the rest (trainer.py), then score the new model and the one being served on the
 holdout set. The new model is deployed only when its R² on log price is higher; otherwise the
-run is recorded as rejected. Every outcome, with its counts, metrics, duration and memory, goes
+run is recorded as rejected. No model ships in the image, so the first run has nothing to beat
+and is deployed as soon as there are enough listings. Every outcome, with its counts, metrics, duration and memory, goes
 to price_model_runs for the "Lịch sử huấn luyện" tab.
 
 The schedule checks every PRICE_TRAINING_CHECK_SECONDS whether today's 02:00 (Vietnam time) run
@@ -53,9 +54,9 @@ class ServedModel:
     """The model the backend serves.
 
     Attributes:
-        bundle: model_name, model, feature_names and, for models trained here, imputation.
-        report: Its training report, or None when the image ships none.
-        run_id: The price_model_runs id it came from, or None for the model shipped in the image.
+        bundle: model_name, model, feature_names and imputation.
+        report: Its training report.
+        run_id: The price_model_runs id it came from.
     """
 
     bundle: Dict[str, Any]
@@ -112,13 +113,13 @@ def split_holdout(prepared: PreparedData, holdout_ids: Set[int]) -> tuple[pd.Dat
     return frame[in_holdout & is_complete], frame[~in_holdout]
 
 
-def execute_run(run_id: int, trigger: str, served: ServedModel) -> str:
+def execute_run(run_id: int, trigger: str, served: Optional[ServedModel]) -> str:
     """Carry out a started run and record its outcome.
 
     Args:
         run_id: The run from repository.start_run.
         trigger: "schedule" (trains only with enough new data) or "manual" (always trains).
-        served: The model being served, the champion to beat.
+        served: The model being served, the champion to beat; None before the first deployed model.
 
     Returns:
         str: The run's final status: "deployed", "rejected", "skipped" or "failed".
@@ -130,18 +131,18 @@ def execute_run(run_id: int, trigger: str, served: ServedModel) -> str:
         holdout, pool = split_holdout(prepared, set(repository.fetch_holdout_ids()))
         # First run, or a catalog update removed listings of the set: choose it (again).
         if len(holdout) < MINIMUM_HOLDOUT_ROWS:
-            holdout_ids = choose_holdout(prepared.frame, served.report)
+            holdout_ids = choose_holdout(prepared.frame, served.report if served else None)
             repository.replace_holdout_ids(holdout_ids)
             holdout, pool = split_holdout(prepared, holdout_ids)
             summary["is_holdout_new"] = True
-        new_rows = int((~pool["listing_id"].isin(seen_listing_ids(served.report))).sum())
+        new_rows = int((~pool["listing_id"].isin(seen_listing_ids(served.report if served else None))).sum())
         summary.update({
             "input_rows": prepared.step_rows[0], "step_rows": prepared.step_rows, "dropped": dict(prepared.dropped),
             "pool_rows": int(len(pool)), "new_rows": new_rows, "holdout_rows": int(len(holdout)),
             "imputed_bedrooms": int(pool["is_bedrooms_imputed"].sum()),
             "imputed_coordinates": int(pool["is_coordinates_imputed"].sum()),
             "by_source": {str(key): int(value) for key, value in pool["source"].value_counts().items()},
-            "champion_run_id": served.run_id,
+            "champion_run_id": served.run_id if served else None,
         })
         if trigger == "schedule" and new_rows < NEW_DATA_SHARE * len(pool):
             return _finish(run_id, "skipped", "not_enough_new_data", summary, started)
@@ -153,7 +154,7 @@ def execute_run(run_id: int, trigger: str, served: ServedModel) -> str:
         # Scoring also runs OpenMP code (HistGradientBoosting): keep it within the training threads.
         with threadpool_limits(limits=TRAINING_JOBS):
             challenger = regression_metrics(holdout_true, predict_log({"model": model, "feature_names": feature_names}, holdout))
-            champion = regression_metrics(holdout_true, predict_log(served.bundle, holdout))
+            champion = regression_metrics(holdout_true, predict_log(served.bundle, holdout)) if served else None
         bundle = {
             "model_name": model_name, "model": model, "feature_names": feature_names, "imputation": prepared.imputation,
             "metrics_overall": challenger, "trained_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -161,8 +162,8 @@ def execute_run(run_id: int, trigger: str, served: ServedModel) -> str:
         report = build_report(bundle, training, holdout, prepared.frame, prepared.step_rows, benchmark)
         report["seen_listing_ids"] = sorted(int(value) for value in pool["listing_id"])
         summary.update({"model_name": model_name, "training_rows": int(len(training)), "challenger": challenger,
-                        "champion": champion, "champion_name": served.bundle.get("model_name")})
-        if challenger["r2"] > champion["r2"]:
+                        "champion": champion, "champion_name": served.bundle.get("model_name") if served else None})
+        if champion is None or challenger["r2"] > champion["r2"]:
             buffer = io.BytesIO()
             joblib.dump(bundle, buffer)
             return _finish(run_id, "deployed", None, summary, started, report, buffer.getvalue())
@@ -189,11 +190,12 @@ def latest_slot(now: datetime) -> datetime:
     return slot if local >= slot else slot - timedelta(days=1)
 
 
-def run_scheduled_if_due(served_model: Callable[[], ServedModel], now: Optional[datetime] = None) -> Optional[str]:
+def run_scheduled_if_due(served_model: Callable[[], Optional[ServedModel]], now: Optional[datetime] = None) -> Optional[str]:
     """Run the day's scheduled training unless it already ran or another run is going.
 
     Args:
-        served_model: Returns the ServedModel to beat (called only when a run starts).
+        served_model: Returns the ServedModel to beat, or None before the first deployed model
+            (called only when a run starts).
         now: The current moment (tests pass one).
 
     Returns:
@@ -234,13 +236,13 @@ def configured_check_seconds() -> float:
 
 
 async def check_schedule_periodically(check_seconds: float, first_delay_seconds: float,
-                                      served_model: Callable[[], ServedModel]) -> None:
+                                      served_model: Callable[[], Optional[ServedModel]]) -> None:
     """Check the schedule after a delay, then every check_seconds, until cancelled; failures are logged.
 
     Args:
         check_seconds: Seconds between checks.
         first_delay_seconds: Wait before the first check, so startup stays quick.
-        served_model: Returns the ServedModel to beat.
+        served_model: Returns the ServedModel to beat, or None before the first deployed model.
     """
     await asyncio.sleep(first_delay_seconds)
     while True:
@@ -257,11 +259,11 @@ class ScheduledTraining:
     def __init__(self):
         self._task: Optional[asyncio.Task] = None
 
-    def start(self, served_model: Callable[[], ServedModel]) -> None:
+    def start(self, served_model: Callable[[], Optional[ServedModel]]) -> None:
         """Start checking on the running event loop, unless the schedule is off or already running.
 
         Args:
-            served_model: Returns the ServedModel to beat.
+            served_model: Returns the ServedModel to beat, or None before the first deployed model.
         """
         check_seconds = configured_check_seconds()
         if check_seconds <= 0 or self._task is not None:

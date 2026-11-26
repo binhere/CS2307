@@ -11,11 +11,11 @@ import unittest
 from datetime import date
 from unittest.mock import patch
 
-import joblib
 from sqlalchemy.exc import OperationalError
 
 from src.api.v1.endpoints.monitoring import view_monitoring
 from src.services.inference import price_prediction
+from tests.price_model_fixture import fixture_served_model, price_service_with_fixture
 from src.services.monitoring import service, statistics
 
 
@@ -124,7 +124,8 @@ class SectionTests(unittest.TestCase):
     def test_predictions_split_verdicts_by_training_membership(self):
         # Missing coordinates are filled in from the ward; a missing area cannot be.
         rows = [listing(listing_id=1), listing(listing_id=2, price_range=40.0), listing(listing_id=3, area=None)]
-        predictions = service.prediction_section(rows, train_ids={1})
+        with patch.object(service, "price_prediction_service", price_service_with_fixture()):
+            predictions = service.prediction_section(rows, train_ids={1})
         groups = {item["group"]: item for item in predictions["verdicts"]}
         self.assertEqual(groups["in_training"]["total"], 1)
         self.assertEqual(groups["not_in_training"]["total"], 2)
@@ -134,19 +135,24 @@ class SectionTests(unittest.TestCase):
 
 
 class SnapshotTests(unittest.TestCase):
-    def test_the_shipped_report_describes_the_shipped_model(self):
-        report = service.load_training_report()
-        bundle = joblib.load(price_prediction.SHIPPED_MODEL_FILE)
-        self.assertEqual(report["model"]["name"], bundle["model_name"])
-        self.assertAlmostEqual(report["segments"][0]["r2"], float(bundle["metrics_overall"]["R2 Score"]), places=4)
-        self.assertEqual(len(report["train_listing_ids"]), report["composition"]["train_rows"])
+    def test_the_report_is_the_served_models_and_absent_before_any_model(self):
+        served = fixture_served_model()
+        with patch.object(service, "price_prediction_service", price_service_with_fixture()):
+            self.assertIs(service.load_training_report(), served.report)
+            self.assertEqual(service.served_model_id(), served.run_id)
+        no_model = price_prediction.PricePredictionService()
+        with patch.object(service, "price_prediction_service", no_model), \
+                patch.object(price_prediction.training_repository, "active_model_id", return_value=None):
+            self.assertIsNone(service.load_training_report())
+            self.assertIsNone(service.prediction_section([listing()], train_ids=set()))
 
     def test_snapshot_has_every_section_without_graph_or_image_store(self):
         rows = [listing(id=index, listing_id=index) for index in range(1, 6)]
         with patch.object(service.repository, "fetch_catalog_rows", return_value=rows), \
                 patch.object(service.repository, "fetch_catalog_import", return_value=None), \
                 patch.object(service.graph_repository, "count_listing_nodes", return_value=None), \
-                patch.object(service.minio_client, "count_objects", return_value=None):
+                patch.object(service.minio_client, "count_objects", return_value=None), \
+                patch.object(service, "price_prediction_service", price_service_with_fixture()):
             snapshot = service.build_snapshot(today=date(2026, 11, 26))
         self.assertEqual(snapshot["kpis"]["listings"], 5)
         self.assertIsNone(snapshot["kpis"]["graph_listings"])

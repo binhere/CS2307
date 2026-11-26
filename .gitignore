@@ -58,3 +58,6 @@ images/*
 databases/graph/data/
 databases/sql/data/
 databases/object_storage/data/
+
+# Offline price model experiments (the backend trains its own model from posted listings)
+price_prediction/artifacts/

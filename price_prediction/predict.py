@@ -8,7 +8,8 @@ import pandas as pd
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-MODEL_FILE = SCRIPT_DIR.parent / "backend" / "src" / "services" / "inference" / "artifacts" / "best_model.joblib"
+# Written by train-models.py (offline experiments; the backend trains its own model).
+MODEL_FILE = SCRIPT_DIR / "artifacts" / "best_model.joblib"
 
 
 def predict_price(

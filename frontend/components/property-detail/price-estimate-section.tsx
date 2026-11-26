@@ -36,7 +36,8 @@ export function PriceEstimateSection({ propertyId }: { propertyId: string }) {
     })
       .then((payload) => {
         if (payload?.status === 'success' && payload.data) setEstimate(payload.data)
-        else if (payload?.status === 'unavailable') setUnavailable(readEnvelopeDetail(payload) || 'Chưa có định giá cho tin này.')
+        // "" when the backend gives no reason: the section then shows its heading line only.
+        else if (payload?.status === 'unavailable') setUnavailable(readEnvelopeDetail(payload) ?? '')
       })
       // A failed or aborted estimate simply hides the section; the listing itself is unaffected.
       .catch(() => {})
@@ -45,10 +46,10 @@ export function PriceEstimateSection({ propertyId }: { propertyId: string }) {
 
   // Unscorable listings (missing fields, outside the training domain) say why instead of vanishing.
   if (!estimate) {
-    if (!unavailable) return null
+    if (unavailable === null) return null
     return (
       <DetailSection title="Định giá AI">
-        <p className="text-sm text-muted-foreground">Chưa có định giá cho tin này. {unavailable}</p>
+        <p className="text-sm text-muted-foreground">Chưa có định giá cho tin này.{unavailable ? ` ${unavailable}` : ''}</p>
       </DetailSection>
     )
   }

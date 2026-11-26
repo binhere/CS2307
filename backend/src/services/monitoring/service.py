@@ -1,10 +1,10 @@
 """Build the data dashboard (/du-lieu): catalog health, data quality, drift, model quality and
 the price model's verdicts over the catalog.
 
-Everything is computed from the catalog rows (a few thousand) plus the training report of the
-model being served (a training run's report, or the training_report.json shipped with the image's
-model). The result changes only when the seed reloads the catalog or a new model is served, so
-it is cached for CACHE_SECONDS and rebuilt at once when the served model changes.
+Everything is computed from the listing rows plus the training report of the model being served
+(the report of the training run that deployed it). The result changes when listings are posted or a new model is served, so it is cached
+for CACHE_SECONDS and rebuilt at once when the served model changes. Before the first training run
+deploys a model, the drift, model and prediction sections are None.
 
 Output: a JSON-ready dict with the sections kpis, quality, distributions, drift, model and
 predictions; drift and model are None without a training report, predictions is None without
@@ -20,11 +20,11 @@ from datetime import date, datetime, timezone
 from threading import Lock
 from typing import Dict, List, Optional, Set
 
-from loguru import logger
 
 from src.search.graph_repository import graph_repository
 from src.search.normalizer import PROPERTY_TYPE_GROUPS
 from src.services.inference.price_prediction import (
+    PriceModelUnavailableError,
     is_inside_city,
     normalize_legal_status,
     parse_coordinates,
@@ -55,19 +55,14 @@ MAX_ROOMS = 20
 
 def load_training_report() -> Optional[Dict]:
     """The report of the model being served, or None when there is no model or no report."""
-    try:
-        return price_prediction_service.served_model().report
-    except FileNotFoundError:
-        logger.warning("Price model missing; the dashboard shows no model sections")
-        return None
+    served = price_prediction_service.served_model_or_none()
+    return served.report if served else None
 
 
 def served_model_id() -> Optional[int]:
     """The training run of the served model (None for the shipped model or no model): the cache key."""
-    try:
-        return price_prediction_service.served_model().run_id
-    except FileNotFoundError:
-        return None
+    served = price_prediction_service.served_model_or_none()
+    return served.run_id if served else None
 
 
 def property_group(property_type: Optional[str]) -> str:
@@ -274,8 +269,7 @@ def prediction_section(rows: List[Dict], train_ids: Set[int]) -> Optional[Dict]:
         assessments = [price_prediction_service.assess_listing(row) for row in rows]
         scored = [(row, assessment) for row, assessment in zip(rows, assessments) if assessment.inputs]
         estimates = price_prediction_service.predict_many([assessment.inputs for _, assessment in scored])
-    except FileNotFoundError:
-        logger.warning("Price model missing; the dashboard shows no prediction monitoring")
+    except PriceModelUnavailableError:
         return None
     groups = {"in_training": Counter(), "not_in_training": Counter()}
     differences: Dict[str, List[float]] = {"in_training": [], "not_in_training": []}

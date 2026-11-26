@@ -1,19 +1,18 @@
 """Price prediction inference service.
 
 Serves the latest model a training run deployed (price_model_runs, see
-src/services/price_training), checking for a newer one every MODEL_CHECK_SECONDS, and falls back
-to the model shipped in the image when the database has none or cannot be reached. Listings are
-encoded by the same code that prepares training data, and missing bedrooms and coordinates are
-filled in the way training filled them. Estimates come with a confidence band per property group.
+src/services/price_training), checking for a newer one every MODEL_CHECK_SECONDS. No model ships in
+the image: listings come only from users, so until the first training run on their listings
+deploys a model, pricing answers PriceModelUnavailableError. Listings are encoded by the same code
+that prepares training data, and missing bedrooms and coordinates are filled in the way training
+filled them. Estimates come with a confidence band per property group.
 """
 
 from __future__ import annotations
 
 import io
-import json
 import time
 from dataclasses import dataclass
-from pathlib import Path
 from threading import Lock
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -35,13 +34,22 @@ from src.services.price_training.preparation import (
 )
 from src.services.price_training.service import ServedModel
 
-ARTIFACT_DIRECTORY = Path(__file__).resolve().parent / "artifacts"
-SHIPPED_MODEL_FILE = ARTIFACT_DIRECTORY / "best_model.joblib"
-SHIPPED_REPORT_FILE = ARTIFACT_DIRECTORY / "training_report.json"
 MODEL_CHECK_SECONDS = 60.0
+NO_MODEL_MESSAGE = "Chưa có mô hình định giá. Mô hình đầu tiên sẽ được huấn luyện khi có đủ tin đăng."
 # Re-exported for the dashboard, which reads these from here.
 __all__ = ["is_inside_city", "normalize_legal_status", "parse_coordinates", "price_bounds", "price_verdict",
            "price_prediction_service"]
+
+
+class PriceModelUnavailableError(ValueError):
+    """No model has been deployed yet (or the database holding it cannot be read).
+
+    A ValueError on purpose: every caller already treats ValueError as "this listing cannot be
+    priced" and shows its Vietnamese message (the listing page, the chat's price tool).
+    """
+
+    def __init__(self) -> None:
+        super().__init__(NO_MODEL_MESSAGE)
 
 
 @dataclass(frozen=True)
@@ -101,40 +109,27 @@ class PricePredictionService:
         # Predictions run in worker threads; the lock makes concurrent calls load a model once.
         self._lock = Lock()
 
-    @staticmethod
-    def _shipped_model() -> ServedModel:
-        """The model and report shipped in the image (price_prediction/train-models.py).
-
-        Raises:
-            FileNotFoundError: The image has no model file.
-        """
-        if not SHIPPED_MODEL_FILE.exists():
-            raise FileNotFoundError(f"Trained price model not found: {SHIPPED_MODEL_FILE}")
-        try:
-            report = json.loads(SHIPPED_REPORT_FILE.read_text(encoding="utf-8"))
-        except (OSError, ValueError) as error:
-            logger.warning("Shipped training report unavailable: {}", type(error).__name__)
-            report = None
-        return ServedModel(joblib.load(SHIPPED_MODEL_FILE), report, None)
-
     def _refresh(self) -> None:
-        """Load the latest deployed model when it differs from the one held; keep the held one on a database error."""
+        """Load the latest deployed model when it differs from the one held; keep the held one on a database error.
+
+        When the database lists no deployed model any more (its runs were wiped), the held model is
+        dropped too: a model the history no longer shows must not keep pricing.
+        """
         self._checked_at = time.monotonic()
         try:
             run_id = training_repository.active_model_id()
             stored = training_repository.fetch_model(run_id) if run_id is not None and (
                 self._served is None or self._served.run_id != run_id) else None
-        except Exception as error:  # noqa: BLE001 - the database is optional for pricing: the shipped model stays
+        except Exception as error:  # noqa: BLE001 - pricing must not fail harder than "no model"
             if self._served is None:
-                logger.warning("Deployed price model unavailable ({}); serving the shipped one", type(error).__name__)
-                self._served = self._shipped_model()
+                logger.warning("Deployed price model unavailable: {}", type(error).__name__)
             return
         if stored is not None:
             # Written by this server's own training runs, never uploaded: loading it is safe.
             self._served = ServedModel(joblib.load(io.BytesIO(stored["model"])), stored["report"], run_id)
             logger.info("Serving price model of training run {}", run_id)
-        elif self._served is None or (run_id is None and self._served.run_id is not None):
-            self._served = self._shipped_model()
+        elif run_id is None:
+            self._served = None
 
     def served_model(self, is_forced: bool = False) -> ServedModel:
         """The model being served, looking for a newer one at most every model_check_seconds.
@@ -146,12 +141,21 @@ class PricePredictionService:
             ServedModel: The bundle, its report and its run id.
 
         Raises:
-            FileNotFoundError: No model in the database and none shipped in the image.
+            PriceModelUnavailableError: No training run has deployed a model yet.
         """
         with self._lock:
             if is_forced or self._served is None or time.monotonic() - self._checked_at > self.model_check_seconds:
                 self._refresh()
+            if self._served is None:
+                raise PriceModelUnavailableError()
             return self._served
+
+    def served_model_or_none(self) -> Optional[ServedModel]:
+        """The model being served, or None before the first deployed model (the champion a training run must beat)."""
+        try:
+            return self.served_model()
+        except PriceModelUnavailableError:
+            return None
 
     def _get_bundle(self) -> Dict[str, Any]:
         """The served model's bundle: model_name, model, feature_names and, for trained-here models, imputation."""
@@ -164,13 +168,16 @@ class PricePredictionService:
         startup keeps that delay out of a user's request.
 
         Returns:
-            bool: True when a model is loaded; False when none could be, in which case predictions
-            raise on use.
+            bool: True when a model is loaded; False before the first deployed model, in which case
+            predictions raise PriceModelUnavailableError.
         """
         try:
             self.served_model()
             return True
-        except Exception as error:  # noqa: BLE001 - startup must not fail on a missing model
+        except PriceModelUnavailableError:
+            logger.info("No price model deployed yet; pricing waits for the first training run")
+            return False
+        except Exception as error:  # noqa: BLE001 - startup must not fail on a broken model
             logger.warning("Price model warm-up failed; predictions are unavailable: {}", error)
             return False
 

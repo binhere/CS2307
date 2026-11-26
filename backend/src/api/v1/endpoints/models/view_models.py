@@ -41,7 +41,7 @@ def run_and_serve(run_id: int) -> None:
     Args:
         run_id: The run started by the request.
     """
-    if service.execute_run(run_id, "manual", price_prediction_service.served_model()) == "deployed":
+    if service.execute_run(run_id, "manual", price_prediction_service.served_model_or_none()) == "deployed":
         price_prediction_service.served_model(is_forced=True)
 
 

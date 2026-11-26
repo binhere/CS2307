@@ -32,7 +32,7 @@ def create_start_app_handler(app: FastAPI) -> Callable:  # noqa
         from src.services.listing_submission.scheduled_geocoding import scheduled_geocoding
         scheduled_geocoding.start()
         from src.services.price_training.service import scheduled_training
-        scheduled_training.start(price_prediction_service.served_model)
+        scheduled_training.start(price_prediction_service.served_model_or_none)
         from src.services.listing_enrichment.service import scheduled_enrichment
         scheduled_enrichment.start()
         await chat_agent_service.start()

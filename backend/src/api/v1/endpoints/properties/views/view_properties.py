@@ -13,7 +13,7 @@ from src.api.v1.endpoints.properties.schemas.properties import (
     PricePredictionRequest,
 )
 from src.search.service import hybrid_search_service
-from src.services.inference.price_prediction import price_prediction_service
+from src.services.inference.price_prediction import PriceModelUnavailableError, price_prediction_service
 from src.services.minio.minio_client import ImageStorageUnavailableError
 from src.settings.event import minio_client
 
@@ -249,6 +249,9 @@ async def view_predict_property_price(data: PricePredictionRequest):
             legal_status=data.legal_status or "Sổ hồng riêng",
         )
         return {"data": result, "errors": [], "status": "success"}
+    except PriceModelUnavailableError as error:
+        # Not the caller's fault: no training run has deployed a model yet.
+        raise HTTPException(status_code=503, detail=str(error)) from error
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
     except Exception as error:

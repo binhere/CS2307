@@ -188,6 +188,15 @@ class ExecuteRunTests(unittest.TestCase):
         self.assertEqual(repository.finished[0]["summary"]["new_rows"], 0)
         self.assertEqual(self.run_with(50.0, trigger="manual", report=everything)[0], "deployed")
 
+    def test_the_first_model_is_deployed_when_none_is_served(self):
+        repository = FakeRepository(self.rows)
+        with patch.object(service, "repository", repository):
+            self.assertEqual(execute_run(1, "schedule", None), "deployed")  # every row is new, nothing to beat
+        run = repository.finished[0]
+        self.assertIsNone(run["summary"]["champion"])
+        self.assertEqual(run["summary"]["new_rows"], run["summary"]["pool_rows"])
+        self.assertIsNotNone(run["model"])
+
     def test_the_holdout_is_chosen_again_when_a_catalog_update_removed_its_listings(self):
         repository = FakeRepository(self.rows, holdout=[999_999])  # listings no longer in the catalog
         served = ServedModel({"model_name": "Constant", "model": ConstantModel(50.0), "feature_names": self.feature_names},

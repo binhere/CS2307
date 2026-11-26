@@ -18,7 +18,7 @@ deployment and inference pipelines fit together.
 | `data/gold/` | SQL tables and Neo4j node/edge CSVs built by `pipeline/build_gold_data.py` |
 | `data/v3/` | Dataset the backend imports today (6,703 listings) and its build inputs |
 | `databases/` | Local Neo4j, PostgreSQL and MinIO loaders for `data/gold` (PowerShell) |
-| `price_prediction/` | Offline price model training; writes the model shipped in the image (`backend/src/services/inference/artifacts/best_model.joblib`). The server retrains from PostgreSQL: `backend/src/services/price_training/` |
+| `price_prediction/` | Offline price model experiments on `data/v3` (output git-ignored). The backend ships no model: it trains its own from posted listings in `backend/src/services/price_training/` |
 | `deploy/` | Embedding and seed images for the homelab deployment; see `deploy/README.md` |
 | `.github/workflows/` | Image builds on push to `main` (`main-build`, `embedding-build`, `seed-build`) |
 | `docs/` | Standalone documentation (Vietnamese) |
@@ -109,8 +109,9 @@ images are built automatically but deployed only by hand (`deploy/README.md` exp
 - The price model is retrained inside the backend (`src/services/price_training/`), daily at 02:00 Vietnam time when
   at least 10% of the training rows are new, or by "Huấn luyện ngay" (`POST /v1/models/price/train`, signed-in users).
   A run's model is served only when its R² beats the served model on the fixed holdout set
-  (`price_training_holdout`); runs, reports and deployed models live in `price_model_runs`, and the image's
-  `best_model.joblib` is the fallback. Training and pricing share `price_training/preparation.py` (cleaning,
+  (`price_training_holdout`); runs, reports and deployed models live in `price_model_runs`. No model ships in
+  the image: until the first run deploys one (it needs about 300 complete listings), pricing answers
+  `PriceModelUnavailableError` ("Chưa có mô hình định giá"). Training and pricing share `price_training/preparation.py` (cleaning,
   filling in bedrooms and coordinates, encoding): change both sides there. Keep training inside
   `threadpool_limits`: OpenMP with one thread per core crawls on a busy node (11.5 s against 1.4 s).
 

@@ -40,9 +40,10 @@ from sklearn.preprocessing import StandardScaler
 SCRIPT_DIR = Path(__file__).resolve().parent
 INPUT_FILE = SCRIPT_DIR / "data_preparation" / "step-4" / "encoded_data.xlsx"
 EVALUATION_FILE = SCRIPT_DIR / "model_evaluation.xlsx"
-# The backend serves this exact file; training overwrites it in place.
-MODEL_FILE = SCRIPT_DIR.parent / "backend" / "src" / "services" / "inference" / "artifacts" / "best_model.joblib"
-# Read by the backend's monitoring API; written with the model so the two always describe each other.
+# Offline experiments on data/v3 only: the backend no longer ships a model (it trains its own from
+# the listings users post, src/services/price_training), so the output stays out of the image and git.
+MODEL_FILE = SCRIPT_DIR / "artifacts" / "best_model.joblib"
+# Written with the model so the two always describe each other.
 REPORT_FILE = MODEL_FILE.with_name("training_report.json")
 MASTER_FILE = SCRIPT_DIR.parent / "data" / "v3" / "master_v3.csv"
 STEP_FILES = [
@@ -268,7 +269,8 @@ def build_training_report(model_name, model, X_test, y_test, ids_train, ids_test
 
 
 def write_training_report(report: dict) -> None:
-    """Write the report next to the model, compactly (it ships inside the backend image)."""
+    """Write the report next to the model, compactly."""
+    REPORT_FILE.parent.mkdir(parents=True, exist_ok=True)
     REPORT_FILE.write_text(json.dumps(report, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"Saved training report to: {REPORT_FILE}")
 
@@ -333,6 +335,7 @@ def main() -> None:
         "metrics_overall": best_row.to_dict(),
         "metrics_by_segment": best_segment_metrics,
     }
+    MODEL_FILE.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(model_bundle, MODEL_FILE)
     print(f"Saved best model ({best_name}) to: {MODEL_FILE}")
     write_training_report(build_training_report(best_name, best_model, X_test, y_test, ids_train, ids_test, overall_df))

@@ -55,7 +55,7 @@ python predict.py
 
 The trained model is deployed to the FastAPI backend via the hybrid setup:
 
-- **Model Artifact**: `train-models.py` writes it directly to `backend/src/services/inference/artifacts/best_model.joblib`; `predict.py` reads the same file. This is the model shipped in the image; the backend serves it until one of its own training runs deploys a better one.
+- **Model Artifact**: `train-models.py` writes `price_prediction/artifacts/best_model.joblib` (git-ignored) for offline experiments on `data/v3`; `predict.py` reads the same file. No model ships in the backend image: listings now come only from users, and the backend serves the models its own training runs deploy.
 - **Server-side retraining**: `backend/src/services/price_training/` repeats data_preparation steps 1–4 on the listings in PostgreSQL (catalog and user-posted, with missing bedrooms and coordinates filled in), trains the same three candidates daily or on "Huấn luyện ngay", and serves the new model only when it beats the served one on a fixed holdout set. Runs are listed on `/du-lieu`, tab "Lịch sử huấn luyện".
 - **Inference Service**: Implemented in `backend/src/services/inference/price_prediction.py`.
 - **API Endpoint**: `POST /v1/properties/predict-price`.

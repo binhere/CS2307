@@ -15,6 +15,7 @@ from src.services.agent.chat_graph import (
     _message_window,
 )
 from src.services.llm.credentials import LlmCredentialError
+from tests.price_model_fixture import price_service_with_fixture
 
 
 def provider_error(error_class, status_code, message):
@@ -258,12 +259,26 @@ class InspectPriceEstimateTests(unittest.IsolatedAsyncioTestCase):
         }
         too_big = {**scorable, "id": 2, "listing_id": 222, "area": 900.0}
         state = {"latest_results": [scorable, too_big]}
-        command = await ChatAgentService()._inspect_previous_recommendations_impl(
-            ["1", "2"], SimpleNamespace(state=state, tool_call_id="call-inspect")
-        )
+        with patch("src.services.agent.chat_graph.price_prediction_service", price_service_with_fixture()):
+            command = await ChatAgentService()._inspect_previous_recommendations_impl(
+                ["1", "2"], SimpleNamespace(state=state, tool_call_id="call-inspect")
+            )
         listings = json.loads(command.update["messages"][0].content)["listings"]
         self.assertIn(listings[0]["price_estimate"]["verdict"], {"below", "within", "above"})
         self.assertIn("unavailable", listings[1]["price_estimate"])
+
+    async def test_without_a_model_the_reason_is_given(self):
+        from src.services.inference.price_prediction import PricePredictionService
+
+        no_model = PricePredictionService(model_check_seconds=0)
+        state = {"latest_results": [{"id": 1, "listing_id": 111, "district": "Phường Tân Hưng", "area": 70.0,
+                                     "bedrooms": 2, "price_range": 4.0, "latitude_longitude": "10.745, 106.705"}]}
+        with patch("src.services.agent.chat_graph.price_prediction_service", no_model), \
+                patch("src.services.inference.price_prediction.training_repository.active_model_id", return_value=None):
+            command = await ChatAgentService()._inspect_previous_recommendations_impl(
+                ["1"], SimpleNamespace(state=state, tool_call_id="call-inspect"))
+        listing = json.loads(command.update["messages"][0].content)["listings"][0]
+        self.assertIn("Chưa có mô hình định giá", listing["price_estimate"]["unavailable"])
 
 
 class MessageWindowTests(unittest.TestCase):
