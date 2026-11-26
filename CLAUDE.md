@@ -2,8 +2,9 @@
 
 Vietnamese real-estate search and AI advisor for Ho Chi Minh City: FastAPI backend,
 Next.js frontend, PostgreSQL + pgvector, Neo4j, MinIO, LangGraph chat agent.
-Read `README.md` for setup and `docs/system_overview.md` / `docs/web_functions.html`
-for how each feature works.
+Read `README.md` for setup, `docs/system_overview.md` / `docs/web_functions.html`
+for how each feature works, and `docs/system_architecture.html` for how the data, training,
+deployment and inference pipelines fit together.
 
 ## Repository layout
 
@@ -36,7 +37,7 @@ docker compose exec backend python scripts/build_search_index.py \
   --skip-catalog-import --skip-graph-metadata --batch-size 32                        # embed catalog (one-time)
 
 cd backend && python -m pytest -q          # backend tests; run WITHOUT a local .env (see pitfalls)
-cd frontend && npx tsc --noEmit && npm run build
+cd frontend && npx tsc --noEmit && npm test && npm run build   # npm test: node --test, no extra dependency
 python -m pytest deploy/seed/tests         # seed build/load tests
 ```
 
