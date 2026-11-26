@@ -1,6 +1,6 @@
 "use client"
 
-import { Building2, KeyRound, LogIn, LogOut, Search, Sparkles } from "lucide-react"
+import { BarChart3, Building2, KeyRound, LogIn, LogOut, Search, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -14,15 +14,22 @@ const LLM_SETTINGS_PATH = "/cai-dat-ai"
 const NAV_ITEMS = [
   { href: "/", label: "Tìm nhà", icon: Search },
   { href: "/tim-kiem-chuyen-sau", label: "Tư vấn AI", icon: Sparkles },
+  { href: "/du-lieu", label: "Dữ liệu", icon: BarChart3 },
 ]
 
-export function Logo() {
+/**
+ * The site logo linking home: icon, name and tagline.
+ * @param props.shouldHideNameOnPhone - show only the icon below 640px (the name stays for screen
+ *   readers); the header needs the room for its three tabs.
+ * @returns the logo link.
+ */
+export function Logo({ shouldHideNameOnPhone = false }: { shouldHideNameOnPhone?: boolean }) {
   return (
     <Link href="/" className="flex items-center gap-2 shrink-0">
       <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
         <Building2 className="h-5 w-5" />
       </span>
-      <span className="leading-tight">
+      <span className={cn("leading-tight", shouldHideNameOnPhone && "sr-only sm:not-sr-only")}>
         <span className="block font-bold tracking-tight text-foreground">BATDONGSAN AI</span>
         <span className="hidden sm:block text-[11px] text-muted-foreground">Tư vấn bất động sản TP.HCM</span>
       </span>
@@ -43,7 +50,7 @@ export function Header() {
   return (
     <div className="border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-2 sm:gap-4">
-        <Logo />
+        <Logo shouldHideNameOnPhone />
 
         <nav className="flex items-center gap-1 rounded-full bg-muted p-1">
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
@@ -60,8 +67,9 @@ export function Header() {
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <Icon className="h-4 w-4" />
-                <span className="hidden sm:inline">{label}</span>
+                <Icon className="h-4 w-4" aria-hidden />
+                {/* Labels from 768px: three labelled tabs do not fit beside the logo and sign-in buttons below that. */}
+                <span className="sr-only md:not-sr-only">{label}</span>
               </Link>
             )
           })}

@@ -110,5 +110,23 @@ class MinioClient:
             object_name=object_key,
         )
 
+    def count_objects(self, prefix: str) -> Optional[int]:
+        """Count the objects under a key prefix, for the data dashboard.
+
+        Args:
+            prefix: Key prefix, e.g. "images/".
+
+        Returns:
+            int | None: the number of objects, or None when no image store is configured or
+            listing fails (logged as a warning). Lists 1,000 keys per request.
+        """
+        if self._minio_client is None:
+            return None
+        try:
+            return sum(1 for _ in self._minio_client.list_objects(self.minio_bucket_name, prefix=prefix, recursive=True))
+        except Exception as error:
+            logger.warning("Image store listing unavailable: {}", type(error).__name__)
+            return None
+
     def stop(self):
         self._minio_client = None

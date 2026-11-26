@@ -730,5 +730,22 @@ class Neo4jGraphRepository:
             logger.warning(f"Neo4j listing subgraph unavailable: {exc}")
             return GraphSubgraphResponse(state="unavailable", error=str(exc))
 
+    def count_listing_nodes(self) -> Optional[int]:
+        """Count the Listing nodes, for the data dashboard.
+
+        Returns:
+            int | None: the number of Listing nodes, or None when graph search is disabled,
+            Neo4j is unreachable or the query fails (logged as a warning).
+        """
+        if not self.enabled or not self._ensure_driver():
+            return None
+        try:
+            with self._driver.session(database=self.database, default_access_mode="READ") as session:
+                record = session.run(self._timed_query("MATCH (listing:Listing) RETURN count(listing) AS listings")).single()
+            return int(record["listings"]) if record else 0
+        except Exception as exc:
+            logger.warning(f"Neo4j listing count unavailable: {exc}")
+            return None
+
 
 graph_repository = Neo4jGraphRepository()
