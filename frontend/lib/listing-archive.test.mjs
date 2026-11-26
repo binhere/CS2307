@@ -121,6 +121,15 @@ test("a reason names its field once", () => {
   ]), ["Giá phải là con số cụ thể.", "Diện tích: «rộng» không phải là một con số."])
 })
 
+test("a listing with more than 20 photos is reported at the end and does not stop the others", async () => {
+  const listings = [listing("nhieu-anh", { listing_id: "nhieu-anh" }, 25), listing("tin-02", { listing_id: "tin-02" }, 3)]
+  const { steps, posted } = fakeSteps()
+  const result = await archive.uploadArchivedListings(listings, steps, () => undefined)
+  assert.deepEqual(posted, [{ id: "tin-02", photoCount: 3 }])
+  assert.deepEqual(result.outcomes[0], { folder: "nhieu-anh", reference: "nhieu-anh", status: "failed", reasons: ["Tối đa 20 ảnh, hiện có 25."] })
+  assert.equal(result.outcomes[1].status, "posted")
+})
+
 test("checks go in batches of 100 and a photo that cannot be read fails only its listing", async () => {
   const listings = Array.from({ length: 205 }, (_, index) => listing(`tin-${index}`, { listing_id: `tin-${index}` }))
   listings[3].photos[0].read = async () => new Blob([])

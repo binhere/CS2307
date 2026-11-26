@@ -1,10 +1,12 @@
 "use client"
 
 // Posting many listings at once from a zip file: one folder per listing with its listing.json and
-// photos. The browser opens the zip, the server checks every listing first, then the browser posts
-// the acceptable ones one by one with photos shrunk like the form's, and lists each listing that
-// failed with its reasons. An upload that had to stop (signed out, offline, server down, or the
-// user pressed stop) can be resumed for the listings not posted yet.
+// photos; the downloadable sample shows the layout, so the panel has no instructions. The browser
+// opens the zip, the server checks every listing first, then the browser posts the acceptable ones
+// one by one with photos shrunk like the form's. A listing that breaks a rule (such as more than 20
+// photos) never stops the upload: it is listed with its reasons once the others are posted. An
+// upload that had to stop (signed out, offline, server down, or the user pressed stop) can be
+// resumed for the listings not posted yet.
 
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
@@ -15,7 +17,6 @@ import { HttpError, extractError, fetchJson, type ApiEnvelope } from "@/lib/http
 import { preparePhoto } from "@/lib/image-resize"
 import {
   LISTING_FILE_NAME,
-  MAXIMUM_PHOTOS,
   buildSampleArchive,
   problemLines,
   readListingArchive,
@@ -32,14 +33,6 @@ import type { ListingReport } from "@/lib/listing-submission"
 // Signing in on this page would lose the opened zip; the token is shared with other tabs.
 const SIGNED_OUT = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại trong một tab mới, rồi quay lại bấm Đăng tiếp."
 const SAMPLE_FILE_NAME = "tin-mau.zip"
-const SAMPLE_TREE = `tin.zip
-├── tin-01/
-│   ├── listing.json
-│   ├── 1.jpg
-│   └── 2.jpg
-└── tin-02/
-    ├── listing.json
-    └── 1.jpg`
 
 /**
  * Check listings on the server, as one validation request.
@@ -223,20 +216,8 @@ export function ListingArchiveUpload() {
 
   return (
     <div className="space-y-6">
-      <section className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6" aria-labelledby="archive-format">
-        <h2 id="archive-format" className="text-base font-semibold text-foreground">Tải lên file zip</h2>
-        <div className="grid gap-4 text-sm text-muted-foreground sm:grid-cols-[1fr_auto]">
-          <div className="space-y-2">
-            <p>Mỗi tin là một thư mục gồm file <code className="font-mono text-foreground">{LISTING_FILE_NAME}</code> và
-              ảnh của tin: JPEG, PNG hoặc WebP, tối đa {MAXIMUM_PHOTOS} ảnh, hiển thị theo thứ tự tên file.</p>
-            <p><code className="font-mono text-foreground">{LISTING_FILE_NAME}</code> có các trường như khi đăng một tin.
-              Tin thiếu <code className="font-mono text-foreground">listing_id</code> sẽ lấy tên thư mục làm{" "}
-              <code className="font-mono text-foreground">listing_id</code>. Hệ thống sẽ tìm tọa độ từ địa chỉ cho tin chưa có
-              tọa độ sau khi đăng.</p>
-          </div>
-          <pre role="img" aria-label="Ví dụ: thư mục tin-01 gồm listing.json, 1.jpg và 2.jpg; thư mục tin-02 gồm listing.json và 1.jpg"
-            className="rounded-lg bg-muted px-4 py-3 font-mono text-xs leading-5 text-foreground">{SAMPLE_TREE}</pre>
-        </div>
+      <section className="space-y-4 rounded-xl border border-border bg-card p-4 sm:p-6" aria-labelledby="archive-upload">
+        <h2 id="archive-upload" className="text-base font-semibold text-foreground">Tải lên file zip</h2>
         <div className="flex flex-wrap gap-3">
           <input ref={fileInput} type="file" accept=".zip,application/zip" className="hidden" tabIndex={-1} aria-hidden
             onChange={(event) => { void openArchive(event.target.files?.[0]); event.target.value = "" }} />
