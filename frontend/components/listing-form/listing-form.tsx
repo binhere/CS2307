@@ -34,6 +34,7 @@ import {
   type RequiredFields,
 } from "@/lib/listing-submission"
 import { cn } from "@/lib/utils"
+import { ListingArchiveUpload } from "./listing-archive-upload"
 import { LocationPicker } from "./location-picker"
 
 const FIELD_CLASS =
@@ -58,14 +59,26 @@ interface PickedPhoto {
 interface Posted {
   id: number
   report: ListingReport
+  /** The user had already posted the same listing; id is that earlier listing. */
+  wasPostedBefore?: boolean
 }
 
+/** The two ways to post, shown as tabs. */
+const POSTING_MODES = [
+  { key: "single", label: "Một tin" },
+  { key: "archive", label: "Nhiều tin (zip)" },
+] as const
+type PostingMode = (typeof POSTING_MODES)[number]["key"]
+
 /**
- * The listing page's content: a sign-in prompt for visitors, the form for signed-in users.
+ * The listing page's content: a sign-in prompt for visitors; for signed-in users, tabs between the
+ * one-listing form and the zip upload. Both stay mounted, so switching keeps what was typed.
  * @returns the element.
  */
 export function ListingForm() {
   const { user, loading } = useAuth()
+  const tabsId = useId()
+  const [mode, setMode] = useState<PostingMode>("single")
   if (loading) {
     return <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden />Đang tải</div>
   }
@@ -77,7 +90,37 @@ export function ListingForm() {
       </div>
     )
   }
-  return <ListingFormBody />
+  /**
+   * Arrow keys move between the tabs, as in the WAI-ARIA tabs pattern.
+   * @param event - key event on a tab.
+   */
+  const moveBetweenTabs = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return
+    event.preventDefault()
+    const next = POSTING_MODES[(POSTING_MODES.findIndex((item) => item.key === mode) + 1) % POSTING_MODES.length].key
+    setMode(next)
+    document.getElementById(`${tabsId}-${next}-tab`)?.focus()
+  }
+  return (
+    <div className="space-y-6">
+      <div role="tablist" aria-label="Cách đăng tin" className="inline-flex rounded-lg border border-border bg-muted p-1">
+        {POSTING_MODES.map((item) => (
+          <button key={item.key} type="button" role="tab" id={`${tabsId}-${item.key}-tab`} aria-controls={`${tabsId}-${item.key}`}
+            aria-selected={mode === item.key} tabIndex={mode === item.key ? 0 : -1}
+            onClick={() => setMode(item.key)} onKeyDown={moveBetweenTabs}
+            className={cn("rounded-md px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              mode === item.key ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
+            {item.label}
+          </button>
+        ))}
+      </div>
+      {POSTING_MODES.map((item) => (
+        <div key={item.key} role="tabpanel" id={`${tabsId}-${item.key}`} aria-labelledby={`${tabsId}-${item.key}-tab`} hidden={mode !== item.key}>
+          {item.key === "single" ? <ListingFormBody /> : <ListingArchiveUpload />}
+        </div>
+      ))}
+    </div>
+  )
 }
 
 /** What a control needs to point at its hint and feedback and to show it is invalid. */
@@ -416,10 +459,14 @@ function ListingFormBody() {
         setReport(envelope.data.report)
       }
     } catch (error) {
-      const refused = error instanceof HttpError
-        ? (error.payload as ApiEnvelope<{ report?: ListingReport }> | null)?.data?.report
+      const data = error instanceof HttpError
+        ? (error.payload as ApiEnvelope<{ id?: number; report?: ListingReport }> | null)?.data
         : undefined
-      if (refused) setReport(refused)
+      if (data?.report) setReport(data.report)
+      if (error instanceof HttpError && error.status === 409 && typeof data?.id === "number" && data.report) {
+        setPosted({ id: data.id, report: data.report, wasPostedBefore: true })
+        return
+      }
       setFormError(error instanceof HttpError ? extractError(error.payload, error.message) : "Chưa đăng được tin.")
     } finally {
       setBusy(null)
@@ -575,7 +622,7 @@ function ListingFormBody() {
       {posted && (
         <div role="status" className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-4 text-sm">
           <CheckCircle2 className="h-5 w-5 text-primary" aria-hidden />
-          <span className="text-foreground">Đã đăng tin.</span>
+          <span className="text-foreground">{posted.wasPostedBefore ? "Bạn đã đăng tin này trước đó." : "Đã đăng tin."}</span>
           <Link href={`/chi-tiet/${posted.id}`} className="font-medium text-primary hover:underline">Xem tin</Link>
         </div>
       )}

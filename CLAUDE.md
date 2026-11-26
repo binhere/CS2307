@@ -90,8 +90,11 @@ images are built automatically but deployed only by hand (`deploy/README.md` exp
   regenerate it with `scripts/export_known_locations.py` after `data/v3/graph` changes.
 - Posted listings (`src/services/listing_submission/`) are checked against Ho Chi Minh City's official
   2025 wards, the old-ward mapping and ward boundaries in `listing_submission/reference/`, built by
-  `scripts/export_address_reference.py` from public sources; validation makes no network call, except
-  the optional Nominatim geocoder for zip uploads (1 request/second on the public server).
+  `scripts/export_address_reference.py` from public sources; validation makes no network call. Listings
+  saved without coordinates get them later from a job inside the backend (`scheduled_geocoding.py`, every
+  `GEOCODING_INTERVAL_SECONDS`, one process at a time through an advisory lock) that asks Nominatim
+  (1 request/second on the public server). The same user posting the same content again gets 409 with the
+  earlier id (`content_fingerprint`), so re-uploading a fixed zip posts only the listings that failed.
 - Neo4j queries go through `_timed_query()` so they carry the configured timeout.
 
 ## Frontend rules
@@ -104,6 +107,8 @@ images are built automatically but deployed only by hand (`deploy/README.md` exp
 - The listing form's map (`components/listing-form/location-picker.tsx`) calls Photon (address search) and
   OpenStreetMap tiles straight from the browser: no key, fair use, attribution shown; the ward comes from
   `/api/listings/locate` (official boundaries), never from the geocoder.
+- Zip uploads (`lib/listing-archive.ts`) are opened and their photos shrunk in the browser, then posted one
+  listing per request: Cloudflare refuses request bodies over 100 MB, which a whole zip easily exceeds.
 - Amenity keys and labels come from `lib/amenities.ts`; listing images go through
   `getPropertyImageSrc` with `PROPERTY_IMAGE_FALLBACK` (`lib/property-images.ts`).
 - Accessibility: labelled inputs, `aria-label` on icon-only buttons, `type="button"`, visible

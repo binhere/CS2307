@@ -10,6 +10,7 @@ computed afterwards in the background (embed_listing).
 
 from __future__ import annotations
 
+import hashlib
 import io
 import json
 from dataclasses import dataclass
@@ -126,6 +127,42 @@ def photo_key(listing_id: int, size: str, position: int, image_format: str) -> s
     return f"images/user-listings/{listing_id}/{size}/{position:03d}.{EXTENSIONS[image_format]}"
 
 
+def listing_fingerprint(listing: Dict[str, Any]) -> str:
+    """Identify a listing by its content, to notice the same listing posted again.
+
+    The posting date is left out: a listing without one takes the day it is posted, so uploading
+    the same zip again tomorrow must still match.
+
+    Args:
+        listing: Canonical listing from validate_listing.
+
+    Returns:
+        str: 64 hexadecimal characters (SHA-256 of the listing as sorted JSON).
+    """
+    content = {name: value for name, value in listing.items() if name != "posted_date"}
+    canonical = json.dumps(content, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def find_posted_listing(owner_user_id: int, fingerprint: str) -> Optional[int]:
+    """The id of a listing this user already posted with the same content, if any.
+
+    Args:
+        owner_user_id: The posting user.
+        fingerprint: listing_fingerprint of the listing about to be posted.
+
+    Returns:
+        int | None: The earlier listing's id, or None.
+
+    Raises:
+        sqlalchemy.exc.SQLAlchemyError: The database cannot be read.
+    """
+    rows = postgres_client.fetch_mappings(
+        "SELECT id FROM properties WHERE owner_user_id = :owner AND content_fingerprint = :fingerprint ORDER BY id LIMIT 1",
+        owner=owner_user_id, fingerprint=fingerprint)
+    return int(rows[0]["id"]) if rows else None
+
+
 def listing_row(listing: Dict[str, Any], listing_id: int, owner_user_id: int, gallery_keys: List[str]) -> Dict[str, Any]:
     """The properties row of a validated listing, in the catalog's own conventions.
 
@@ -168,6 +205,7 @@ def listing_row(listing: Dict[str, Any], listing_id: int, owner_user_id: int, ga
         "source": "user",
         "owner_user_id": owner_user_id,
         "submission": json.dumps(listing, ensure_ascii=False),
+        "content_fingerprint": listing_fingerprint(listing),
     }
     row["search_text"] = build_listing_search_text(row)
     return row

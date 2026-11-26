@@ -52,11 +52,14 @@ class FakeImageStore:
 
 
 class FakeDatabase:
-    def __init__(self, write_error=None):
-        self.writes, self.write_error = [], write_error
+    def __init__(self, write_error=None, earlier_ids=()):
+        self.writes, self.write_error, self.earlier_ids = [], write_error, list(earlier_ids)
 
     def fetch_write(self, query, **parameters):
         return [{"value": 9000000001}]
+
+    def fetch_mappings(self, query, **parameters):
+        return [{"id": earlier_id} for earlier_id in self.earlier_ids]
 
     def execute_write(self, query, **parameters):
         if self.write_error:
@@ -103,8 +106,19 @@ class RowTests(unittest.TestCase):
         self.assertEqual(json.loads(row["images"]), keys)
         self.assertEqual(json.loads(row["submission"])["metadata"]["nearby_amenities"][0]["name"], "Rạch Chiếc")
         self.assertIn("Phường Cát Lái", row["search_text"])
+        self.assertEqual(row["content_fingerprint"], storage.listing_fingerprint(valid_listing()))
         # The image route only serves keys under images/, so posted photos must live there.
         self.assertTrue(storage.photo_key(9000000001, "thumbnails", 3, "WEBP").startswith("images/"))
+
+
+class FingerprintTests(unittest.TestCase):
+    def test_the_same_content_matches_whatever_its_posting_date(self):
+        listing = valid_listing()
+        later = {**listing, "posted_date": "2026-11-27"}
+        changed = {**listing, "price_billion_vnd": 44.0}
+        self.assertEqual(storage.listing_fingerprint(listing), storage.listing_fingerprint(later))
+        self.assertNotEqual(storage.listing_fingerprint(listing), storage.listing_fingerprint(changed))
+        self.assertEqual(len(storage.listing_fingerprint(listing)), 64)
 
 
 class SaveTests(unittest.TestCase):
@@ -202,6 +216,14 @@ class PostingApiTests(unittest.TestCase):
         no_store = self.post(PLAN_EXAMPLE, [image_bytes(1280, 960)], [image_bytes(480, 360)], user=user,
                              images=FakeImageStore(error=ImageStorageUnavailableError("off")))
         self.assertEqual((no_store.status_code, no_store.json()["errors"][0]["msg"]), (503, "IMAGE_STORAGE_UNAVAILABLE"))
+
+    def test_the_same_listing_posted_again_points_at_the_first_copy(self):
+        images = FakeImageStore()
+        response = self.post(PLAN_EXAMPLE, [image_bytes(1280, 960)], [image_bytes(480, 360)], user={"id": 7, "username": "lan"},
+                             images=images, database=FakeDatabase(earlier_ids=[9000000005]))
+        self.assertEqual((response.status_code, response.json()["errors"][0]["msg"]), (409, "DUPLICATE_LISTING"))
+        self.assertEqual(response.json()["data"]["id"], 9000000005)
+        self.assertEqual(images.stored, {})
 
     def test_anonymous_callers_cannot_post(self):
         response = self.post(PLAN_EXAMPLE, [image_bytes(1280, 960)], [image_bytes(480, 360)])

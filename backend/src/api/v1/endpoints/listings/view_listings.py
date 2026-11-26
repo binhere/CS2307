@@ -116,7 +116,8 @@ async def view_post_listing(
 
     Returns:
         dict | JSONResponse: 201 with data {"id", "listing_id", "report"}; 400 when the listing or
-        a photo is refused (data holds the report); 503 when the image store or database is down.
+        a photo is refused (data holds the report); 409 when this user already posted the same
+        listing (data holds the earlier "id"); 503 when the image store or database is down.
     """
     try:
         document = json.loads(listing)
@@ -125,6 +126,16 @@ async def view_post_listing(
     report = await run_in_threadpool(validate_listing, document, 0, today_in_vietnam())
     if not report.is_valid:
         return error_response(400, "listing", "INVALID_LISTING", "Tin chưa hợp lệ.", {"report": report.as_dict()})
+    # Checked before the photos are read: a zip uploaded again after fixing its failed listings
+    # resends every listing that already went through.
+    try:
+        earlier_id = await run_in_threadpool(storage.find_posted_listing, int(user["id"]), storage.listing_fingerprint(report.listing))
+    except SQLAlchemyError:
+        logger.exception("Looking for an earlier copy of a posted listing failed")
+        return error_response(503, "storage", "STORAGE_UNAVAILABLE", "Chưa lưu được tin. Vui lòng thử lại sau.")
+    if earlier_id is not None:
+        return error_response(409, "listing", "DUPLICATE_LISTING", "Bạn đã đăng tin này trước đó.",
+                              {"id": earlier_id, "report": report.as_dict()})
     # Read at most one byte past each limit, so an oversized upload is refused without reading it all.
     galleries = [await photo.read(storage.GALLERY_MAXIMUM_BYTES + 1) for photo in photos]
     small_photos = [await photo.read(storage.THUMBNAIL_MAXIMUM_BYTES + 1) for photo in thumbnails]

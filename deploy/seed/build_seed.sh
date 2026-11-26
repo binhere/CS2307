@@ -76,7 +76,7 @@ for table in properties listing_amenity_distances; do
   columns="$(psql_query "SELECT string_agg(quote_ident(column_name), ', ' ORDER BY ordinal_position)
     FROM information_schema.columns
     WHERE table_schema = 'public' AND table_name = '$table' AND is_generated = 'NEVER'
-      AND column_name NOT IN ('created_at', 'updated_at', 'source', 'owner_user_id', 'submission')")"
+      AND column_name NOT IN ('created_at', 'updated_at', 'source', 'owner_user_id', 'submission', 'geocoding_status', 'content_fingerprint')")"
   # Only catalog rows, without the columns of user-posted listings: the seed leaves those alone, and the
   # catalog files stay byte-identical, so the content digest does not change because of them.
   rows="$table"

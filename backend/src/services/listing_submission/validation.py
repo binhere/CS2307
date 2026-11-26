@@ -9,8 +9,8 @@ dropped with a warning and the listing stays valid.
 Location fields are checked together against the official 2025 wards (see places.py and
 geography.py): an old ward name becomes its new ward, a missing former district is filled in when
 the ward came from one district only, the pair must agree, and coordinates must lie in the city and
-near the ward. A geocoder, when given (zip uploads, processed on the server), fills missing
-coordinates from the street.
+near the ward. A geocoder, when given, fills missing coordinates from the street; the posting
+routes pass none, and scheduled_geocoding.py looks the street up after the listing is saved.
 """
 
 from __future__ import annotations
@@ -423,7 +423,8 @@ def validate_listing(document: Any, index: int, today: date, geocoder: Optional[
         index: Its position in the request, echoed in the report.
         today: Today's date in Vietnam; a missing posted_date becomes today, a later one is refused.
         geocoder: Finds coordinates from the street when none were given; None to skip (the form
-            geocodes in the browser, zip uploads on the server).
+            picks a point on its map, and listings saved without one are looked up later by
+            scheduled_geocoding.py).
 
     Returns:
         ListingReport: The canonical listing with every error, warning and conversion.

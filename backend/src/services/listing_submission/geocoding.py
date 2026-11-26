@@ -1,10 +1,11 @@
-"""Server-side geocoding of posted listings' streets, for zip uploads.
+"""Server-side geocoding of posted listings' streets.
 
-The form geocodes one listing in the user's browser; a zip archive holds many listings and is
-processed on the server, so the server asks Nominatim (OpenStreetMap) itself. The public
-Nominatim service allows at most one request per second, an identifying User-Agent and no heavy
-bulk use (operations.osmfoundation.org/policies/nominatim), so requests are serialised one second
-apart across threads and repeated addresses are answered from a cache. Point GEOCODER_URL at a
+The form's map finds a point in the user's browser; listings saved without coordinates (most zip
+uploads) are looked up afterwards by scheduled_geocoding.py, which asks Nominatim
+(OpenStreetMap) through this class. The public Nominatim service allows at most one request per
+second, an identifying User-Agent and no heavy bulk use
+(operations.osmfoundation.org/policies/nominatim), so requests are serialised one second apart
+across threads and repeated addresses are answered from a cache. Point GEOCODER_URL at a
 self-hosted Nominatim to lift the limit.
 """
 
