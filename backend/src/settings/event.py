@@ -31,6 +31,8 @@ def create_start_app_handler(app: FastAPI) -> Callable:  # noqa
         await run_in_threadpool(ensure_demo_account_at_startup)
         from src.services.listing_submission.scheduled_geocoding import scheduled_geocoding
         scheduled_geocoding.start()
+        from src.services.price_training.service import scheduled_training
+        scheduled_training.start(price_prediction_service.served_model)
         await chat_agent_service.start()
         price_prediction_service.warm_up()
     return start_app
@@ -43,6 +45,8 @@ def create_stop_app_handler(app: FastAPI) -> Callable:  # noqa
         from src.services.agent import chat_agent_service
         from src.services.listing_submission.scheduled_geocoding import scheduled_geocoding
         await scheduled_geocoding.stop()
+        from src.services.price_training.service import scheduled_training
+        await scheduled_training.stop()
         graph_repository.stop()
         await chat_agent_service.stop()
         await llm_model.stop()

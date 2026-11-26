@@ -1,9 +1,10 @@
 """Build the data dashboard (/du-lieu): catalog health, data quality, drift, model quality and
 the price model's verdicts over the catalog.
 
-Everything is computed from the catalog rows (a few thousand) plus training_report.json, which
-price_prediction/train-models.py writes next to the model. The result changes only when the
-seed reloads the catalog or a new model ships, so it is cached for CACHE_SECONDS.
+Everything is computed from the catalog rows (a few thousand) plus the training report of the
+model being served (a training run's report, or the training_report.json shipped with the image's
+model). The result changes only when the seed reloads the catalog or a new model is served, so
+it is cached for CACHE_SECONDS and rebuilt at once when the served model changes.
 
 Output: a JSON-ready dict with the sections kpis, quality, distributions, drift, model and
 predictions; drift and model are None without a training report, predictions is None without
@@ -12,13 +13,10 @@ the model file.
 
 from __future__ import annotations
 
-import json
 import math
 import time
 from collections import Counter
 from datetime import date, datetime, timezone
-from functools import lru_cache
-from pathlib import Path
 from threading import Lock
 from typing import Dict, List, Optional, Set
 
@@ -45,7 +43,6 @@ from src.services.monitoring.statistics import (
 )
 from src.settings.event import minio_client
 
-REPORT_FILE = Path(__file__).resolve().parents[1] / "inference" / "artifacts" / "training_report.json"
 CACHE_SECONDS = 600
 # Domain-chosen histogram edges: prices in billion VND, areas in m², errors in percent.
 PRICE_EDGES = [1, 2, 3, 5, 7, 10, 15, 20, 30, 50]
@@ -56,13 +53,20 @@ SUSPICIOUS_LIMIT = 25
 MAX_ROOMS = 20
 
 
-@lru_cache(maxsize=1)
 def load_training_report() -> Optional[Dict]:
-    """The report of the model being served, or None when it is missing or unreadable."""
+    """The report of the model being served, or None when there is no model or no report."""
     try:
-        return json.loads(REPORT_FILE.read_text(encoding="utf-8"))
-    except (OSError, ValueError) as error:
-        logger.warning("Training report unavailable: {}", type(error).__name__)
+        return price_prediction_service.served_model().report
+    except FileNotFoundError:
+        logger.warning("Price model missing; the dashboard shows no model sections")
+        return None
+
+
+def served_model_id() -> Optional[int]:
+    """The training run of the served model (None for the shipped model or no model): the cache key."""
+    try:
+        return price_prediction_service.served_model().run_id
+    except FileNotFoundError:
         return None
 
 
@@ -329,19 +333,22 @@ class MonitoringService:
         self.cache_seconds = cache_seconds
         self._snapshot: Optional[Dict] = None
         self._built_at = 0.0
+        self._model_id: Optional[int] = None
         # One build at a time: concurrent first visitors wait for it instead of each running it.
         self._lock = Lock()
 
     def snapshot(self) -> Dict:
-        """The cached snapshot, rebuilt when older than cache_seconds.
+        """The cached snapshot, rebuilt when older than cache_seconds or when another model is served.
 
         Raises:
             sqlalchemy.exc.SQLAlchemyError: the database is unavailable while rebuilding.
         """
         with self._lock:
-            if self._snapshot is None or time.monotonic() - self._built_at > self.cache_seconds:
+            model_id = served_model_id()
+            if self._snapshot is None or model_id != self._model_id or time.monotonic() - self._built_at > self.cache_seconds:
                 self._snapshot = build_snapshot()
                 self._built_at = time.monotonic()
+                self._model_id = model_id
             return self._snapshot
 
 

@@ -11,6 +11,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react"
 import Link from "next/link"
 import { AlertTriangle, CheckCircle2, ImagePlus, Loader2, Trash2, XCircle } from "lucide-react"
+import { Tabs } from "@/components/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { authHeaders, getStoredToken, useAuth } from "@/lib/auth-context"
@@ -63,13 +64,6 @@ interface Posted {
   wasPostedBefore?: boolean
 }
 
-/** The two ways to post, shown as tabs. */
-const POSTING_MODES = [
-  { key: "single", label: "Một tin" },
-  { key: "archive", label: "Nhiều tin (zip)" },
-] as const
-type PostingMode = (typeof POSTING_MODES)[number]["key"]
-
 /**
  * The listing page's content: a sign-in prompt for visitors; for signed-in users, tabs between the
  * one-listing form and the zip upload. Both stay mounted, so switching keeps what was typed.
@@ -77,8 +71,6 @@ type PostingMode = (typeof POSTING_MODES)[number]["key"]
  */
 export function ListingForm() {
   const { user, loading } = useAuth()
-  const tabsId = useId()
-  const [mode, setMode] = useState<PostingMode>("single")
   if (loading) {
     return <div className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden />Đang tải</div>
   }
@@ -90,36 +82,11 @@ export function ListingForm() {
       </div>
     )
   }
-  /**
-   * Arrow keys move between the tabs, as in the WAI-ARIA tabs pattern.
-   * @param event - key event on a tab.
-   */
-  const moveBetweenTabs = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return
-    event.preventDefault()
-    const next = POSTING_MODES[(POSTING_MODES.findIndex((item) => item.key === mode) + 1) % POSTING_MODES.length].key
-    setMode(next)
-    document.getElementById(`${tabsId}-${next}-tab`)?.focus()
-  }
   return (
-    <div className="space-y-6">
-      <div role="tablist" aria-label="Cách đăng tin" className="inline-flex rounded-lg border border-border bg-muted p-1">
-        {POSTING_MODES.map((item) => (
-          <button key={item.key} type="button" role="tab" id={`${tabsId}-${item.key}-tab`} aria-controls={`${tabsId}-${item.key}`}
-            aria-selected={mode === item.key} tabIndex={mode === item.key ? 0 : -1}
-            onClick={() => setMode(item.key)} onKeyDown={moveBetweenTabs}
-            className={cn("rounded-md px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-              mode === item.key ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
-            {item.label}
-          </button>
-        ))}
-      </div>
-      {POSTING_MODES.map((item) => (
-        <div key={item.key} role="tabpanel" id={`${tabsId}-${item.key}`} aria-labelledby={`${tabsId}-${item.key}-tab`} hidden={mode !== item.key}>
-          {item.key === "single" ? <ListingFormBody /> : <ListingArchiveUpload />}
-        </div>
-      ))}
-    </div>
+    <Tabs label="Cách đăng tin" items={[
+      { key: "single", label: "Một tin", panel: <ListingFormBody /> },
+      { key: "archive", label: "Nhiều tin (zip)", panel: <ListingArchiveUpload /> },
+    ]} />
   )
 }
 

@@ -1,11 +1,13 @@
 "use client"
 
-// The data dashboard (/du-lieu): catalog health, data quality, drift between the training data
-// and the catalog, the price model's test quality and its verdicts over the catalog. One request
-// to GET /api/monitoring feeds every section.
+// The data dashboard (/du-lieu), in two tabs. "Dữ liệu và model": catalog health, data quality,
+// drift between the training data and the catalog, the price model's test quality and its
+// verdicts over the catalog, all fed by one request to GET /api/monitoring. "Lịch sử huấn luyện":
+// the price model's training runs and the "Train ngay" button (training-history.tsx).
 
 import { useEffect, useState, type ReactNode } from "react"
 import Link from "next/link"
+import { Tabs } from "@/components/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
 import { fetchJson, HttpError, isAbortError, type ApiEnvelope } from "@/lib/http"
 import {
@@ -37,6 +39,7 @@ import {
   formatNumber,
   formatShare,
 } from "./format"
+import { TrainingHistory } from "./training-history"
 import type { MonitoringSnapshot, VerdictGroup } from "./types"
 
 const LOAD_ERROR = "Không tải được số liệu. Vui lòng thử lại sau."
@@ -84,8 +87,27 @@ function Panel({ title, note, children, className }: { title: string; note?: Rea
   )
 }
 
-/** Fetches the snapshot once; shows a skeleton while loading and a retry on failure. */
+/**
+ * The dashboard's two tabs; a newly deployed model makes the data tab reload its numbers.
+ * @returns the tabs.
+ */
 export function DataDashboard() {
+  const [reloadCount, setReloadCount] = useState(0)
+  return (
+    <Tabs label="Nội dung trang Dữ liệu" items={[
+      { key: "data", label: "Dữ liệu và model", panel: <DataOverview reloadCount={reloadCount} /> },
+      { key: "training", label: "Lịch sử huấn luyện",
+        panel: <TrainingHistory onModelChanged={() => setReloadCount((count) => count + 1)} /> },
+    ]} />
+  )
+}
+
+/**
+ * Fetches the snapshot; shows a skeleton while loading and a retry on failure.
+ * @param props.reloadCount - changes when the numbers must be fetched again (a new model is served).
+ * @returns the data tab.
+ */
+function DataOverview({ reloadCount }: { reloadCount: number }) {
   const [snapshot, setSnapshot] = useState<MonitoringSnapshot | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
@@ -103,7 +125,7 @@ export function DataDashboard() {
         setError(reason instanceof HttpError ? reason.message : LOAD_ERROR)
       })
     return () => controller.abort()
-  }, [attempt])
+  }, [attempt, reloadCount])
 
   if (error && !snapshot) {
     return (

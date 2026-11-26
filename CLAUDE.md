@@ -18,7 +18,7 @@ deployment and inference pipelines fit together.
 | `data/gold/` | SQL tables and Neo4j node/edge CSVs built by `pipeline/build_gold_data.py` |
 | `data/v3/` | Dataset the backend imports today (6,703 listings) and its build inputs |
 | `databases/` | Local Neo4j, PostgreSQL and MinIO loaders for `data/gold` (PowerShell) |
-| `price_prediction/` | Price model training; writes `backend/src/services/inference/artifacts/best_model.joblib` |
+| `price_prediction/` | Offline price model training; writes the model shipped in the image (`backend/src/services/inference/artifacts/best_model.joblib`). The server retrains from PostgreSQL: `backend/src/services/price_training/` |
 | `deploy/` | Embedding and seed images for the homelab deployment; see `deploy/README.md` |
 | `.github/workflows/` | Image builds on push to `main` (`main-build`, `embedding-build`, `seed-build`) |
 | `docs/` | Standalone documentation (Vietnamese) |
@@ -96,6 +96,13 @@ images are built automatically but deployed only by hand (`deploy/README.md` exp
   (1 request/second on the public server). The same user posting the same content again gets 409 with the
   earlier id (`content_fingerprint`), so re-uploading a fixed zip posts only the listings that failed.
 - Neo4j queries go through `_timed_query()` so they carry the configured timeout.
+- The price model is retrained inside the backend (`src/services/price_training/`), daily at 02:00 Vietnam time when
+  at least 10% of the training rows are new, or by "Train ngay" (`POST /v1/models/price/train`, signed-in users).
+  A run's model is served only when its R² beats the served model on the fixed holdout set
+  (`price_training_holdout`); runs, reports and deployed models live in `price_model_runs`, and the image's
+  `best_model.joblib` is the fallback. Training and pricing share `price_training/preparation.py` (cleaning,
+  filling in bedrooms and coordinates, encoding): change both sides there. Keep training inside
+  `threadpool_limits`: OpenMP with one thread per core crawls on a busy node (11.5 s against 1.4 s).
 
 ## Frontend rules
 

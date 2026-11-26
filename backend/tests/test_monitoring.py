@@ -15,6 +15,7 @@ import joblib
 from sqlalchemy.exc import OperationalError
 
 from src.api.v1.endpoints.monitoring import view_monitoring
+from src.services.inference import price_prediction
 from src.services.monitoring import service, statistics
 
 
@@ -121,7 +122,8 @@ class SectionTests(unittest.TestCase):
         self.assertEqual(sum(row["Căn hộ"] for row in model["error_histogram"]), 2)
 
     def test_predictions_split_verdicts_by_training_membership(self):
-        rows = [listing(listing_id=1), listing(listing_id=2, price_range=40.0), listing(listing_id=3, latitude_longitude="")]
+        # Missing coordinates are filled in from the ward; a missing area cannot be.
+        rows = [listing(listing_id=1), listing(listing_id=2, price_range=40.0), listing(listing_id=3, area=None)]
         predictions = service.prediction_section(rows, train_ids={1})
         groups = {item["group"]: item for item in predictions["verdicts"]}
         self.assertEqual(groups["in_training"]["total"], 1)
@@ -134,7 +136,7 @@ class SectionTests(unittest.TestCase):
 class SnapshotTests(unittest.TestCase):
     def test_the_shipped_report_describes_the_shipped_model(self):
         report = service.load_training_report()
-        bundle = joblib.load(service.REPORT_FILE.with_name("best_model.joblib"))
+        bundle = joblib.load(price_prediction.SHIPPED_MODEL_FILE)
         self.assertEqual(report["model"]["name"], bundle["model_name"])
         self.assertAlmostEqual(report["segments"][0]["r2"], float(bundle["metrics_overall"]["R2 Score"]), places=4)
         self.assertEqual(len(report["train_listing_ids"]), report["composition"]["train_rows"])

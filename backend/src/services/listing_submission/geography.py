@@ -68,6 +68,22 @@ def bounding_box(polygons: Sequence[Polygon]) -> BoundingBox:
     return min(longitudes), min(latitudes), max(longitudes), max(latitudes)
 
 
+def ring_area(ring: Ring) -> float:
+    """Signed area of a closed ring in square degrees (shoelace formula); only its size is compared."""
+    return sum(start[0] * end[1] - end[0] * start[1] for start, end in zip(ring, ring[1:])) / 2
+
+
+def ring_centroid(ring: Ring) -> Tuple[float, float]:
+    """Area-weighted centroid of a closed ring as (longitude, latitude); the vertex mean for a degenerate ring."""
+    area = ring_area(ring)
+    if area == 0:
+        return sum(point[0] for point in ring) / len(ring), sum(point[1] for point in ring) / len(ring)
+    factor = 1 / (6 * area)
+    longitude = sum((start[0] + end[0]) * (start[0] * end[1] - end[0] * start[1]) for start, end in zip(ring, ring[1:]))
+    latitude = sum((start[1] + end[1]) * (start[0] * end[1] - end[0] * start[1]) for start, end in zip(ring, ring[1:]))
+    return longitude * factor, latitude * factor
+
+
 def is_in_ring(longitude: float, latitude: float, ring: Ring) -> bool:
     """Ray casting: whether a point lies inside a closed ring."""
     is_inside = False
@@ -144,6 +160,7 @@ class AddressReference:
         self._city: List[Polygon] = boundaries["city"]
         self._city_box = bounding_box(self._city)
         self._ward_by_code: Dict[str, Ward] = {ward.code: ward for ward in self.wards}
+        self._representative_points: Dict[str, Tuple[float, float]] = {}
 
     def group_of(self, former_district: str) -> str:
         """The unit a former district counts as when checking a ward ("Quận 9" -> "Thành phố Thủ Đức")."""
@@ -180,6 +197,33 @@ class AddressReference:
         nearby = [(self.distance_to_ward_metres(candidate, latitude, longitude), candidate.code, candidate)
                   for candidate in self.wards if self.is_near_ward(candidate, latitude, longitude)]
         return min(nearby)[2] if nearby else None
+
+    def representative_point(self, ward: Ward) -> Tuple[float, float]:
+        """A point inside a ward, near its centre: the stand-in location of a listing without one.
+
+        The area-weighted centroid of the ward's largest polygon, or, when that falls outside (a
+        crescent-shaped ward), the inside point of a 25 x 25 grid over the polygon nearest to it.
+
+        Args:
+            ward: An official ward.
+
+        Returns:
+            tuple: (latitude, longitude), rounded to 6 decimals.
+        """
+        if ward.code not in self._representative_points:
+            polygons = self._polygons[ward.code]
+            ring = max((polygon[0] for polygon in polygons), key=lambda outer: abs(ring_area(outer)))
+            longitude, latitude = ring_centroid(ring)
+            if not is_in_polygons(longitude, latitude, polygons):
+                minimum_longitude, minimum_latitude, maximum_longitude, maximum_latitude = bounding_box([[ring]])
+                steps = [index / 24 for index in range(25)]
+                inside = [(minimum_longitude + (maximum_longitude - minimum_longitude) * x,
+                           minimum_latitude + (maximum_latitude - minimum_latitude) * y)
+                          for x in steps for y in steps]
+                inside = [point for point in inside if is_in_polygons(point[0], point[1], polygons)] or [tuple(ring[0])]
+                longitude, latitude = min(inside, key=lambda point: (point[0] - longitude) ** 2 + (point[1] - latitude) ** 2)
+            self._representative_points[ward.code] = (round(latitude, 6), round(longitude, 6))
+        return self._representative_points[ward.code]
 
     def distance_to_ward_metres(self, ward: Ward, latitude: float, longitude: float) -> float:
         """Distance from a point to a ward's boundary in metres, 0 when inside."""

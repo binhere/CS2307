@@ -1,12 +1,17 @@
 """Price prediction inference service.
 
-Loads the trained machine learning model and computes real estate valuations
-with confidence bounds based on property type segment.
+Serves the latest model a training run deployed (price_model_runs, see
+src/services/price_training), checking for a newer one every MODEL_CHECK_SECONDS, and falls back
+to the model shipped in the image when the database has none or cannot be reached. Listings are
+encoded by the same code that prepares training data, and missing bedrooms and coordinates are
+filled in the way training filled them. Estimates come with a confidence band per property group.
 """
 
 from __future__ import annotations
 
-import re
+import io
+import json
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from threading import Lock
@@ -17,15 +22,26 @@ import numpy as np
 import pandas as pd
 from loguru import logger
 
+from src.services.price_training import repository as training_repository
+from src.services.price_training.preparation import (
+    OUTLIER_RULES,
+    feature_frame,
+    impute_bedrooms,
+    is_inside_city,
+    normalize_legal_status,
+    parse_coordinates,
+    property_group,
+    ward_point,
+)
+from src.services.price_training.service import ServedModel
 
-# shortcut: label rules duplicated from price_prediction/data_preparation/step-1/remove-unreliable-features.py
-# (DB stores the raw v3 labels, the model was trained on the normalized ones); keep in sync on retrain.
-_APARTMENT_TYPES = {"Căn hộ", "Căn hộ chung cư"}
-_COORDINATES = re.compile(r"(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)")
-# Training domain: step-2 coordinate box and step-3 outlier rules.
-_LAT_RANGE, _LON_RANGE = (10.3, 11.6), (106.3, 107.6)
-# Per type: (min area, max area, max bedrooms, min price tỷ, max price tỷ, min tr/m2, max tr/m2).
-_DOMAIN = {"Căn hộ": (25, 150, 4, 1.0, 20.0, 20, 180), "Nhà đất": (20, 350, 8, 1.5, 40.0, 30, 350)}
+ARTIFACT_DIRECTORY = Path(__file__).resolve().parent / "artifacts"
+SHIPPED_MODEL_FILE = ARTIFACT_DIRECTORY / "best_model.joblib"
+SHIPPED_REPORT_FILE = ARTIFACT_DIRECTORY / "training_report.json"
+MODEL_CHECK_SECONDS = 60.0
+# Re-exported for the dashboard, which reads these from here.
+__all__ = ["is_inside_city", "normalize_legal_status", "parse_coordinates", "price_bounds", "price_verdict",
+           "price_prediction_service"]
 
 
 @dataclass(frozen=True)
@@ -34,8 +50,8 @@ class ListingAssessment:
 
     Attributes:
         inputs: Keyword arguments for PricePredictionService.predict, or None when refused.
-        reason_code: Why the listing is refused ("missing_fields", "outside_city", "unknown_ward",
-            "area_range", "bedrooms_range", "price_range", "price_per_m2_range"), or None.
+        reason_code: Why the listing is refused ("missing_fields", "unknown_ward", "area_range",
+            "bedrooms_range", "price_range", "price_per_m2_range"), or None.
         message: The user-facing Vietnamese reason, or None.
         asking_price: The listing's asking price in billion VND, when it has one.
     """
@@ -44,21 +60,6 @@ class ListingAssessment:
     reason_code: Optional[str]
     message: Optional[str]
     asking_price: Optional[float]
-
-
-def parse_coordinates(value: Optional[str]) -> Optional[Tuple[float, float]]:
-    """Read "latitude, longitude" from a listing's latitude_longitude text.
-
-    Returns:
-        tuple | None: (latitude, longitude), or None when the text holds no coordinate pair.
-    """
-    match = _COORDINATES.search(value or "")
-    return (float(match.group(1)), float(match.group(2))) if match else None
-
-
-def is_inside_city(latitude: float, longitude: float) -> bool:
-    """Whether a point lies in the Ho Chi Minh City box the model was trained on."""
-    return _LAT_RANGE[0] <= latitude <= _LAT_RANGE[1] and _LON_RANGE[0] <= longitude <= _LON_RANGE[1]
 
 
 def price_bounds(estimated_price: float, property_type: str) -> Tuple[float, float]:
@@ -85,94 +86,93 @@ def price_verdict(asking_price: float, lower_bound: float, upper_bound: float) -
     return "below" if asking_price < lower_bound else "above" if asking_price > upper_bound else "within"
 
 
-def normalize_legal_status(value: Optional[str]) -> str:
-    text = (value or "").lower()
-    if re.search(r"chờ|làm sổ|nộp hồ sơ", text):
-        return "Đang chờ sổ"
-    if re.search(r"chung|sdc", text):
-        return "Sổ chung"
-    if re.search(r"hợp đồng|hđmb|hdmb", text):
-        return "Hợp đồng mua bán"
-    if re.search(r"sổ|hồng|đỏ|shr", text):
-        return "Sổ hồng riêng"
-    return "Không rõ"
-
-
 class PricePredictionService:
-    def __init__(self) -> None:
-        self._bundle: Optional[Dict[str, Any]] = None
-        # Predictions run in worker threads; the lock makes concurrent first calls
-        # load the bundle once instead of once per thread.
-        self._bundle_lock = Lock()
+    """Prices listings with the served model, reloading it when a training run deploys a new one."""
 
-    def _resolve_model_path(self) -> Path:
-        """Return the trained model bundle written by price_prediction/train-models.py."""
-        model_path = Path(__file__).resolve().parent / "artifacts" / "best_model.joblib"
-        if model_path.exists():
-            return model_path
-        raise FileNotFoundError(f"Trained price model not found: {model_path}")
+    def __init__(self, model_check_seconds: float = MODEL_CHECK_SECONDS) -> None:
+        """Start without a model; the first use loads one.
 
-    def _get_bundle(self) -> Dict[str, Any]:
-        """Lazy-load and cache the model bundle."""
-        if self._bundle is None:
-            with self._bundle_lock:
-                if self._bundle is None:
-                    self._bundle = joblib.load(self._resolve_model_path())
-        return self._bundle
+        Args:
+            model_check_seconds: How often to look for a newly deployed model.
+        """
+        self.model_check_seconds = model_check_seconds
+        self._served: Optional[ServedModel] = None
+        self._checked_at = 0.0
+        # Predictions run in worker threads; the lock makes concurrent calls load a model once.
+        self._lock = Lock()
 
-    def warm_up(self) -> bool:
-        """Load the model bundle ahead of the first request.
+    @staticmethod
+    def _shipped_model() -> ServedModel:
+        """The model and report shipped in the image (price_prediction/train-models.py).
 
-        The first load takes about a second (joblib plus scikit-learn imports);
-        doing it at startup keeps that delay out of a user's request.
+        Raises:
+            FileNotFoundError: The image has no model file.
+        """
+        if not SHIPPED_MODEL_FILE.exists():
+            raise FileNotFoundError(f"Trained price model not found: {SHIPPED_MODEL_FILE}")
+        try:
+            report = json.loads(SHIPPED_REPORT_FILE.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            logger.warning("Shipped training report unavailable: {}", type(error).__name__)
+            report = None
+        return ServedModel(joblib.load(SHIPPED_MODEL_FILE), report, None)
+
+    def _refresh(self) -> None:
+        """Load the latest deployed model when it differs from the one held; keep the held one on a database error."""
+        self._checked_at = time.monotonic()
+        try:
+            run_id = training_repository.active_model_id()
+            stored = training_repository.fetch_model(run_id) if run_id is not None and (
+                self._served is None or self._served.run_id != run_id) else None
+        except Exception as error:  # noqa: BLE001 - the database is optional for pricing: the shipped model stays
+            if self._served is None:
+                logger.warning("Deployed price model unavailable ({}); serving the shipped one", type(error).__name__)
+                self._served = self._shipped_model()
+            return
+        if stored is not None:
+            # Written by this server's own training runs, never uploaded: loading it is safe.
+            self._served = ServedModel(joblib.load(io.BytesIO(stored["model"])), stored["report"], run_id)
+            logger.info("Serving price model of training run {}", run_id)
+        elif self._served is None or (run_id is None and self._served.run_id is not None):
+            self._served = self._shipped_model()
+
+    def served_model(self, is_forced: bool = False) -> ServedModel:
+        """The model being served, looking for a newer one at most every model_check_seconds.
+
+        Args:
+            is_forced: Look now (after a run deployed a model).
 
         Returns:
-            bool: True when the bundle is loaded; False when it could not be
-            loaded, in which case predictions raise on use as before.
+            ServedModel: The bundle, its report and its run id.
+
+        Raises:
+            FileNotFoundError: No model in the database and none shipped in the image.
+        """
+        with self._lock:
+            if is_forced or self._served is None or time.monotonic() - self._checked_at > self.model_check_seconds:
+                self._refresh()
+            return self._served
+
+    def _get_bundle(self) -> Dict[str, Any]:
+        """The served model's bundle: model_name, model, feature_names and, for trained-here models, imputation."""
+        return self.served_model().bundle
+
+    def warm_up(self) -> bool:
+        """Load the model ahead of the first request.
+
+        The first load takes about a second (joblib plus scikit-learn imports); doing it at
+        startup keeps that delay out of a user's request.
+
+        Returns:
+            bool: True when a model is loaded; False when none could be, in which case predictions
+            raise on use.
         """
         try:
-            self._get_bundle()
+            self.served_model()
             return True
         except Exception as error:  # noqa: BLE001 - startup must not fail on a missing model
             logger.warning("Price model warm-up failed; predictions are unavailable: {}", error)
             return False
-
-    @staticmethod
-    def _feature_row(
-        feature_names: List[str],
-        property_type: str,
-        area: float,
-        bedrooms: int,
-        latitude: float,
-        longitude: float,
-        district: str,
-        legal_status: str = "Sổ hồng riêng",
-    ) -> Dict[str, Any]:
-        """Build one model input row, as price_prediction/data_preparation step 4 encoded it.
-
-        Returns:
-            dict: A value for every feature name; one-hot columns the model does not know stay 0.
-        """
-        row = {col: 0 for col in feature_names}
-        row["area"] = float(area)
-        row["bedrooms"] = int(bedrooms)
-        row["area_per_bedroom"] = round(float(area) / max(int(bedrooms), 1), 2)
-        row["latitude"] = float(latitude)
-        row["longitude"] = float(longitude)
-
-        # One-hot encoded flags
-        pt_col = f"property_type_{property_type}"
-        if pt_col in row:
-            row[pt_col] = 1
-
-        ls_col = f"legal_status_{legal_status}"
-        if ls_col in row:
-            row[ls_col] = 1
-
-        dist_col = f"district_{district}"
-        if dist_col in row:
-            row[dist_col] = 1
-        return row
 
     def predict_many(self, inputs: List[Dict[str, Any]]) -> List[float]:
         """Estimate many listings in one model call.
@@ -186,9 +186,8 @@ class PricePredictionService:
         if not inputs:
             return []
         bundle = self._get_bundle()
-        feature_names = bundle["feature_names"]
-        frame = pd.DataFrame([self._feature_row(feature_names, **values) for values in inputs])[feature_names]
-        return [round(float(value), 2) for value in np.expm1(bundle["model"].predict(frame))]
+        frame = pd.DataFrame([{**values, "legal_status": values.get("legal_status", "Sổ hồng riêng")} for values in inputs])
+        return [round(float(value), 2) for value in np.expm1(bundle["model"].predict(feature_frame(frame, bundle["feature_names"])))]
 
     def predict(
         self,
@@ -202,18 +201,11 @@ class PricePredictionService:
     ) -> Dict[str, Any]:
         """Predict estimated price and confidence interval in billion VND."""
         bundle = self._get_bundle()
-        model = bundle["model"]
-        feature_names = bundle["feature_names"]
-        row = self._feature_row(feature_names, property_type, area, bedrooms, latitude, longitude, district, legal_status)
-
-        # DataFrame with exact column order expected by scikit-learn
-        input_df = pd.DataFrame([row])[feature_names]
-
-        # Inference in log space, convert to billion VND
-        pred_log = model.predict(input_df)[0]
-        estimated_price = round(float(np.expm1(pred_log)), 2)
+        estimated_price = self.predict_many([{
+            "property_type": property_type, "area": area, "bedrooms": bedrooms, "latitude": latitude,
+            "longitude": longitude, "district": district, "legal_status": legal_status,
+        }])[0]
         lower_bound, upper_bound = price_bounds(estimated_price, property_type)
-
         return {
             "estimated_price": estimated_price,
             "lower_bound": lower_bound,
@@ -227,6 +219,10 @@ class PricePredictionService:
     def assess_listing(self, item: Dict[str, Any]) -> ListingAssessment:
         """Check whether a stored listing lies inside the model's training domain.
 
+        Missing bedrooms and missing or out-of-city coordinates are filled in as training fills
+        them (the bedroom median of the served model, a point inside the listing's ward); a model
+        shipped without bedroom medians refuses listings without bedrooms.
+
         Args:
             item: A properties row with latitude_longitude, area, bedrooms, price_range,
                 property_type, district and legal_status.
@@ -235,40 +231,44 @@ class PricePredictionService:
             ListingAssessment: the model inputs when every check passes, otherwise the first
             failing check's code and Vietnamese message.
         """
-        coords = parse_coordinates(item.get("latitude_longitude"))
-        area, bedrooms, asking = item.get("area"), item.get("bedrooms"), item.get("price_range")
+        bundle = self._get_bundle()
+        area, asking = item.get("area"), item.get("price_range")
         asking_price = float(asking) if asking else None
-        if not (coords and area and bedrooms and asking):
+        group = property_group(item.get("property_type")) or "Nhà đất"
+        district = item.get("district")
+        coordinates = parse_coordinates(item.get("latitude_longitude"))
+        if not (coordinates and is_inside_city(*coordinates)):
+            coordinates = ward_point(district)
+        bedrooms = item.get("bedrooms")
+        if not bedrooms and area and bundle.get("imputation"):
+            bedrooms = impute_bedrooms(group, float(area), bundle["imputation"])
+        if not (coordinates and area and bedrooms and asking):
             return ListingAssessment(None, "missing_fields",
                                      "Tin đăng thiếu diện tích, số phòng ngủ, giá hoặc tọa độ để định giá.", asking_price)
 
-        latitude, longitude = coords
-        property_type = "Căn hộ" if item.get("property_type") in _APARTMENT_TYPES else "Nhà đất"
-        min_area, max_area, max_bedrooms, min_price, max_price, min_m2, max_m2 = _DOMAIN[property_type]
+        latitude, longitude = coordinates
+        rule = OUTLIER_RULES[group]
         per_m2 = float(asking) * 1000 / float(area)
-        district = item.get("district")
         # First failing check wins; the message is shown to users, so say which limit was hit.
         checks = [
-            (is_inside_city(latitude, longitude),
-             "outside_city", "Toạ độ của tin nằm ngoài khu vực TP.HCM."),
-            (f"district_{district}" in self._get_bundle()["feature_names"],
+            (f"district_{district}" in bundle["feature_names"],
              "unknown_ward", "Khu vực (phường/xã) của tin chưa có trong dữ liệu huấn luyện."),
-            (min_area <= float(area) <= max_area,
-             "area_range", f"Diện tích {float(area):g} m² nằm ngoài khoảng {min_area}–{max_area} m² mô hình được huấn luyện."),
-            (1 <= int(bedrooms) <= max_bedrooms,
-             "bedrooms_range", f"Số phòng ngủ ({int(bedrooms)}) nằm ngoài khoảng 1–{max_bedrooms} mô hình được huấn luyện."),
+            (rule.minimum_area <= float(area) <= rule.maximum_area,
+             "area_range", f"Diện tích {float(area):g} m² nằm ngoài khoảng {rule.minimum_area:g}–{rule.maximum_area:g} m² mô hình được huấn luyện."),
+            (1 <= int(bedrooms) <= rule.maximum_bedrooms,
+             "bedrooms_range", f"Số phòng ngủ ({int(bedrooms)}) nằm ngoài khoảng 1–{rule.maximum_bedrooms} mô hình được huấn luyện."),
             # Asking price outside the trained price band: the comparison would be meaningless.
-            (min_price <= float(asking) <= max_price,
-             "price_range", f"Giá rao nằm ngoài khoảng {min_price:g}–{max_price:g} tỷ mô hình được huấn luyện."),
-            (min_m2 <= per_m2 <= max_m2,
+            (rule.minimum_price <= float(asking) <= rule.maximum_price,
+             "price_range", f"Giá rao nằm ngoài khoảng {rule.minimum_price:g}–{rule.maximum_price:g} tỷ mô hình được huấn luyện."),
+            (rule.minimum_price_per_m2 <= per_m2 <= rule.maximum_price_per_m2,
              "price_per_m2_range",
-             f"Đơn giá {per_m2:.0f} triệu/m² nằm ngoài khoảng {min_m2}–{max_m2} triệu/m² mô hình được huấn luyện."),
+             f"Đơn giá {per_m2:.0f} triệu/m² nằm ngoài khoảng {rule.minimum_price_per_m2:g}–{rule.maximum_price_per_m2:g} triệu/m² mô hình được huấn luyện."),
         ]
         for ok, code, reason in checks:
             if not ok:
                 return ListingAssessment(None, code, reason, asking_price)
         inputs = {
-            "property_type": property_type,
+            "property_type": group,
             "area": float(area),
             "bedrooms": int(bedrooms),
             "latitude": latitude,
