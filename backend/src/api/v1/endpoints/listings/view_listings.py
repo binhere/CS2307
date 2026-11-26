@@ -1,4 +1,4 @@
-"""Listings posted by signed-in users: the form's choices, checking before posting, and posting.
+"""Listings posted by signed-in users: the form's choices and map lookup, checking, and posting.
 
 The browser checks a listing here first (validate) and shows the user which fields fail and why;
 posting (multipart: the listing as JSON plus each photo in two sizes the browser made) checks it
@@ -9,7 +9,7 @@ check or post; the form's choices are public.
 import json
 from typing import Any, List
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, Query, UploadFile, status
 from fastapi.responses import JSONResponse
 from loguru import logger
 from minio.error import S3Error
@@ -20,6 +20,7 @@ from starlette.concurrency import run_in_threadpool
 from src.services.auth.dependencies import get_current_user
 from src.services.listing_submission import storage
 from src.services.listing_submission.coercion import today_in_vietnam
+from src.services.listing_submission.places import location_directory
 from src.services.listing_submission.validation import validate_listing, validate_listings
 from src.services.minio.minio_client import ImageStorageUnavailableError
 
@@ -65,6 +66,25 @@ async def view_listing_reference():
         "legal_statuses", "furnishings", "limits"}.
     """
     return {"data": storage.listing_reference(), "errors": [], "status": "success"}
+
+
+@router.get("/locate", summary="The ward and former districts of a point, for the form's map")
+async def view_locate(latitude: float = Query(..., ge=-90, le=90), longitude: float = Query(..., ge=-180, le=180)):
+    """Name the place a user picked on the map, from the official ward boundaries.
+
+    Args:
+        latitude: Decimal degrees.
+        longitude: Decimal degrees.
+
+    Returns:
+        dict: Envelope whose data is {"is_in_city": bool, "ward": official name or null,
+        "former_districts": [districts the ward's area belonged to before 1 July 2025]}.
+    """
+    reference = location_directory().reference
+    ward = reference.ward_near(latitude, longitude) if reference.is_in_city(latitude, longitude) else None
+    data = {"is_in_city": ward is not None, "ward": ward.name if ward else None,
+            "former_districts": list(ward.former_districts) if ward else []}
+    return {"data": data, "errors": [], "status": "success"}
 
 
 @router.post("/validate", summary="Check listings before posting: converted values, errors and warnings")

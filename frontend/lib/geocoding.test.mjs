@@ -1,59 +1,48 @@
-// Tests for the listing form's geocoder: it asks Nominatim from the browser, so it must keep the
-// public server's rules itself (one request per second, results bounded to the city) and never
-// geocode a bare ward, whose centre would look like a real location.
+// Tests for the listing form's address search (Photon): searches stay inside the city, short
+// queries cost no request, and answers become a clean list of places with their street.
 // Run with: npm test (node --test, TypeScript sources loaded with --experimental-strip-types).
 import assert from "node:assert/strict"
 import { test } from "node:test"
 
-const { buildGeocodingQuery, createGeocoder } = await import("./geocoding.ts")
+const { buildSearchUrl, parsePlaces, searchPlaces, streetAt } = await import("./geocoding.ts")
 
-/** A fetch stand-in that records URLs and answers from a queue of [status, body] pairs. */
-function fakeFetch(answers) {
-  const requests = []
-  const fetchImplementation = async (url) => {
-    requests.push(new URL(url))
-    const [status, body] = answers.shift()
-    return { ok: status < 400, status, json: async () => body }
-  }
-  return { requests, fetchImplementation }
-}
+const feature = (properties, coordinates = [106.7571, 10.7792]) => ({ geometry: { coordinates }, properties })
 
-test("the query needs a street or project and names the city", () => {
-  assert.equal(buildGeocodingQuery({ ward: "Phường Cát Lái" }), null)
-  assert.equal(
-    buildGeocodingQuery({ street: " Đường Số 60 ", ward: "Phường Cát Lái" }),
-    "Đường Số 60, Phường Cát Lái, Thành phố Hồ Chí Minh",
-  )
+test("searches are limited to the city and biased to its centre", () => {
+  const params = new URL(buildSearchUrl("  Đường Số 60 ")).searchParams
+  assert.equal(params.get("q"), "Đường Số 60")
+  assert.equal(params.get("bbox"), "106.3,10.3,107.6,11.6")
+  assert.ok(params.get("lat") && params.get("lon"))
+  assert.equal(params.get("lang"), "default") // Vietnamese names, not the browser's language
 })
 
-test("a match is returned with its label, and the request is bounded to the city", async () => {
-  const { requests, fetchImplementation } = fakeFetch([[200, [{ lat: "10.7792", lon: "106.7571", display_name: "Phường Cát Lái" }]]])
-  const geocode = createGeocoder({ fetchImplementation, now: () => 0, wait: async () => {} })
-  const place = await geocode({ street: "Đường Số 60", ward: "Phường Cát Lái" })
-  assert.deepEqual(place, { latitude: 10.7792, longitude: 106.7571, label: "Phường Cát Lái" })
-  const params = requests[0].searchParams
-  assert.equal(params.get("bounded"), "1")
-  assert.equal(params.get("countrycodes"), "vn")
-  assert.equal(params.get("q"), "Đường Số 60, Phường Cát Lái, Thành phố Hồ Chí Minh")
-})
-
-test("a second request waits until a second has passed", async () => {
-  let clock = 1000
-  const waits = []
-  const { fetchImplementation } = fakeFetch([[200, []], [200, []]])
-  const geocode = createGeocoder({
-    fetchImplementation,
-    now: () => clock,
-    wait: async (milliseconds) => { waits.push(milliseconds); clock += milliseconds },
+test("answers become places with a readable label and their street", () => {
+  const places = parsePlaces({
+    features: [
+      feature({ name: "Căn hộ DEFINE", street: "Đường Số 60", district: "Phường Cát Lái", city: "Thành phố Hồ Chí Minh" }),
+      feature({ name: "Đường Nguyễn Thị Định", osm_key: "highway", district: "Phường Cát Lái" }, [106.789, 10.7577]),
+      feature({ name: "Căn hộ DEFINE", street: "Đường Số 60", district: "Phường Cát Lái", city: "Thành phố Hồ Chí Minh" }),
+      { geometry: {}, properties: { name: "no coordinates" } },
+    ],
   })
-  assert.equal(await geocode({ street: "Đường A" }), null)
-  clock += 300
-  await geocode({ street: "Đường B" })
-  assert.deepEqual(waits, [700])
+  assert.deepEqual(places, [
+    { latitude: 10.7792, longitude: 106.7571, label: "Căn hộ DEFINE, Đường Số 60, Phường Cát Lái, Thành phố Hồ Chí Minh", street: "Đường Số 60" },
+    { latitude: 10.7577, longitude: 106.789, label: "Đường Nguyễn Thị Định, Phường Cát Lái", street: "Đường Nguyễn Thị Định" },
+  ])
+  assert.deepEqual(parsePlaces(null), [])
 })
 
-test("an HTTP error rejects instead of looking like no match", async () => {
-  const { fetchImplementation } = fakeFetch([[429, {}]])
-  const geocode = createGeocoder({ fetchImplementation, now: () => 0, wait: async () => {} })
-  await assert.rejects(geocode({ street: "Đường A" }), /429/)
+test("short queries make no request and HTTP errors reject", async () => {
+  let requests = 0
+  const failing = async () => { requests += 1; return { ok: false, status: 429, json: async () => ({}) } }
+  assert.deepEqual(await searchPlaces("ab", undefined, failing), [])
+  assert.equal(requests, 0)
+  await assert.rejects(searchPlaces("Đường Số 60", undefined, failing), /429/)
+})
+
+test("the street at a point comes from the reverse lookup, and failures give none", async () => {
+  const answering = async () => ({ ok: true, status: 200, json: async () => ({ features: [feature({ name: "Đường Số 60", osm_key: "highway" })] }) })
+  assert.equal(await streetAt(10.7792, 106.7571, undefined, answering), "Đường Số 60")
+  const broken = async () => { throw new Error("offline") }
+  assert.equal(await streetAt(10.7792, 106.7571, undefined, broken), undefined)
 })

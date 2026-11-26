@@ -166,3 +166,16 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Listing form map pin (components/listing-form/location-picker.tsx): drawn in CSS because
+   Leaflet's default marker images do not survive bundling. */
+.listing-map-pin {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50% 50% 50% 0;
+  background: var(--primary);
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+  transform: rotate(-45deg);
+}

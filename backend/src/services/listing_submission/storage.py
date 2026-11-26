@@ -251,13 +251,18 @@ def listing_reference() -> Dict[str, Any]:
     """Choices the posting form offers: wards, former districts and the categorical codes.
 
     Returns:
-        dict: {"wards": [names], "former_districts": [names], "property_types", "legal_statuses",
-        "furnishings": [{"code", "label"}], "limits": photo limits}.
+        dict: {"wards": [names], "former_districts": [names], "ward_former_districts": {ward: [former
+        districts its area belonged to]}, "former_district_groups": {former district: the unit it
+        counts as, e.g. "Quận 2" -> "Thành phố Thủ Đức"}, "property_types", "legal_statuses",
+        "furnishings": [{"code", "label"}], "limits": photo limits}. The form uses the two maps to
+        narrow each place list to the other's choice.
     """
     reference = location_directory().reference
     return {
         "wards": [ward.name for ward in sorted(reference.wards, key=lambda ward: ward.name)],
         "former_districts": sorted(reference.former_districts),
+        "ward_former_districts": {ward.name: list(ward.former_districts) for ward in reference.wards},
+        "former_district_groups": {name: reference.group_of(name) for name in reference.former_districts},
         "property_types": category_options(vocabulary.PROPERTY_TYPES),
         "legal_statuses": category_options(vocabulary.LEGAL_STATUSES),
         "furnishings": category_options(vocabulary.FURNISHINGS),

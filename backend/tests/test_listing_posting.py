@@ -218,6 +218,31 @@ class PostingApiTests(unittest.TestCase):
         self.assertEqual(len(data["wards"]), 168)
         self.assertIn("Quận 2", data["former_districts"])
         self.assertEqual(data["property_types"][0], {"code": "can_ho_chung_cu", "label": "Căn hộ chung cư"})
+        # The form narrows each place list to the other's choice with these two maps.
+        self.assertEqual(data["ward_former_districts"]["Phường Chánh Hiệp"], ["Thành phố Thủ Dầu Một"])
+        self.assertEqual(data["former_district_groups"]["Quận 2"], "Thành phố Thủ Đức")
+
+
+class LocateApiTests(unittest.TestCase):
+    def locate(self, latitude, longitude):
+        from src.main import app
+
+        async def send():
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+                return await client.get("/v1/listings/locate", params={"latitude": latitude, "longitude": longitude})
+
+        return asyncio.run(send())
+
+    def test_a_point_on_the_map_names_its_ward_and_former_districts(self):
+        data = self.locate(10.7792, 106.7571).json()["data"]
+        self.assertEqual(data, {"is_in_city": True, "ward": "Phường Cát Lái", "former_districts": ["Thành phố Thủ Đức"]})
+
+    def test_a_point_outside_the_city_names_nothing(self):
+        data = self.locate(10.957, 106.843).json()["data"]  # Biên Hòa, Đồng Nai
+        self.assertEqual(data, {"is_in_city": False, "ward": None, "former_districts": []})
+
+    def test_coordinates_must_be_numbers(self):
+        self.assertEqual(self.locate("abc", 106.7).status_code, 400)
 
 
 if __name__ == "__main__":

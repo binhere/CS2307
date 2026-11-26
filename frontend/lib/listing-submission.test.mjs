@@ -28,11 +28,14 @@ test("the optional JSON must be one object", () => {
   assert.match(submission.buildListingDocument(REQUIRED, "{bedroom_count: 2}").error, /JSON/)
 })
 
-test("geocoded coordinates are written into the JSON without losing other fields", () => {
-  const text = submission.withCoordinates('{"street": "Đường Số 60"}', 10.77921234567, 106.7571)
-  assert.deepEqual(JSON.parse(text), { street: "Đường Số 60", latitude: 10.7792123, longitude: 106.7571 })
-  assert.equal(submission.withCoordinates("not json", 1, 2), null)
-  assert.deepEqual(submission.addressFromMetadata(text), { street: "Đường Số 60", project: undefined })
+test("a location picked on the map is written into the JSON without losing other fields", () => {
+  const text = submission.withLocation('{"bedroom_count": 2, "street": "cũ"}', { latitude: 10.77921234567, longitude: 106.7571, street: "Đường Số 60" })
+  assert.deepEqual(JSON.parse(text), { bedroom_count: 2, street: "Đường Số 60", latitude: 10.7792123, longitude: 106.7571 })
+  assert.deepEqual(submission.coordinatesFromMetadata(text), { latitude: 10.7792123, longitude: 106.7571 })
+  assert.deepEqual(JSON.parse(submission.withLocation(text, null)), { bedroom_count: 2, street: "Đường Số 60" })
+  assert.equal(submission.withLocation('{"latitude": 1, "longitude": 2}', null), "")
+  assert.equal(submission.withLocation("not json", { latitude: 1, longitude: 2 }), null)
+  assert.equal(submission.coordinatesFromMetadata('{"latitude": "10.7"}'), null)
 })
 
 test("photos shrink to fit and are never enlarged", () => {
@@ -61,4 +64,54 @@ test("after signing in, only paths on this site are followed", () => {
 
 test("the default posted date is today in Vietnam", () => {
   assert.equal(submission.todayInVietnam(new Date("2026-11-26T18:30:00Z")), "2026-11-27")
+})
+
+test("each reported problem lands under the input it is about", () => {
+  const problem = (field, code) => ({ field, label: field, value: null, code, message: code })
+  const report = {
+    index: 0, reference: null, is_valid: false, listing: {},
+    errors: [problem("title", "TOO_SHORT"), problem("former_district", "MISMATCHED_FORMER_DISTRICT")],
+    warnings: [problem("metadata.colour", "UNKNOWN_FIELD"), problem("latitude", "COORDINATES_OUTSIDE_WARD")],
+    conversions: [{ field: "price_billion_vnd", kind: "value", from: "4 tỷ 500", to: 4.5 }, { field: "bedroom_count", kind: "field", from: "metadata.pn", to: "bedroom_count" }],
+  }
+  const feedback = submission.feedbackByArea(report)
+  assert.deepEqual(feedback.title.errors.map((item) => item.code), ["TOO_SHORT"])
+  assert.deepEqual(feedback.former_district.errors.map((item) => item.code), ["MISMATCHED_FORMER_DISTRICT"])
+  assert.deepEqual(feedback.metadata.warnings.map((item) => item.code), ["UNKNOWN_FIELD", "COORDINATES_OUTSIDE_WARD"])
+  assert.equal(feedback.price_billion_vnd.conversions[0].to, 4.5)
+  assert.equal(feedback.metadata.conversions[0].field, "bedroom_count")
+  assert.deepEqual(feedback.ward, { errors: [], warnings: [], conversions: [] })
+  assert.deepEqual(submission.feedbackByArea(null).metadata, { errors: [], warnings: [], conversions: [] })
+})
+
+const REFERENCE = {
+  wards: ["Phường Cát Lái", "Phường Chánh Hiệp", "Phường Bình Dương", "Xã Nhà Bè"],
+  former_districts: ["Huyện Nhà Bè", "Quận 2", "Thành phố Thủ Dầu Một", "Thành phố Thủ Đức", "Thành phố Tân Uyên"],
+  ward_former_districts: {
+    "Phường Cát Lái": ["Thành phố Thủ Đức"], "Phường Chánh Hiệp": ["Thành phố Thủ Dầu Một"],
+    "Phường Bình Dương": ["Thành phố Thủ Dầu Một", "Thành phố Tân Uyên"], "Xã Nhà Bè": ["Huyện Nhà Bè"],
+  },
+  former_district_groups: {
+    "Huyện Nhà Bè": "Huyện Nhà Bè", "Quận 2": "Thành phố Thủ Đức", "Thành phố Thủ Dầu Một": "Thành phố Thủ Dầu Một",
+    "Thành phố Thủ Đức": "Thành phố Thủ Đức", "Thành phố Tân Uyên": "Thành phố Tân Uyên",
+  },
+}
+
+test("choosing a ward narrows the former districts to the ones it came from", () => {
+  assert.deepEqual(submission.formerDistrictOptions(REFERENCE, "Phường Chánh Hiệp"), ["Thành phố Thủ Dầu Một"])
+  assert.deepEqual(submission.formerDistrictOptions(REFERENCE, "Phường Cát Lái"), ["Quận 2", "Thành phố Thủ Đức"])
+  assert.equal(submission.formerDistrictOptions(REFERENCE, "phuong cat la").length, 5) // not a ward name yet
+})
+
+test("choosing a former district narrows the wards to the ones made from it", () => {
+  assert.deepEqual(submission.wardOptions(REFERENCE, "Thành phố Thủ Dầu Một"), ["Phường Chánh Hiệp", "Phường Bình Dương"])
+  assert.deepEqual(submission.wardOptions(REFERENCE, "Quận 2"), ["Phường Cát Lái"])
+  assert.equal(submission.wardOptions(REFERENCE, "").length, 4)
+})
+
+test("a former district that no longer fits the ward is replaced or cleared", () => {
+  assert.equal(submission.scopedFormerDistrict(REFERENCE, "Phường Chánh Hiệp", "Huyện Nhà Bè"), "Thành phố Thủ Dầu Một")
+  assert.equal(submission.scopedFormerDistrict(REFERENCE, "Phường Cát Lái", "Quận 2"), "Quận 2")
+  assert.equal(submission.scopedFormerDistrict(REFERENCE, "Phường Bình Dương", "Huyện Nhà Bè"), "")
+  assert.equal(submission.scopedFormerDistrict(REFERENCE, "phuong lạ", "Huyện Nhà Bè"), "Huyện Nhà Bè")
 })

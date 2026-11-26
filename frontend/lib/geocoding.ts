@@ -1,109 +1,121 @@
-// Geocoding for the single-listing form, done in the user's browser: the form posts one listing,
-// so it asks Nominatim (OpenStreetMap) directly; zip uploads are geocoded on the server instead.
-// Nominatim's policy (operations.osmfoundation.org/policies/nominatim) allows at most one request
-// per second, no search-as-you-type and requires attribution, so call this from a button, never
-// from typing, and show OSM_ATTRIBUTION next to the result. The server checks the coordinates
-// against the ward boundaries when the listing is submitted.
+// Address search for the listing form's map, done in the user's browser with Photon, an
+// OpenStreetMap geocoder built for search-as-you-type (photon.komoot.io; fair use, no key).
+// Results are limited to Ho Chi Minh City; the user then fine-tunes the pin on the map, and the
+// server names the ward from the official boundaries. Zip uploads are geocoded on the server.
 
-/** Public Nominatim search endpoint. */
-export const NOMINATIM_SEARCH_URL = "https://nominatim.openstreetmap.org/search"
+/** Photon's public endpoints. */
+export const PHOTON_SEARCH_URL = "https://photon.komoot.io/api/"
+export const PHOTON_REVERSE_URL = "https://photon.komoot.io/reverse"
 
-/** Attribution the OpenStreetMap licence requires wherever a geocoded result is shown. */
+/** Attribution the OpenStreetMap licence requires wherever its map or data is shown. */
 export const OSM_ATTRIBUTION = "© OpenStreetMap contributors"
 
-/** Ho Chi Minh City since 1 July 2025 (with Bình Dương and Bà Rịa - Vũng Tàu): west, north, east, south. */
-const CITY_VIEWBOX = "106.3,11.6,107.6,10.3"
-const MINIMUM_INTERVAL_MS = 1000
+/** Ho Chi Minh City since 1 July 2025 (with Bình Dương and Bà Rịa - Vũng Tàu): west, south, east, north. */
+const CITY_BOUNDING_BOX = "106.3,10.3,107.6,11.6"
+/** The old city centre, where most listings are: results near it rank first. */
+export const CITY_CENTRE = { latitude: 10.7769, longitude: 106.7009 }
+const RESULT_LIMIT = 6
 
-/** A geocoded address. */
-export interface GeocodedPlace {
+/** A place the user can pick. */
+export interface FoundPlace {
   latitude: number
   longitude: number
-  /** Nominatim's full name of the match, to show the user what was found. */
+  /** What the list shows, e.g. "Căn hộ DEFINE, Đường Số 60, Phường Cát Lái". */
   label: string
-}
-
-/** The address parts the form has. */
-export interface AddressParts {
+  /** The street, when the place is on one or is one. */
   street?: string
-  project?: string
-  ward?: string
 }
 
-/**
- * The search text for an address, or null when there is nothing more precise than the ward
- * (geocoding a ward alone would return its centre and look like a real location).
- * @param parts - street, project and ward as typed.
- * @returns e.g. "Đường Số 60, Phường Cát Lái, Thành phố Hồ Chí Minh", or null.
- */
-export function buildGeocodingQuery(parts: AddressParts): string | null {
-  const precise = [parts.project, parts.street].map((part) => part?.trim()).filter(Boolean)
-  if (precise.length === 0) return null
-  return [...precise, parts.ward?.trim(), "Thành phố Hồ Chí Minh"].filter(Boolean).join(", ")
-}
-
-/** Dependencies of a geocoder, replaceable in tests. */
-export interface GeocoderDependencies {
-  fetchImplementation?: typeof fetch
-  now?: () => number
-  wait?: (milliseconds: number, signal?: AbortSignal) => Promise<void>
-}
-
-/**
- * Wait a number of milliseconds, ending early with an AbortError when the signal aborts.
- * @param milliseconds - time to wait.
- * @param signal - optional abort signal.
- * @returns a promise that resolves after the wait.
- */
-function waitFor(milliseconds: number, signal?: AbortSignal): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if (signal?.aborted) return reject(new DOMException("Aborted", "AbortError"))
-    const timer = setTimeout(resolve, milliseconds)
-    signal?.addEventListener("abort", () => {
-      clearTimeout(timer)
-      reject(new DOMException("Aborted", "AbortError"))
-    }, { once: true })
-  })
-}
-
-/**
- * Create a geocoder that keeps its own one-request-per-second pace.
- * @param dependencies - fetch, clock and wait; the browser's by default.
- * @returns a function that geocodes an address: it resolves to the best match in the city or null
- *   when there is none or the address has no street or project, and rejects on a network or HTTP
- *   error (and with an AbortError when the signal aborts).
- */
-export function createGeocoder(dependencies: GeocoderDependencies = {}) {
-  const fetchImplementation = dependencies.fetchImplementation ?? ((input, init) => fetch(input, init))
-  const now = dependencies.now ?? (() => Date.now())
-  const wait = dependencies.wait ?? waitFor
-  let lastRequestAt: number | null = null
-
-  return async function geocodeAddress(parts: AddressParts, signal?: AbortSignal): Promise<GeocodedPlace | null> {
-    const query = buildGeocodingQuery(parts)
-    if (!query) return null
-    if (lastRequestAt !== null) {
-      const remaining = MINIMUM_INTERVAL_MS - (now() - lastRequestAt)
-      if (remaining > 0) await wait(remaining, signal)
-    }
-    lastRequestAt = now()
-    const url = new URL(NOMINATIM_SEARCH_URL)
-    url.search = new URLSearchParams({
-      q: query, format: "jsonv2", limit: "1", countrycodes: "vn",
-      viewbox: CITY_VIEWBOX, bounded: "1", "accept-language": "vi",
-    }).toString()
-    // Browsers send the page origin as Referer, which identifies this site to Nominatim.
-    const response = await fetchImplementation(url.toString(), { signal, headers: { Accept: "application/json" } })
-    if (!response.ok) throw new Error(`Nominatim answered ${response.status}`)
-    const results: unknown = await response.json()
-    if (!Array.isArray(results) || results.length === 0) return null
-    const best = results[0] as { lat?: string; lon?: string; display_name?: string }
-    const latitude = Number(best.lat)
-    const longitude = Number(best.lon)
-    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null
-    return { latitude, longitude, label: best.display_name ?? query }
+/** One feature of Photon's GeoJSON answer (only the properties used here). */
+interface PhotonFeature {
+  geometry?: { coordinates?: [number, number] }
+  properties?: {
+    name?: string
+    housenumber?: string
+    street?: string
+    district?: string
+    locality?: string
+    city?: string
+    osm_key?: string
   }
 }
 
-/** The browser's geocoder for the listing form. */
-export const geocodeAddress = createGeocoder()
+/**
+ * The search URL for a typed address.
+ * @param query - what the user typed.
+ * @returns the Photon URL, limited to the city and biased towards its centre.
+ */
+export function buildSearchUrl(query: string): string {
+  const url = new URL(PHOTON_SEARCH_URL)
+  url.search = new URLSearchParams({
+    // "default" keeps OpenStreetMap's own (Vietnamese) names instead of the browser's language.
+    q: query.trim(), limit: String(RESULT_LIMIT), bbox: CITY_BOUNDING_BOX, lang: "default",
+    lat: String(CITY_CENTRE.latitude), lon: String(CITY_CENTRE.longitude),
+  }).toString()
+  return url.toString()
+}
+
+/**
+ * Turn Photon's answer into places to pick, dropping features without coordinates and duplicates.
+ * @param body - the parsed JSON answer.
+ * @returns the places, in Photon's order.
+ */
+export function parsePlaces(body: unknown): FoundPlace[] {
+  const features = (body as { features?: PhotonFeature[] } | null)?.features
+  if (!Array.isArray(features)) return []
+  const places: FoundPlace[] = []
+  const seen = new Set<string>()
+  for (const feature of features) {
+    const coordinates = feature.geometry?.coordinates
+    if (!coordinates || !Number.isFinite(coordinates[0]) || !Number.isFinite(coordinates[1])) continue
+    const properties = feature.properties ?? {}
+    const street = properties.street ?? (properties.osm_key === "highway" ? properties.name : undefined)
+    const streetLine = [properties.housenumber, properties.street].filter(Boolean).join(" ")
+    const parts = [properties.name, streetLine, properties.district ?? properties.locality, properties.city]
+    const label = parts.filter((part, index) => part && parts.indexOf(part) === index).join(", ")
+    if (!label || seen.has(label)) continue
+    seen.add(label)
+    places.push({ latitude: coordinates[1], longitude: coordinates[0], label, street })
+  }
+  return places
+}
+
+/**
+ * Search addresses as the user types. Call it debounced and abort the previous call.
+ * @param query - at least 3 characters; shorter queries return no places without a request.
+ * @param signal - aborts a superseded search.
+ * @param fetchImplementation - fetch, replaceable in tests.
+ * @returns places in the city.
+ * @throws Error on a network or HTTP error (and an AbortError when aborted).
+ */
+export async function searchPlaces(
+  query: string, signal?: AbortSignal, fetchImplementation: typeof fetch = (input, init) => fetch(input, init),
+): Promise<FoundPlace[]> {
+  if (query.trim().length < 3) return []
+  const response = await fetchImplementation(buildSearchUrl(query), { signal })
+  if (!response.ok) throw new Error(`Photon answered ${response.status}`)
+  return parsePlaces(await response.json())
+}
+
+/**
+ * The street at a point the user clicked or dragged the pin to.
+ * @param latitude - decimal degrees.
+ * @param longitude - decimal degrees.
+ * @param signal - aborts a superseded lookup.
+ * @param fetchImplementation - fetch, replaceable in tests.
+ * @returns the street name, or undefined when there is none nearby or the lookup fails.
+ */
+export async function streetAt(
+  latitude: number, longitude: number, signal?: AbortSignal,
+  fetchImplementation: typeof fetch = (input, init) => fetch(input, init),
+): Promise<string | undefined> {
+  const url = new URL(PHOTON_REVERSE_URL)
+  url.search = new URLSearchParams({ lat: String(latitude), lon: String(longitude), limit: "1", lang: "default" }).toString()
+  try {
+    const response = await fetchImplementation(url.toString(), { signal })
+    if (!response.ok) return undefined
+    return parsePlaces(await response.json())[0]?.street
+  } catch {
+    return undefined
+  }
+}

@@ -101,6 +101,9 @@ images are built automatically but deployed only by hand (`deploy/README.md` exp
   (`lib/http.ts`); pass an `AbortController` signal and ignore `isAbortError`.
 - AI requests send `llmHeaders()` (`lib/llm-settings.ts`); without a key the AI features stay
   disabled and link to `/cai-dat-ai`.
+- The listing form's map (`components/listing-form/location-picker.tsx`) calls Photon (address search) and
+  OpenStreetMap tiles straight from the browser: no key, fair use, attribution shown; the ward comes from
+  `/api/listings/locate` (official boundaries), never from the geocoder.
 - Amenity keys and labels come from `lib/amenities.ts`; listing images go through
   `getPropertyImageSrc` with `PROPERTY_IMAGE_FALLBACK` (`lib/property-images.ts`).
 - Accessibility: labelled inputs, `aria-label` on icon-only buttons, `type="button"`, visible

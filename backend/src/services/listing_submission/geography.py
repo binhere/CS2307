@@ -166,6 +166,21 @@ class AddressReference:
                     return self._ward_by_code[code]
         return None
 
+    def ward_near(self, latitude: float, longitude: float) -> Optional[Ward]:
+        """The ward containing a point, or the nearest one within the boundary tolerance.
+
+        Simplified edges leave thin gaps between wards; a point in one still belongs to a ward.
+
+        Returns:
+            Ward | None: The ward, or None when the point is not in or near any ward.
+        """
+        ward = self.ward_at(latitude, longitude)
+        if ward is not None:
+            return ward
+        nearby = [(self.distance_to_ward_metres(candidate, latitude, longitude), candidate.code, candidate)
+                  for candidate in self.wards if self.is_near_ward(candidate, latitude, longitude)]
+        return min(nearby)[2] if nearby else None
+
     def distance_to_ward_metres(self, ward: Ward, latitude: float, longitude: float) -> float:
         """Distance from a point to a ward's boundary in metres, 0 when inside."""
         return distance_to_polygons_metres(longitude, latitude, self._polygons[ward.code])

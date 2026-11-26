@@ -43,6 +43,10 @@ export interface ListingOption {
 export interface ListingReference {
   wards: string[]
   former_districts: string[]
+  /** Official ward -> the former districts its area belonged to before 1 July 2025. */
+  ward_former_districts: Record<string, string[]>
+  /** Former district -> the unit it counts as ("Quận 2" -> "Thành phố Thủ Đức"). */
+  former_district_groups: Record<string, string>
   property_types: ListingOption[]
   legal_statuses: ListingOption[]
   furnishings: ListingOption[]
@@ -114,30 +118,48 @@ export function buildListingDocument(
   return { document }
 }
 
-/**
- * Put coordinates into the optional JSON, keeping everything else the user typed.
- * @param metadataText - the textarea's content (must be a JSON object or empty).
- * @param latitude - decimal degrees.
- * @param longitude - decimal degrees.
- * @returns the new textarea content, pretty-printed, or null when the text is not a JSON object.
- */
-export function withCoordinates(metadataText: string, latitude: number, longitude: number): string | null {
-  const parsed = parseMetadataText(metadataText)
-  if ("error" in parsed) return null
-  const round = (value: number) => Math.round(value * 1e7) / 1e7
-  return JSON.stringify({ ...parsed.metadata, latitude: round(latitude), longitude: round(longitude) }, null, 2)
+/** A location picked on the map. */
+export interface PickedLocation {
+  latitude: number
+  longitude: number
+  /** The street at that point, when known. */
+  street?: string
 }
 
 /**
- * The address parts of the optional JSON that geocoding can use.
- * @param metadataText - the textarea's content.
- * @returns street and project when they are text, else empty.
+ * Write a picked location into the optional JSON, keeping everything else the user typed.
+ * @param metadataText - the textarea's content (a JSON object or empty).
+ * @param location - the picked point and its street; null removes latitude and longitude.
+ * @returns the new textarea content, pretty-printed, or null when the text is not a JSON object.
  */
-export function addressFromMetadata(metadataText: string): { street?: string; project?: string } {
+export function withLocation(metadataText: string, location: PickedLocation | null): string | null {
   const parsed = parseMetadataText(metadataText)
-  if ("error" in parsed) return {}
-  const text = (value: unknown) => (typeof value === "string" && value.trim() ? value.trim() : undefined)
-  return { street: text(parsed.metadata.street), project: text(parsed.metadata.project) }
+  if ("error" in parsed) return null
+  const metadata = { ...parsed.metadata }
+  if (!location) {
+    delete metadata.latitude
+    delete metadata.longitude
+  } else {
+    const round = (value: number) => Math.round(value * 1e7) / 1e7
+    metadata.latitude = round(location.latitude)
+    metadata.longitude = round(location.longitude)
+    if (location.street) metadata.street = location.street
+  }
+  return Object.keys(metadata).length ? JSON.stringify(metadata, null, 2) : ""
+}
+
+/**
+ * The coordinates in the optional JSON, to show the pin where the listing already is.
+ * @param metadataText - the textarea's content.
+ * @returns latitude and longitude when both are numbers, else null.
+ */
+export function coordinatesFromMetadata(metadataText: string): { latitude: number; longitude: number } | null {
+  const parsed = parseMetadataText(metadataText)
+  if ("error" in parsed) return null
+  const { latitude, longitude } = parsed.metadata
+  return typeof latitude === "number" && typeof longitude === "number" && Number.isFinite(latitude) && Number.isFinite(longitude)
+    ? { latitude, longitude }
+    : null
 }
 
 /**
@@ -157,4 +179,101 @@ export function todayInVietnam(now: Date = new Date()): string {
 export function safeRedirectPath(value: string | null | undefined): string | null {
   if (!value || !value.startsWith("/") || value.startsWith("//") || value.startsWith("/\\")) return null
   return value
+}
+
+/** Where a reported field shows on the form: a required field's own input, or the JSON box. */
+export type FormArea = keyof RequiredFields | "metadata"
+
+/** The required fields, in form order. */
+export const REQUIRED_FIELD_NAMES: readonly (keyof RequiredFields)[] = [
+  "title", "description", "property_type", "price_billion_vnd", "area_m2", "ward", "former_district", "posted_date",
+]
+
+/** What the server said about one area of the form. */
+export interface AreaFeedback {
+  errors: ListingProblem[]
+  warnings: ListingProblem[]
+  conversions: ListingConversion[]
+}
+
+/**
+ * The form area a reported field belongs to.
+ * @param field - the report's field path, e.g. "price_billion_vnd", "metadata.bedroom_count", "latitude".
+ * @returns the required field itself, or "metadata" for optional fields, coordinates and the rest.
+ */
+export function areaOfField(field: string): FormArea {
+  return (REQUIRED_FIELD_NAMES as readonly string[]).includes(field) ? (field as keyof RequiredFields) : "metadata"
+}
+
+/**
+ * Split a report by form area, so each input can show its own errors, warnings and rewritten values.
+ * @param report - the server's report, or null before the first check.
+ * @returns feedback for every area (empty lists where there is nothing to say).
+ */
+export function feedbackByArea(report: ListingReport | null): Record<FormArea, AreaFeedback> {
+  const areas = [...REQUIRED_FIELD_NAMES, "metadata"] as FormArea[]
+  const feedback = Object.fromEntries(
+    areas.map((area): [FormArea, AreaFeedback] => [area, { errors: [], warnings: [], conversions: [] }]),
+  ) as Record<FormArea, AreaFeedback>
+  if (!report) return feedback
+  for (const problem of report.errors) feedback[areaOfField(problem.field)].errors.push(problem)
+  for (const problem of report.warnings) feedback[areaOfField(problem.field)].warnings.push(problem)
+  for (const conversion of report.conversions) feedback[areaOfField(conversion.field)].conversions.push(conversion)
+  return feedback
+}
+
+/**
+ * Units a ward's area came from, with the names that count as the same unit
+ * (Thủ Đức city wards also accept "Quận 2", "Quận 9" and "Quận Thủ Đức").
+ * @param reference - the form's choices.
+ * @param ward - an official ward name.
+ * @returns the set of unit names, or null when the ward is not an official name.
+ */
+function unitsOfWard(reference: ListingReference, ward: string): Set<string> | null {
+  const districts = reference.ward_former_districts[ward.trim()]
+  if (!districts) return null
+  return new Set(districts.map((district) => reference.former_district_groups[district] ?? district))
+}
+
+/**
+ * The former districts to offer once a ward is chosen.
+ * @param reference - the form's choices.
+ * @param ward - the ward as typed.
+ * @returns the former districts the ward belonged to (and their other names); every former district
+ *   while the ward is not an official name yet.
+ */
+export function formerDistrictOptions(reference: ListingReference, ward: string): string[] {
+  const units = unitsOfWard(reference, ward)
+  if (!units) return reference.former_districts
+  return reference.former_districts.filter((district) => units.has(reference.former_district_groups[district] ?? district))
+}
+
+/**
+ * The wards to offer once a former district is chosen.
+ * @param reference - the form's choices.
+ * @param formerDistrict - the former district as typed.
+ * @returns the wards made (partly) from it; every ward while it is not an official name yet.
+ */
+export function wardOptions(reference: ListingReference, formerDistrict: string): string[] {
+  const district = formerDistrict.trim()
+  if (!(district in reference.former_district_groups)) return reference.wards
+  const unit = reference.former_district_groups[district]
+  return reference.wards.filter((ward) => unitsOfWard(reference, ward)?.has(unit))
+}
+
+/**
+ * The former district to keep after the ward changed.
+ * @param reference - the form's choices.
+ * @param ward - the new ward as typed.
+ * @param current - the former district as typed.
+ * @returns current when it fits the ward (or the ward is not recognised yet); else the ward's only
+ *   former district; else "" so the user picks among the ward's few options.
+ */
+export function scopedFormerDistrict(reference: ListingReference, ward: string, current: string): string {
+  const units = unitsOfWard(reference, ward)
+  if (!units) return current
+  const currentUnit = reference.former_district_groups[current.trim()]
+  if (currentUnit && units.has(currentUnit)) return current
+  const districts = reference.ward_former_districts[ward.trim()]
+  return districts.length === 1 ? districts[0] : ""
 }
