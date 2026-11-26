@@ -80,13 +80,18 @@ images are built automatically but deployed only by hand (`deploy/README.md` exp
   key into LangGraph state. Map provider errors with `credential_error_from_exception` and
   answer with `credential_error_response`.
 - **Embeddings are fixed on the server** (`qwen3-embedding:0.6b`, 1024 dimensions, CPU via the
-  `embedding` service) and never use a user's key. The server embeds only search queries; the
-  catalog's vectors are computed on a powerful developer machine with `deploy/seed/embed_catalog.sh`
+  `embedding` service) and never use a user's key. The server embeds search queries and, in the
+  background, each listing a user posts (`/dang-tin`); the catalog's vectors are computed on a powerful
+  developer machine with `deploy/seed/embed_catalog.sh`
   and committed (`data/gold/listing_embeddings.*`). Re-run it after any change to the dataset or to
   `src/search/text_builder.py`: CI refuses stale vectors. Changing the model, the Ollama version or the
   query/passage prefixes requires re-embedding the whole catalog.
 - The rule-based query parser only accepts places listed in `src/search/known_locations.json`;
   regenerate it with `scripts/export_known_locations.py` after `data/v3/graph` changes.
+- Posted listings (`src/services/listing_submission/`) are checked against Ho Chi Minh City's official
+  2025 wards, the old-ward mapping and ward boundaries in `listing_submission/reference/`, built by
+  `scripts/export_address_reference.py` from public sources; validation makes no network call, except
+  the optional Nominatim geocoder for zip uploads (1 request/second on the public server).
 - Neo4j queries go through `_timed_query()` so they carry the configured timeout.
 
 ## Frontend rules

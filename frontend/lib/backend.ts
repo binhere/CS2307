@@ -80,3 +80,33 @@ export async function proxyJson(
     )
   }
 }
+
+/**
+ * Proxy for uploads: forwards a multipart body (a listing with its photos) unchanged, with the
+ * caller's bearer token and the original content type (which carries the multipart boundary).
+ * @param request - the incoming route-handler request.
+ * @param backendPath - backend path, e.g. "/v1/listings".
+ * @returns a JSON Response with the upstream status; `{ error }` with 502 when the backend is
+ *   unreachable.
+ */
+export async function proxyMultipart(request: Request, backendPath: string): Promise<Response> {
+  const headers: Record<string, string> = {}
+  const contentType = request.headers.get("content-type")
+  if (contentType) headers["Content-Type"] = contentType
+  const auth = request.headers.get("authorization")
+  if (auth) headers["Authorization"] = auth
+  try {
+    // Buffered rather than streamed: a listing is at most 20 photos of a few hundred KB, and a
+    // buffered body needs no streaming support from the runtime's fetch.
+    const upstream = await fetch(`${BACKEND_URL}${backendPath}`, {
+      method: "POST", headers, body: await request.arrayBuffer(), cache: "no-store",
+    })
+    const text = await upstream.text()
+    return Response.json(parseUpstreamBody(text), { status: upstream.status })
+  } catch (error) {
+    return Response.json(
+      { error: error instanceof Error ? error.message : "Upstream request failed" },
+      { status: 502 },
+    )
+  }
+}

@@ -41,6 +41,7 @@ csv.field_size_limit(sys.maxsize)
 DATA_DIR = Path(os.environ.get("SEED_DATA_DIR", "/seed/data"))
 # Catalog tables in load order, each read from catalog/<table>.csv.
 CATALOG_TABLES = ("properties", "listing_amenity_distances")
+CATALOG_ROWS_ONLY = sql.SQL(" WHERE source = 'catalog'")
 # Any constant works; it only has to be the same for every seed run.
 RUN_LOCK_KEY = 2307_0001
 NEO4J_BATCH_SIZE = 2000
@@ -157,13 +158,19 @@ def load_postgres(digest: str) -> None:
             if loaded_digest == digest:
                 log(f"PostgreSQL: catalog {short(digest)} already loaded; skipping")
                 return
+            # Listings users posted (source "user", migration 0007) are not part of the catalog and
+            # must survive its replacement; before that migration every row is a catalog row.
+            cursor.execute("SELECT EXISTS (SELECT 1 FROM information_schema.columns "
+                           "WHERE table_name = 'properties' AND column_name = 'source')")
+            has_source = cursor.fetchone()[0]
             cursor.execute("SELECT EXISTS (SELECT 1 FROM properties)")
             if cursor.fetchone()[0]:
                 log(f"PostgreSQL: replacing catalog {short(loaded_digest)} with {short(digest)}")
                 # DELETE rather than TRUNCATE: TRUNCATE would block the backend's reads until the
                 # commit, while with DELETE they keep seeing the old catalog.
                 for table in CATALOG_TABLES:
-                    cursor.execute(sql.SQL("DELETE FROM {table}").format(table=sql.Identifier(table)))
+                    cursor.execute(sql.SQL("DELETE FROM {table}").format(table=sql.Identifier(table))
+                                   + (CATALOG_ROWS_ONLY if table == "properties" and has_source else sql.SQL("")))
             for table, path in zip(CATALOG_TABLES, catalog_files()):
                 with path.open(encoding="utf-8", newline="") as stream:
                     columns = next(csv.reader(stream))
@@ -175,8 +182,10 @@ def load_postgres(digest: str) -> None:
                     cursor.copy_expert(statement.as_string(cursor), stream)
                 log(f"PostgreSQL: loaded {cursor.rowcount} rows into {table}")
             # Rows keep their exported ids, so the sequence must continue after them.
+            # Posted listings take ids from their own sequence (9 billion and up), so only catalog ids count here.
             cursor.execute(
-                "SELECT setval(pg_get_serial_sequence('properties', 'id'), (SELECT max(id) FROM properties))"
+                "SELECT setval(pg_get_serial_sequence('properties', 'id'), (SELECT max(id) FROM properties"
+                + (" WHERE source = 'catalog'" if has_source else "") + "))"
             )
             cursor.execute(
                 "INSERT INTO catalog_imports (name, content_sha256, seed_version) VALUES (%s, %s, %s) "

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { ChevronLeft, ChevronRight, Images } from 'lucide-react'
-import { getPropertyImageSrc, PROPERTY_IMAGE_FALLBACK } from '@/lib/property-images'
+import { getPropertyImageSrc, getPropertyThumbnailSrc, PROPERTY_IMAGE_FALLBACK } from '@/lib/property-images'
 import { cn } from '@/lib/utils'
 
 interface ImageGalleryProps {
@@ -12,10 +12,11 @@ interface ImageGalleryProps {
 }
 
 export function ImageGallery({ images, title }: ImageGalleryProps) {
-  const propertyImages = (images || [])
-    .filter((image) => Boolean(image?.trim()))
-    .map(getPropertyImageSrc)
+  const storedImages = (images || []).filter((image) => Boolean(image?.trim()))
+  const propertyImages = storedImages.map(getPropertyImageSrc)
   const imageList = propertyImages.length > 0 ? propertyImages : [PROPERTY_IMAGE_FALLBACK]
+  // The strip under the main photo shows small previews: posted listings have 480 px thumbnails.
+  const previewList = storedImages.length > 0 ? storedImages.map(getPropertyThumbnailSrc) : [PROPERTY_IMAGE_FALLBACK]
   const [mainImageIndex, setMainImageIndex] = useState(0)
   // Photos that failed to load (e.g. not uploaded to MinIO yet) render the illustration instead;
   // kept in state so a re-render cannot swap the broken URL back in.
@@ -112,7 +113,8 @@ export function ImageGallery({ images, title }: ImageGalleryProps) {
                 mainImageIndex === index ? 'ring-2 ring-primary ring-offset-2 ring-offset-background' : 'opacity-70 hover:opacity-100',
               )}
             >
-              <Image src={imageSourceAt(index)} alt="" fill className="object-cover" onError={() => markImageFailed(index)} />
+              <Image src={failedImageIndexes.has(index) ? PROPERTY_IMAGE_FALLBACK : previewList[index]} alt="" fill
+                className="object-cover" onError={() => markImageFailed(index)} />
             </button>
           ))}
         </div>

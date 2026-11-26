@@ -76,8 +76,12 @@ match, so the cluster runs it every hour:
 - The exported rows leave out `created_at` and `updated_at` (they take the load time), so rebuilding
   the same data gives the same digest and replaces nothing.
 - One run at a time: a PostgreSQL advisory lock is held for the whole run.
-- The catalog tables belong to the seed: the API never writes them, and no other table has a foreign
-  key to them. `interactions` and `recommendation_events` keep a `listing_id` without one.
+- The catalog rows belong to the seed. Listings users post (`/dang-tin`) are rows of `properties` with
+  `source = 'user'` and ids from `user_listing_id_seq` (9 billion and up); the seed deletes and
+  exports only `source = 'catalog'` rows, so a catalog replacement keeps them. Seed images built
+  before migration `20261126_0007` delete every row: pin a newer seed before a catalog change.
+  No other table has a foreign key to the catalog tables; `interactions` and `recommendation_events`
+  keep a `listing_id` without one.
 
 Build and check it locally (Docker; a few minutes):
 

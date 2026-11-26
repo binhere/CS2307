@@ -76,9 +76,13 @@ for table in properties listing_amenity_distances; do
   columns="$(psql_query "SELECT string_agg(quote_ident(column_name), ', ' ORDER BY ordinal_position)
     FROM information_schema.columns
     WHERE table_schema = 'public' AND table_name = '$table' AND is_generated = 'NEVER'
-      AND column_name NOT IN ('created_at', 'updated_at')")"
+      AND column_name NOT IN ('created_at', 'updated_at', 'source', 'owner_user_id', 'submission')")"
+  # Only catalog rows, without the columns of user-posted listings: the seed leaves those alone, and the
+  # catalog files stay byte-identical, so the content digest does not change because of them.
+  rows="$table"
+  [[ "$table" == "properties" ]] && rows="properties WHERE source = 'catalog'"
   docker exec "$postgres_container" psql -U seed -d catalog -v ON_ERROR_STOP=1 \
-    -c "\\copy (SELECT $columns FROM $table ORDER BY 1, 2) TO STDOUT WITH (FORMAT csv, HEADER true)" \
+    -c "\\copy (SELECT $columns FROM $rows ORDER BY 1, 2) TO STDOUT WITH (FORMAT csv, HEADER true)" \
     > "$context/data/catalog/$table.csv"
 done
 

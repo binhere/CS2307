@@ -147,13 +147,21 @@ expect_in_log "$run_log" "PostgreSQL: catalog .* already loaded; skipping" "Post
 expect_in_log "$run_log" "Neo4j: graph .* already imported; skipping" "Neo4j was not skipped"
 [[ "$(count_rows properties)" == "$EXPECTED_LISTINGS" ]] || fail "second run changed properties"
 
+echo "[check] a listing a user posted survives every catalog replacement below"
+psql_query "WITH next AS (SELECT nextval('user_listing_id_seq') AS value)
+  INSERT INTO properties (id, listing_id, title, source) SELECT value, value, 'posted by a user', 'user' FROM next" > /dev/null
+count_user_rows() {
+  psql_query "SELECT count(*) FROM properties WHERE source = 'user'"
+}
+
 echo "[check] changed catalog (one listing less): replaces PostgreSQL, skips Neo4j"
 changed_catalog="$(data_without_last_row catalog/properties.csv)"
 changed_data_directories+=("$changed_catalog")
 run_log="$(run_seed -v "$changed_catalog:/seed/changed:ro" -e SEED_DATA_DIR=/seed/changed)"; echo "$run_log"
 expect_in_log "$run_log" "PostgreSQL: replacing catalog" "PostgreSQL was not replaced"
 expect_in_log "$run_log" "Neo4j: graph .* already imported; skipping" "Neo4j was replaced for a catalog-only change"
-[[ "$(count_rows properties)" == "$((EXPECTED_LISTINGS - 1))" ]] || fail "the changed catalog was not loaded"
+[[ "$(count_rows properties)" == "$EXPECTED_LISTINGS" ]] || fail "the changed catalog was not loaded"
+[[ "$(count_user_rows)" == "1" ]] || fail "replacing the catalog deleted a user's listing"
 [[ "$(count_rows catalog_imports)" == "1" ]] || fail "catalog record after a replacement"
 
 echo "[check] changed graph (one listing node less), original catalog: replaces both stores"
@@ -162,7 +170,8 @@ changed_data_directories+=("$changed_graph")
 run_log="$(run_seed -v "$changed_graph:/seed/changed:ro" -e SEED_DATA_DIR=/seed/changed)"; echo "$run_log"
 expect_in_log "$run_log" "PostgreSQL: replacing catalog" "PostgreSQL was not put back"
 expect_in_log "$run_log" "Neo4j: replacing graph" "Neo4j was not replaced"
-[[ "$(count_rows properties)" == "$EXPECTED_LISTINGS" ]] || fail "the original catalog was not put back"
+[[ "$(count_rows properties)" == "$((EXPECTED_LISTINGS + 1))" ]] || fail "the original catalog was not put back"
+[[ "$(count_user_rows)" == "1" ]] || fail "putting the catalog back deleted a user's listing"
 [[ "$(count_listing_nodes)" == "$((EXPECTED_LISTINGS - 1))" ]] || fail "the changed graph was not loaded"
 
 echo "[check] the image's own data again: skips PostgreSQL, puts the graph back"

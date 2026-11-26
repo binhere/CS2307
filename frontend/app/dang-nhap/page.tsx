@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useAuth } from "@/lib/auth-context"
 import { AuthShell } from "@/components/auth-shell"
+import { safeRedirectPath } from "@/lib/listing-submission"
 
 export default function LoginPage() {
   const { login } = useAuth()
@@ -23,7 +24,9 @@ export default function LoginPage() {
     setLoading(true)
     try {
       await login(username.trim(), password)
-      router.push("/tim-kiem-chuyen-sau")
+      // Pages that need an account send visitors here with ?next=<their path>.
+      const next = safeRedirectPath(new URLSearchParams(window.location.search).get("next"))
+      router.push(next ?? "/tim-kiem-chuyen-sau")
     } catch (err) {
       setError(err instanceof Error ? err.message : "Đăng nhập thất bại")
     } finally {

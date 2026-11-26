@@ -36,3 +36,14 @@ export function getPropertyImageSrc(value?: string | null): string {
   if (!objectPath.startsWith("images/")) return PROPERTY_IMAGE_FALLBACK
   return `/api/property-images?path=${encodeURIComponent(objectPath)}`
 }
+
+/**
+ * Card-size image for a listing: posted listings store a 480 px thumbnail next to each gallery
+ * photo (".../gallery/001.jpg" -> ".../thumbnails/001.jpg"); catalog photos have one size only.
+ * @param value - the listing's first image key or URL.
+ * @returns the image route URL of the thumbnail when there is one, else of the image itself.
+ */
+export function getPropertyThumbnailSrc(value?: string | null): string {
+  const thumbnail = value?.replace(/(\/user-listings\/\d+\/)gallery\//, "$1thumbnails/")
+  return getPropertyImageSrc(thumbnail)
+}

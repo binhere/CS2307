@@ -1,10 +1,11 @@
-"""Read property images from the private MinIO bucket.
+"""Read and write property images in the private MinIO bucket.
 
 MinIO is optional: a deployment without images leaves MINIO_END_POINT empty, and the
-frontend then shows its illustration for every listing.
+frontend then shows its illustration for every listing. Writes come from listings users post.
 """
 
-from typing import Optional
+import io
+from typing import List, Optional
 from urllib.parse import unquote, urlparse
 
 import certifi
@@ -109,6 +110,39 @@ class MinioClient:
             bucket_name=self.minio_bucket_name,
             object_name=object_key,
         )
+
+    def put_image(self, object_key: str, content: bytes, content_type: str) -> None:
+        """Store an image under a property image key, replacing any object already there.
+
+        Args:
+            object_key: Key under "images/", e.g. "images/user-listings/9000000001/gallery/001.jpg".
+            content: The image bytes.
+            content_type: MIME type served back with the image, e.g. "image/jpeg".
+
+        Raises:
+            ValueError: The key is not a property image key.
+            ImageStorageUnavailableError: MinIO is not configured or not started.
+            minio.S3Error: MinIO answered with an error.
+        """
+        object_key = self.normalize_object_key(object_key)
+        if self._minio_client is None:
+            raise ImageStorageUnavailableError("MinIO is not configured")
+        self._minio_client.put_object(self.minio_bucket_name, object_key, io.BytesIO(content),
+                                      length=len(content), content_type=content_type)
+
+    def remove_images(self, object_keys: List[str]) -> None:
+        """Remove images, ignoring failures: used to clean up after a listing could not be saved.
+
+        Args:
+            object_keys: Keys under "images/".
+        """
+        if self._minio_client is None:
+            return
+        for object_key in object_keys:
+            try:
+                self._minio_client.remove_object(self.minio_bucket_name, self.normalize_object_key(object_key))
+            except Exception as error:
+                logger.warning("Could not remove image {}: {}", object_key, type(error).__name__)
 
     def count_objects(self, prefix: str) -> Optional[int]:
         """Count the objects under a key prefix, for the data dashboard.

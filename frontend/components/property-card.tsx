@@ -6,7 +6,7 @@ import Link from "next/link"
 import { Heart, MapPin, Camera, Bed, Bath, Maximize, ArrowRight } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 import { getSavedListingIds, setSavedListing } from "@/lib/feedback"
-import { getPropertyImageSrc, PROPERTY_IMAGE_FALLBACK } from "@/lib/property-images"
+import { getPropertyThumbnailSrc, PROPERTY_IMAGE_FALLBACK } from "@/lib/property-images"
 import { formatDate, formatPrice, formatPricePerM2, getListingBadge } from "@/lib/format"
 import { cn } from "@/lib/utils"
 
@@ -32,7 +32,7 @@ interface PropertyCardProps {
 
 export function PropertyCard({ property, variant = "list", source = "search_bar" }: PropertyCardProps) {
   const hasPropertyImage = Boolean(property.images?.[0]?.trim())
-  const imageUrl = getPropertyImageSrc(property.images?.[0])
+  const imageUrl = getPropertyThumbnailSrc(property.images?.[0])
   const badge = getListingBadge(property.listing_type)
   const { user } = useAuth()
   const [saved, setSaved] = useState(false)

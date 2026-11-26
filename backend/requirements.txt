@@ -39,3 +39,7 @@ joblib>=1.4.0
 pandas
 # Pickled model: must match the sklearn version used by price_prediction/train-models.py
 scikit-learn==1.9.1
+
+# Listing posts: multipart form parsing (FastAPI File/Form) and checking uploaded photos
+python-multipart==0.0.6
+Pillow

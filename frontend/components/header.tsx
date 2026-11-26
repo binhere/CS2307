@@ -1,6 +1,6 @@
 "use client"
 
-import { BarChart3, Building2, KeyRound, LogIn, LogOut, Search, Sparkles } from "lucide-react"
+import { BarChart3, Building2, KeyRound, LogIn, LogOut, Search, Sparkles, SquarePlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -68,14 +68,19 @@ export function Header() {
                 )}
               >
                 <Icon className="h-4 w-4" aria-hidden />
-                {/* Labels from 768px: three labelled tabs do not fit beside the logo and sign-in buttons below that. */}
-                <span className="sr-only md:not-sr-only">{label}</span>
+                {/* Labels from 1024px: three labelled tabs do not fit beside the logo and the account buttons below that. */}
+                <span className="sr-only lg:not-sr-only">{label}</span>
               </Link>
             )
           })}
         </nav>
 
         <div className="flex items-center gap-2 shrink-0">
+          <Button asChild variant="ghost" size="icon-sm">
+            <Link href="/dang-tin" aria-label="Đăng tin" title="Đăng tin" aria-current={pathname === "/dang-tin" ? "page" : undefined}>
+              <SquarePlus className="h-4 w-4" aria-hidden />
+            </Link>
+          </Button>
           <Button asChild variant="ghost" size="icon-sm" className="relative">
             <Link
               href={llmSettingsHref}
