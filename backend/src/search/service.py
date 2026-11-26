@@ -75,7 +75,8 @@ class HybridSearchService:
         parsed = await self.parse(request.query, request.top_k, request.filters)
         embedded_count, property_count = await run_in_threadpool(search_repository.embedding_coverage)
         vector = None
-        if property_count > 0 and embedded_count == property_count:
+        # Listings without a vector yet (just posted) are still found by text and filters.
+        if embedded_count > 0:
             try:
                 vector = await asyncio.wait_for(
                     run_in_threadpool(embedding_model.encode_query, parsed.semantic_query),
@@ -263,7 +264,7 @@ class HybridSearchService:
 
     async def similar(self, listing_id: str, top_k: int = 10) -> dict:
         embedded_count, property_count = await run_in_threadpool(search_repository.embedding_coverage)
-        vector_available = property_count > 0 and embedded_count == property_count
+        vector_available = embedded_count > 0
         # The detail page accepts both the PostgreSQL ``properties.id`` and the
         # source ``listing_id``.  Neo4j only knows the latter, so resolve the
         # identifier once before starting the graph traversal.  Without this

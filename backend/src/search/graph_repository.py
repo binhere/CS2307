@@ -13,10 +13,11 @@ from src.settings.config import config_value
 logger = logging.getLogger(__name__)
 
 try:
-    from neo4j import GraphDatabase, Query
+    from neo4j import GraphDatabase, Query, unit_of_work
 except ImportError:  # pragma: no cover - exercised only in a misconfigured runtime
     GraphDatabase = None
     Query = None
+    unit_of_work = None
 
 
 GRAPH_FEATURE_CATEGORIES = {
@@ -729,6 +730,34 @@ class Neo4jGraphRepository:
         except Exception as exc:
             logger.warning(f"Neo4j listing subgraph unavailable: {exc}")
             return GraphSubgraphResponse(state="unavailable", error=str(exc))
+
+    def write(self, statements: List[Tuple[str, Dict[str, Any]]]) -> bool:
+        """Run Cypher write statements in one transaction, under the configured timeout.
+
+        Used to add the listings users post to the graph (src/services/listing_enrichment).
+
+        Args:
+            statements: (Cypher text, parameters) pairs, run in order.
+
+        Returns:
+            bool: True when written; False when graph search is disabled or Neo4j is unreachable,
+            in which case nothing was written.
+
+        Raises:
+            neo4j.exceptions.Neo4jError: A statement failed; the transaction is rolled back.
+        """
+        if not self.enabled or not self._ensure_driver():
+            return False
+
+        # A transaction rejects _timed_query's Query objects; unit_of_work carries the same timeout.
+        @unit_of_work(timeout=self.query_timeout)
+        def run_all(transaction) -> None:
+            for query_text, parameters in statements:
+                transaction.run(query_text, parameters)
+
+        with self._driver.session(database=self.database) as session:
+            session.execute_write(run_all)
+        return True
 
     def count_listing_nodes(self) -> Optional[int]:
         """Count the Listing nodes, for the data dashboard.

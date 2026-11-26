@@ -81,6 +81,14 @@ images are built automatically but deployed only by hand (`deploy/README.md` exp
   answer with `credential_error_response`. A chat step never hides a failure behind a canned reply: it raises
   `ChatModelError` (502), shown in red in the chat with the step and the provider's own message (keys masked);
   any other exception reaches the client as its class name only.
+- **Listings come only from users** (the `/dang-tin` form and zip uploads); the catalog seed still exists
+  but is no longer the data source. After a listing is saved the server embeds it, finds its coordinates
+  when missing (`scheduled_geocoding.py`) and enriches it (`src/services/listing_enrichment/`): its 5
+  nearest amenities per category from `listing_enrichment/reference/amenities.json` (OpenStreetMap; drive
+  = straight line × a per-category road factor measured with OSRM, rebuilt by
+  `scripts/export_amenity_reference.py`) into `listing_amenity_distances`, and its Neo4j node with ward,
+  former district, street, 150 m cell and amenity relationships (`listing_enrichment/graph.py`, same model
+  as `scripts/neo4j/import_search_graph.cypher`). Semantic search runs once any listing has a vector.
 - **Embeddings are fixed on the server** (`qwen3-embedding:0.6b`, 1024 dimensions, CPU via the
   `embedding` service) and never use a user's key. The server embeds search queries and, in the
   background, each listing a user posts (`/dang-tin`); the catalog's vectors are computed on a powerful
@@ -133,7 +141,7 @@ images are built automatically but deployed only by hand (`deploy/README.md` exp
 - `minio/minio` and `minio/mc` are gone from Docker Hub; compose uses the Chainguard images.
 - The listing price in `data/v3` (and the crawl's card price) can be wrong: the crawler takes the
   first amount in the title (e.g. rent "HĐT 300 triệu/th" instead of "giá 170 tỷ").
-- Image keys: `data/v3` stores them in Unicode NFD (macOS file names), the photo archive and MinIO in
+- Image keys: `data/v3` stores them in Unicode NFD (macOS file names), the manifest and MinIO in
   NFC; the strings look identical but never match. The seed takes keys from
   `data/gold/images_manifest.csv` (NFC). 184 v3 listings also list old-dataset photos that do not exist.
 - `docker run --env-file` and `kubectl --from-env-file` keep a trailing `# comment` as part of the

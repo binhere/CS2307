@@ -18,6 +18,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from starlette.concurrency import run_in_threadpool
 
 from src.services.auth.dependencies import get_current_user
+from src.services.listing_enrichment.service import enrich_listing
 from src.services.listing_submission import storage
 from src.services.listing_submission.coercion import today_in_vietnam
 from src.services.listing_submission.places import location_directory
@@ -151,4 +152,7 @@ async def view_post_listing(
         logger.exception("Saving a posted listing failed")
         return error_response(503, "storage", "STORAGE_UNAVAILABLE", "Chưa lưu được tin. Vui lòng thử lại sau.")
     background_tasks.add_task(storage.embed_listing, saved["id"])
+    # Amenities and the graph node now, when the listing came with coordinates; the scheduled job
+    # does it once the geocoding job has found them otherwise.
+    background_tasks.add_task(enrich_listing, saved["id"])
     return {"data": {**saved, "report": report.as_dict()}, "errors": [], "status": "success"}

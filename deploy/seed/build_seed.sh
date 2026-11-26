@@ -76,7 +76,7 @@ for table in properties listing_amenity_distances; do
   columns="$(psql_query "SELECT string_agg(quote_ident(column_name), ', ' ORDER BY ordinal_position)
     FROM information_schema.columns
     WHERE table_schema = 'public' AND table_name = '$table' AND is_generated = 'NEVER'
-      AND column_name NOT IN ('created_at', 'updated_at', 'source', 'owner_user_id', 'submission', 'geocoding_status', 'content_fingerprint')")"
+      AND column_name NOT IN ('created_at', 'updated_at', 'source', 'owner_user_id', 'submission', 'geocoding_status', 'content_fingerprint', 'enriched_coordinates')")"
   # Only catalog rows, without the columns of user-posted listings: the seed leaves those alone, and the
   # catalog files stay byte-identical, so the content digest does not change because of them.
   rows="$table"
@@ -88,11 +88,9 @@ done
 
 cp "$WORK_DIR"/input/v3/graph/*.csv "$context/data/graph/"
 cp "$repository_root/backend/scripts/neo4j/import_search_graph.cypher" "$context/data/"
-# photos.py uploads the photos this manifest lists (deploy/README.md, "Listing photos").
-cp "$repository_root/data/gold/images_manifest.csv" "$context/data/"
 seed_version="${SEED_IMAGE##*:}"
 echo "$seed_version" > "$context/data/SEED_VERSION"
-cp "$seed_directory/seed.py" "$seed_directory/photos.py" "$seed_directory/requirements.txt" "$context/"
+cp "$seed_directory/seed.py" "$seed_directory/requirements.txt" "$context/"
 
 # --load keeps the image in the local engine even when a docker-container Buildx builder is the default.
 docker build --load --quiet --file "$seed_directory/Dockerfile" \

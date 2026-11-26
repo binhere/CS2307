@@ -22,7 +22,6 @@ deploy: the workflow runs the backend tests and starts both images before pushin
 | frontend | 3000 | `GET /` | `/tmp`, `/app/.next/cache` | `BACKEND_URL` at runtime; no domain or key in the image |
 | embedding | 11434 | `GET /` | `/tmp` | embeds search queries only; model baked in; stays loaded |
 | seed (CronJob) | none | exit code | `/tmp` | runs after the migrations; replaces the catalog when its own differs, otherwise does nothing |
-| photos (CronJob, seed image, `python /seed/photos.py`) | none | exit code | `/tmp`, or `PHOTO_WORK_DIR` with about 10 GB free | uploads the listing photos MinIO lacks; otherwise does nothing |
 
 All four run as user and group `10001` with a read-only root filesystem and no capabilities. The
 backend starts without Neo4j (search falls back to PostgreSQL), without MinIO (leave
@@ -96,43 +95,10 @@ python -m pytest deploy/seed/tests      # needs deploy/seed/requirements.txt
 
 ## Listing photos
 
-The photos are the archive `images.zip` (33,882 files for the 3,857 listings, laid out as
-`images/<property type>/<ward>/<listing id>/<file>`; Unicode NFC names; 9,523,350,576 bytes). It is on
-Lộc's Google Drive, shared with anyone who has the link, and never in git or in an image.
-`data/gold/images_manifest.csv` lists the archive's files, and the seed image carries that list.
-
-`photos.py` in the seed image makes the photo store (Garage in the cluster, MinIO locally) hold every
-photo of the manifest; the cluster runs it as its own CronJob.
-- Each run lists the bucket's `images/` prefix and stops when nothing is missing.
-- Otherwise it reads the archive's table of contents from Google Drive with range requests and uploads
-  exactly the missing files under their manifest key:
-  - more than 1,000 missing: it downloads the archive once (continuing a partial download) and deletes it
-    afterwards;
-  - fewer: it reads each photo from the URL with range requests.
-- Every photo is checked against the archive's CRC-32 when read, and again after upload by reading the
-  stored copy back. A mismatch is retried from fresh bytes up to 3 times: a damaged local copy falls back
-  to the URL. Photos that still fail are reported after all others are uploaded.
-- `PHOTO_VERIFY_EXISTING=true` also reads back every stored photo and replaces the damaged ones; run it
-  once after a hardware fault.
-- Settings: it reads the backend's `MINIO_*` settings, with a key that may write the bucket.
-- Resources: it needs about 10 GB in `PHOTO_WORK_DIR` (default `/tmp`) only for a full download, and
-  about 80 MiB of memory.
-- The backend only reads photos, so its own key can be read-only.
-
-To publish a new archive:
-1. Upload it to Google Drive, shared with anyone who has the link.
-2. Set `DEFAULT_ARCHIVE_URL` (the `drive.usercontent.google.com/download?id=…&export=download&confirm=t`
-   form) and `DEFAULT_ARCHIVE_SIZE` in `deploy/seed/photos.py`.
-3. Regenerate the manifest:
-
-```bash
-unzip -Z1 images.zip | python3 -c "
-import csv, sys, unicodedata
-rows = sorted((name.split('/')[3], unicodedata.normalize('NFC', name)) for name in sys.stdin.read().splitlines()
-              if not name.endswith('/'))
-writer = csv.writer(sys.stdout); writer.writerow(['listing_id', 'object_key']); writer.writerows(rows)
-" > data/gold/images_manifest.csv
-```
-
-The keys in `data/v3/master_v3.csv` are NFD and include 1,484 photos of the old dataset that the archive
-does not have; the seed never uses them.
+Listings, and so their photos, come only from users: the posting form and zip uploads. The browser
+shrinks every photo to a gallery copy (longest side 1,280 px) and a thumbnail (480 px), and the
+backend stores both in the photo store (Garage in the cluster, MinIO locally) under
+`images/user-listings/<listing id>/{gallery,thumbnails}/`. Nothing else uploads photos: the earlier
+catalog archive on Google Drive and its photos CronJob are gone. The seed still writes catalog image
+keys from `data/gold/images_manifest.csv`, but no photo is uploaded for them, so a reseeded catalog
+shows the illustration instead of its photos.

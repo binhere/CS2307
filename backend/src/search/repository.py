@@ -61,12 +61,11 @@ def _json_safe(row: dict) -> dict:
 
 class SearchRepository:
     def embedding_coverage(self) -> Tuple[int, int]:
-        """Embedded and total active catalog listings; semantic search runs only when they are equal.
+        """Embedded and total active listings; semantic search runs as soon as one has a vector.
 
-        Only catalog rows count: their vectors come with the seed, so a partial count means a
-        backfill is still running. A listing a user just posted is embedded in the background and
-        may briefly have no vector; until then it is found by text and filters, and it must not
-        switch semantic search off for everyone.
+        Listings come from users (form and zip uploads) and are embedded in the background after
+        posting, so some always lack a vector for a moment; they are still found by text and
+        filters, and the vector ranks those that have one.
 
         Returns:
             tuple: (embedded, total).
@@ -75,7 +74,7 @@ class SearchRepository:
             """
             SELECT COUNT(*) AS total,
                    COUNT(*) FILTER (WHERE embedding IS NOT NULL) AS embedded
-            FROM properties WHERE is_active = true AND is_deleted = false AND source = 'catalog'
+            FROM properties WHERE is_active = true AND is_deleted = false
             """
         )
         return (int(rows[0]["embedded"]), int(rows[0]["total"])) if rows else (0, 0)

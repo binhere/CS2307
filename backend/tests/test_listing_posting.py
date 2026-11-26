@@ -166,16 +166,16 @@ class SaveTests(unittest.TestCase):
 
 
 class SemanticSearchGateTests(unittest.TestCase):
-    def test_only_catalog_rows_decide_whether_semantic_search_runs(self):
+    def test_every_listing_counts_now_that_listings_come_from_users(self):
         queries = []
 
         def fetch_mappings(query, **parameters):
             queries.append(query)
-            return [{"embedded": 3857, "total": 3857}]
+            return [{"embedded": 12, "total": 15}]
 
         with patch.object(search_repository_module.postgres_client, "fetch_mappings", fetch_mappings):
-            self.assertEqual(search_repository_module.SearchRepository().embedding_coverage(), (3857, 3857))
-        self.assertIn("source = 'catalog'", queries[0])
+            self.assertEqual(search_repository_module.SearchRepository().embedding_coverage(), (12, 15))
+        self.assertNotIn("source", queries[0])  # posted listings count, and three still being embedded do not block it
 
 
 class PostingApiTests(unittest.TestCase):

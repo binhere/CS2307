@@ -81,9 +81,10 @@ def seen_listing_ids(report: Optional[Dict[str, Any]]) -> Set[int]:
 def choose_holdout(frame: pd.DataFrame, report: Optional[Dict[str, Any]]) -> Set[int]:
     """Pick the fixed holdout set on the first run.
 
-    Complete catalog rows (nothing filled in) that the served model was tested on and not
-    trained on, so the first comparison is fair; when too few remain, a random 15% of the complete
-    catalog rows it was not trained on.
+    Complete rows (nothing filled in), from any source, that the served model was tested on and
+    not trained on, so the first comparison is fair; when too few remain, a random 15% of the
+    complete rows it was not trained on. Listings now come from users, so the set cannot rely on
+    a catalog.
 
     Args:
         frame: Prepared rows.
@@ -92,7 +93,7 @@ def choose_holdout(frame: pd.DataFrame, report: Optional[Dict[str, Any]]) -> Set
     Returns:
         set: Listing ids.
     """
-    complete = frame[(frame["source"] == "catalog") & ~frame["is_bedrooms_imputed"] & ~frame["is_coordinates_imputed"]]
+    complete = frame[~frame["is_bedrooms_imputed"] & ~frame["is_coordinates_imputed"]]
     trained = set(report.get("train_listing_ids", [])) if report else set()
     tested = {row[0] for row in report.get("test_predictions", [])} if report else set()
     chosen = set(complete["listing_id"]) & tested
