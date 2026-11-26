@@ -8,7 +8,7 @@ to price_model_runs for the "Lịch sử huấn luyện" tab.
 
 The schedule checks every PRICE_TRAINING_CHECK_SECONDS whether today's 02:00 (Vietnam time) run
 has happened, and runs it when not; that run trains only when at least 10% of the training rows
-are new to the served model. "Train ngay" always trains. Training runs inside the API process
+are new to the served model. "Huấn luyện ngay" always trains. Training runs inside the API process
 (scikit-learn on a few thousand rows takes seconds) on a worker thread.
 """
 
@@ -208,7 +208,7 @@ def run_scheduled_if_due(served_model: Callable[[], ServedModel], now: Optional[
 
 
 def start_manual_run(user: Dict[str, Any]) -> Optional[int]:
-    """Start a "Train ngay" run for a signed-in user.
+    """Start a "Huấn luyện ngay" run for a signed-in user.
 
     Args:
         user: The users row of the person who pressed the button.

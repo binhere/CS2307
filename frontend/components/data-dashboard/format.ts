@@ -73,9 +73,9 @@ export const FEATURE_LABELS: Record<string, string> = {
   area: "Diện tích (m²)",
   bedrooms: "Phòng ngủ",
   price_per_m2: "Đơn giá (triệu/m²)",
-  property_group: "Nhóm loại BĐS",
+  property_group: "Phân khúc",
   legal_status: "Pháp lý",
-  ward: "Phường (10 phường nhiều tin nhất)",
+  ward: "10 phường nhiều tin nhất",
 }
 
 /** Reasons the price model refuses a listing, in Vietnamese. */
@@ -103,9 +103,11 @@ export const SEGMENT_LABELS: Record<string, string> = {
   "Nhà đất": "Nhà đất",
 }
 
-/** Where training rows came from in data/v3. */
+/** Where training rows came from: data/v3's crawls (shipped model) or the database (server runs). */
 export const SOURCE_LABELS: Record<string, string> = {
-  new: "Crawl hiện tại",
+  new: "Lần thu thập mới",
   both: "Có ở cả hai",
-  old: "Dataset cũ",
+  old: "Bộ dữ liệu cũ",
+  catalog: "Kho tin",
+  user: "Tin người dùng",
 }

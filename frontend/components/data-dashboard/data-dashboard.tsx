@@ -3,7 +3,7 @@
 // The data dashboard (/du-lieu), in two tabs. "Dữ liệu và model": catalog health, data quality,
 // drift between the training data and the catalog, the price model's test quality and its
 // verdicts over the catalog, all fed by one request to GET /api/monitoring. "Lịch sử huấn luyện":
-// the price model's training runs and the "Train ngay" button (training-history.tsx).
+// the price model's training runs and the "Huấn luyện ngay" button (training-history.tsx).
 
 import { useEffect, useState, type ReactNode } from "react"
 import Link from "next/link"
@@ -95,7 +95,7 @@ export function DataDashboard() {
   const [reloadCount, setReloadCount] = useState(0)
   return (
     <Tabs label="Nội dung trang Dữ liệu" items={[
-      { key: "data", label: "Dữ liệu và model", panel: <DataOverview reloadCount={reloadCount} /> },
+      { key: "data", label: "Dữ liệu và mô hình", panel: <DataOverview reloadCount={reloadCount} /> },
       { key: "training", label: "Lịch sử huấn luyện",
         panel: <TrainingHistory onModelChanged={() => setReloadCount((count) => count + 1)} /> },
     ]} />
@@ -151,7 +151,7 @@ function DataOverview({ reloadCount }: { reloadCount: number }) {
   }
   return (
     <div className="space-y-10">
-      <p className="text-sm text-muted-foreground">Cập nhật lúc {formatMoment(snapshot.generated_at)}.</p>
+      <p className="text-sm text-muted-foreground">Cập nhật lúc {formatMoment(snapshot.generated_at)}</p>
       <OverviewSection snapshot={snapshot} />
       <QualitySection snapshot={snapshot} />
       <DistributionSection snapshot={snapshot} />
@@ -169,18 +169,17 @@ function OverviewSection({ snapshot }: { snapshot: MonitoringSnapshot }) {
   return (
     <DashboardSection title="Tổng quan">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        <StatTile label="Tin trong catalog" value={formatNumber(kpis.listings)}
-          meta={kpis.loaded_at ? `Nạp lúc ${formatMoment(kpis.loaded_at)}` : "Chưa có lần nạp bằng seed"} />
-        <StatTile label="Có vector" value={formatNumber(kpis.embedded)} meta={`${share(kpis.embedded)} catalog`} />
-        <StatTile label="Node trên đồ thị" value={kpis.graph_listings === null ? "Không kết nối" : formatNumber(kpis.graph_listings)}
+        <StatTile label="Tin trong kho" value={formatNumber(kpis.listings)}
+          meta={kpis.loaded_at ? `Nạp lúc ${formatMoment(kpis.loaded_at)}` : "Chưa nạp"} />
+        <StatTile label="Tin có vector" value={formatNumber(kpis.embedded)} meta={`${share(kpis.embedded)} kho tin`} />
+        <StatTile label="Tin trong đồ thị" value={kpis.graph_listings === null ? "Không kết nối" : formatNumber(kpis.graph_listings)}
           meta="Neo4j" />
         <StatTile label="Ảnh" value={formatNumber(kpis.photo_keys)}
           meta={kpis.stored_photos === null ? `${formatNumber(kpis.listings_with_photos)} tin có ảnh`
-            : `${formatNumber(kpis.stored_photos)} ảnh trong kho`} />
-        <StatTile label="Model định giá" value={kpis.model ? `R² ${formatNumber(kpis.model.r2, 3)}` : "Chưa có"}
+            : `${formatNumber(kpis.stored_photos)} ảnh đã lưu`} />
+        <StatTile label="Mô hình định giá" value={kpis.model ? `R² ${formatNumber(kpis.model.r2, 3)}` : "Chưa có"}
           meta={kpis.model ? `${kpis.model.name} · MAPE ${formatNumber(kpis.model.mape, 1)}%` : undefined} />
-        <StatTile label="Tin trùng tập huấn luyện" value={formatNumber(kpis.in_training)} meta={`${share(kpis.in_training)} catalog`}
-          status={kpis.in_training > 0 ? <StatusLabel level="warning">Rò rỉ dữ liệu khi định giá</StatusLabel> : undefined} />
+        <StatTile label="Tin trong tập huấn luyện" value={formatNumber(kpis.in_training)} meta={`${share(kpis.in_training)} kho tin`} />
       </div>
     </DashboardSection>
   )
@@ -194,11 +193,11 @@ function QualitySection({ snapshot }: { snapshot: MonitoringSnapshot }) {
   const suspicious = quality.suspicious_prices
   return (
     <DashboardSection title="Chất lượng dữ liệu"
-      description={`${formatNumber(quality.rows)} tin; ${formatNumber(quality.duplicate_listings)} mã tin bị trùng.`}>
+      description={`${formatNumber(quality.rows)} tin · ${formatNumber(quality.duplicate_listings)} mã tin trùng`}>
       <div className="grid gap-4 lg:grid-cols-2">
-        <ChartCard title="Giá trị thiếu theo trường" note="Thanh: tỷ lệ tin thiếu trường đó; số sai theo quy tắc ghi bên cạnh."
+        <ChartCard title="Giá trị thiếu theo trường"
           table={{
-            columns: ["Trường", "Thiếu", "Tỷ lệ thiếu", "Sai", "Quy tắc sai", "Số giá trị khác nhau"],
+            columns: ["Trường", "Thiếu", "Tỷ lệ", "Sai", "Quy tắc", "Số giá trị khác nhau"],
             numericColumns: [1, 2, 3, 5],
             rows: fields.map((field) => [FIELD_LABELS[field.field] ?? field.field, formatNumber(field.missing),
               formatShare(field.missing / quality.rows), formatNumber(field.invalid), INVALID_RULES[field.field] ?? "—",
@@ -219,7 +218,7 @@ function QualitySection({ snapshot }: { snapshot: MonitoringSnapshot }) {
         </ChartCard>
       </div>
       <Panel title="Đơn giá bất thường"
-        note={`${formatNumber(suspicious.count)} tin có đơn giá lệch mạnh so với tin cùng loại (modified z-score vượt ${formatNumber(suspicious.threshold, 1)}), xếp từ lệch nhất. Đơn giá quá thấp thường do crawler lấy nhầm con số đầu tiên trong tiêu đề.`}>
+        note={`${formatNumber(suspicious.count)} tin · modified z-score > ${formatNumber(suspicious.threshold, 1)}`}>
         <DataTable table={{
           columns: ["Tin", "Loại", "Giá (tỷ)", "Diện tích (m²)", "Đơn giá (triệu/m²)", "z"],
           numericColumns: [2, 3, 4, 5],
@@ -234,7 +233,7 @@ function QualitySection({ snapshot }: { snapshot: MonitoringSnapshot }) {
         {suspicious.listings.length > SUSPICIOUS_PREVIEW && (
           <button type="button" onClick={() => setIsEverySuspiciousShown((current) => !current)}
             className="mt-2 text-xs text-primary hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-            {isEverySuspiciousShown ? "Thu gọn" : `Xem ${suspicious.listings.length} tin lệch nhất`}
+            {isEverySuspiciousShown ? "Thu gọn" : `Xem tất cả (${suspicious.listings.length})`}
           </button>
         )}
       </Panel>
@@ -255,13 +254,13 @@ function DistributionSection({ snapshot }: { snapshot: MonitoringSnapshot }) {
     columns: [unit, "Số tin"], numericColumns: [1], rows: bins.map((bin) => [bin.label, formatNumber(bin.count)]),
   })
   return (
-    <DashboardSection title="Phân bố catalog">
+    <DashboardSection title="Phân bố kho tin">
       <div className="grid gap-4 lg:grid-cols-2">
         <ChartCard title="Loại BĐS" table={histogramTable("Loại", distributions.property_types)}>
           <RankedBars ariaLabel="Số tin theo loại bất động sản" labelWidth={210}
             data={distributions.property_types.map((item) => ({ label: item.label, value: item.count }))} />
         </ChartCard>
-        <ChartCard title="Đơn giá theo loại (triệu/m²)" note="Hộp: 50% tin ở giữa; vạch đậm: trung vị; râu: tới 1,5 lần khoảng tứ phân vị."
+        <ChartCard title="Đơn giá theo loại (triệu/m²)"
           table={{
             columns: ["Loại", "Số tin", "Thấp", "Q1", "Trung vị", "Q3", "Cao", "Ngoại lai"], numericColumns: [1, 2, 3, 4, 5, 6, 7],
             rows: distributions.price_per_m2.map((row) => [row.label, formatNumber(row.count), formatNumber(row.low),
@@ -291,12 +290,12 @@ const DRIFT_LEVELS: Record<string, StatusLevel> = { stable: "good", moderate: "w
 /** Training data against the catalog, one small chart per feature. */
 function DriftSection({ drift }: { drift: NonNullable<MonitoringSnapshot["drift"]> }) {
   const series = [
-    { key: "reference", name: `Tập huấn luyện (${formatNumber(drift.reference_rows)} tin)`, color: VIZ.series1 },
-    { key: "current", name: `Catalog (${formatNumber(drift.current_rows)} tin)`, color: VIZ.series2 },
+    { key: "reference", name: `Tập huấn luyện (${formatNumber(drift.reference_rows)})`, color: VIZ.series1 },
+    { key: "current", name: `Kho tin (${formatNumber(drift.current_rows)})`, color: VIZ.series2 },
   ]
   return (
-    <DashboardSection title="Drift dữ liệu"
-      description="Phân bố của tập huấn luyện so với catalog đang hiển thị, đo bằng PSI: dưới 0,1 là ổn định, 0,1–0,25 là lệch vừa, trên 0,25 là lệch mạnh.">
+    <DashboardSection title="Độ lệch phân phối"
+      description="PSI: < 0,1 ổn định · 0,1–0,25 lệch vừa · > 0,25 lệch mạnh">
       <div className="grid gap-4 lg:grid-cols-2">
         {drift.features.map((feature, index) => (
           <ChartCard key={feature.feature} title={FEATURE_LABELS[feature.feature] ?? feature.feature}
@@ -304,7 +303,7 @@ function DriftSection({ drift }: { drift: NonNullable<MonitoringSnapshot["drift"
             note={<StatusLabel level={DRIFT_LEVELS[feature.status]}>
               {DRIFT_STATUS_LABELS[feature.status]} · PSI {formatNumber(feature.psi, 3)}</StatusLabel>}
             table={{
-              columns: ["Khoảng", "Tập huấn luyện", "Catalog"], numericColumns: [1, 2],
+              columns: ["Giá trị", "Tập huấn luyện", "Kho tin"], numericColumns: [1, 2],
               rows: feature.bins.map((bin) => [bin.label, formatShare(bin.reference), formatShare(bin.current)]),
             }}>
             <GroupedBars ariaLabel={`Phân bố ${FEATURE_LABELS[feature.feature] ?? feature.feature}`} series={series}
@@ -320,12 +319,17 @@ function DriftSection({ drift }: { drift: NonNullable<MonitoringSnapshot["drift"
 
 /** Test-set quality of the served price model, its training data and its errors. */
 function ModelSection({ model }: { model: NonNullable<MonitoringSnapshot["model"]> }) {
-  const sourceOrder = ["new", "both", "old"]
-  const sourceColors: Record<string, string> = { new: VIZ.series1, both: VIZ.series3, old: VIZ.series2 }
+  // data/v3 reports split rows by crawl (new, both, old); reports of server runs by catalog and user-posted.
+  const sourceOrder = ["new", "both", "old", "catalog", "user"]
+  const sourceColors: Record<string, string> = {
+    new: VIZ.series1, both: VIZ.series3, old: VIZ.series2, catalog: VIZ.series1, user: VIZ.series2,
+  }
   const sources: Segment[] = sourceOrder.filter((key) => model.composition.train_by_source[key]).map((key) => ({
     key, name: SOURCE_LABELS[key] ?? key, value: model.composition.train_by_source[key], color: sourceColors[key], ink: "light",
   }))
-  const [raw, cleaned, withoutOutliers] = model.composition.step_rows
+  // The last count is after outlier removal in both report kinds (data/v3 adds an encoding step, the server a locating step).
+  const stepRows = model.composition.step_rows
+  const [raw, cleaned, withoutOutliers] = [stepRows[0], stepRows[1], stepRows[stepRows.length - 1]]
   const segmentSeries = [
     { key: "Căn hộ", name: "Căn hộ", color: VIZ.series1 },
     { key: "Nhà đất", name: "Nhà đất", color: VIZ.series2 },
@@ -333,12 +337,11 @@ function ModelSection({ model }: { model: NonNullable<MonitoringSnapshot["model"
   const prices = model.scatter.flatMap(([actual, predicted]) => [actual, predicted]).filter((value) => value > 0)
   const domain: [number, number] = [Math.max(0.3, Math.min(...prices) * 0.9), Math.max(...prices) * 1.1]
   return (
-    <DashboardSection title="Model định giá"
-      description={`${model.name}, đánh giá trên ${formatNumber(model.composition.test_rows)} tin kiểm tra không dùng để huấn luyện.`}>
-      <Panel title="Hiệu năng trên tập kiểm tra"
-        note="Khoảng hiển thị trên trang chi tiết là ±12% với căn hộ và ±20% với nhà đất; cột cuối cho biết bao nhiêu giá thật thực sự nằm trong khoảng đó.">
+    <DashboardSection title="Mô hình định giá"
+      description={`${model.name} · ${formatNumber(model.composition.test_rows)} tin kiểm tra`}>
+      <Panel title="Hiệu năng trên tập kiểm tra" note="Khoảng giá: ±12% căn hộ, ±20% nhà đất">
         <DataTable table={{
-          columns: ["Phân khúc", "Số tin", "R²", "MAE (tỷ)", "MAPE", "Giá thật nằm trong khoảng"],
+          columns: ["Phân khúc", "Số tin", "R²", "MAE (tỷ)", "MAPE", "Giá rao trong khoảng"],
           numericColumns: [1, 2, 3, 4, 5],
           rows: model.segments.map((row) => [
             SEGMENT_LABELS[row.segment] ?? row.segment, formatNumber(row.count), formatNumber(row.r2, 3), formatNumber(row.mae, 2),
@@ -350,33 +353,33 @@ function ModelSection({ model }: { model: NonNullable<MonitoringSnapshot["model"
         }} />
       </Panel>
       <div className="grid gap-4 lg:grid-cols-2">
-        <ChartCard title="Nguồn của tập huấn luyện"
-          note={`${formatNumber(raw)} tin trong data/v3 → ${formatNumber(cleaned)} sau làm sạch → ${formatNumber(withoutOutliers)} sau bỏ ngoại lai → ${formatNumber(model.composition.train_rows)} huấn luyện + ${formatNumber(model.composition.test_rows)} kiểm tra.`}
+        <ChartCard title="Dữ liệu huấn luyện"
+          note={`${formatNumber(raw)} → làm sạch ${formatNumber(cleaned)} → bỏ ngoại lai ${formatNumber(withoutOutliers)} · huấn luyện ${formatNumber(model.composition.train_rows)} · kiểm tra ${formatNumber(model.composition.test_rows)}`}
           table={{ columns: ["Nguồn", "Số tin huấn luyện", "Tỷ lệ"], numericColumns: [1, 2],
             rows: sources.map((source) => [source.name, formatNumber(source.value), formatShare(source.value / model.composition.train_rows)]) }}>
           <Legend series={sources.map((source) => ({ key: source.key, name: `${source.name} (${formatNumber(source.value)})`, color: source.color }))} />
-          <SegmentedBar label="Nguồn của tập huấn luyện" segments={sources} />
+          <SegmentedBar label="Nguồn dữ liệu huấn luyện" segments={sources} />
         </ChartCard>
-        <ChartCard title="So sánh model ứng viên"
-          table={{ columns: ["Model", "R²", "MAPE"], numericColumns: [1, 2],
+        <ChartCard title="Mô hình ứng viên"
+          table={{ columns: ["Mô hình", "R²", "MAPE"], numericColumns: [1, 2],
             rows: model.benchmark.map((row) => [row.model, formatNumber(row.r2, 3), `${formatNumber(row.mape, 1)}%`]) }}>
-          <RankedBars ariaLabel="R² của từng model trên tập kiểm tra" labelWidth={150} formatValue={(value) => formatNumber(value, 3)}
+          <RankedBars ariaLabel="R² của từng mô hình ứng viên" labelWidth={150} formatValue={(value) => formatNumber(value, 3)}
             data={[...model.benchmark].sort((first, second) => second.r2 - first.r2).map((row) => ({ label: row.model, value: row.r2 }))} />
         </ChartCard>
-        <ChartCard title="Giá dự đoán so với giá thật" note="Mỗi chấm là một tin kiểm tra; càng gần đường chéo càng đúng."
+        <ChartCard title="Giá dự đoán và giá rao"
           table={{
-            columns: ["Phân khúc", "Giá thật (tỷ)", "Dự đoán (tỷ)", "Sai số"], numericColumns: [1, 2, 3],
+            columns: ["Phân khúc", "Giá rao (tỷ)", "Dự đoán (tỷ)", "Sai số"], numericColumns: [1, 2, 3],
             rows: [...model.scatter].sort((first, second) => Math.abs(second[1] / second[0] - 1) - Math.abs(first[1] / first[0] - 1))
               .map(([actual, predicted, segment]) => [segment, formatNumber(actual, 2), formatNumber(predicted, 2),
                 `${formatNumber((predicted / actual - 1) * 100, 1)}%`]),
           }}>
-          <PriceScatter ariaLabel="Giá dự đoán so với giá thật trên tập kiểm tra" domain={domain}
+          <PriceScatter ariaLabel="Giá dự đoán và giá rao trên tập kiểm tra" domain={domain}
             series={segmentSeries.map((item) => ({
               ...item,
               points: model.scatter.filter(([, , segment]) => segment === item.key).map(([actual, predicted]) => ({ actual, predicted })),
             }))} />
         </ChartCard>
-        <ChartCard title="Sai số dự đoán (%)" note="(dự đoán − giá thật) / giá thật, trên tập kiểm tra."
+        <ChartCard title="Sai số dự đoán (%)"
           table={{ columns: ["Sai số (%)", "Căn hộ", "Nhà đất"], numericColumns: [1, 2],
             rows: model.error_histogram.map((row) => [row.label, formatNumber(Number(row["Căn hộ"] ?? 0)), formatNumber(Number(row["Nhà đất"] ?? 0))]) }}>
           <GroupedBars ariaLabel="Phân bố sai số dự đoán" series={segmentSeries} data={model.error_histogram}
@@ -388,8 +391,8 @@ function ModelSection({ model }: { model: NonNullable<MonitoringSnapshot["model"
 }
 
 const VERDICT_GROUP_LABELS: Record<VerdictGroup["group"], string> = {
-  in_training: "Tin model đã học",
-  not_in_training: "Tin model chưa học",
+  in_training: "Trong tập huấn luyện",
+  not_in_training: "Ngoài tập huấn luyện",
 }
 
 /** The model's verdicts over the catalog, split by training membership. */
@@ -413,9 +416,9 @@ function PredictionSection({ predictions, catalogSize }: {
     { key: "not_in_training", name: VERDICT_GROUP_LABELS.not_in_training, color: VIZ.series2 },
   ]
   return (
-    <DashboardSection title="Giám sát định giá trên catalog"
-      description={`Model định giá ${formatNumber(predictions.scored)}/${formatNumber(catalogSize)} tin. Tin model đã học thường được ước tính sát giá rao, nên tỷ lệ "trong khoảng" ở nhóm đó cao hơn thực tế.`}>
-      <ChartCard title="Kết luận định giá theo nhóm tin" note="Tỷ lệ trên các tin được định giá; tin bị từ chối đếm riêng."
+    <DashboardSection title="Định giá trên kho tin"
+      description={`Đã định giá ${formatNumber(predictions.scored)}/${formatNumber(catalogSize)} tin`}>
+      <ChartCard title="Kết quả định giá"
         table={{
           columns: ["Nhóm", "Tổng", "Thấp hơn", "Trong khoảng", "Cao hơn", "Không định giá", "Tỷ lệ trong khoảng"],
           numericColumns: [1, 2, 3, 4, 5, 6],
@@ -428,14 +431,14 @@ function PredictionSection({ predictions, catalogSize }: {
           {predictions.verdicts.map((group) => (
             <div key={group.group} className="grid gap-1.5 sm:grid-cols-[11rem_1fr_9rem] sm:items-center">
               <span className="text-xs text-foreground">{VERDICT_GROUP_LABELS[group.group]} ({formatNumber(group.total)})</span>
-              <SegmentedBar label={`Kết luận định giá: ${VERDICT_GROUP_LABELS[group.group]}`} segments={verdictSegments(group)} />
+              <SegmentedBar label={`Kết quả định giá: ${VERDICT_GROUP_LABELS[group.group]}`} segments={verdictSegments(group)} />
               <span className="text-xs text-muted-foreground sm:text-right">{formatNumber(group.refused)} tin không định giá</span>
             </div>
           ))}
         </div>
       </ChartCard>
       <div className="grid gap-4 lg:grid-cols-2">
-        <ChartCard title="Chênh lệch giá rao so với ước tính (%)" note="Tỷ lệ trong từng nhóm; nhóm đã học dồn quanh 0%."
+        <ChartCard title="Chênh lệch giá rao so với ước tính (%)"
           table={{ columns: ["Chênh lệch (%)", VERDICT_GROUP_LABELS.in_training, VERDICT_GROUP_LABELS.not_in_training], numericColumns: [1, 2],
             rows: differences.map((row) => [row.label, formatShare(row.in_training), formatShare(row.not_in_training)]) }}>
           <GroupedBars ariaLabel="Chênh lệch giá rao so với giá ước tính" series={groupSeries} data={differences}

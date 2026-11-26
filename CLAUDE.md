@@ -78,7 +78,9 @@ images are built automatically but deployed only by hand (`deploy/README.md` exp
   `src/services/llm/credentials.py`; routes bind credentials with
   `async with use_credentials(resolve_credentials(request.headers))`. Never store, log or put a
   key into LangGraph state. Map provider errors with `credential_error_from_exception` and
-  answer with `credential_error_response`.
+  answer with `credential_error_response`. A chat step never hides a failure behind a canned reply: it raises
+  `ChatModelError` (502), shown in red in the chat with the step and the provider's own message (keys masked);
+  any other exception reaches the client as its class name only.
 - **Embeddings are fixed on the server** (`qwen3-embedding:0.6b`, 1024 dimensions, CPU via the
   `embedding` service) and never use a user's key. The server embeds search queries and, in the
   background, each listing a user posts (`/dang-tin`); the catalog's vectors are computed on a powerful
@@ -97,7 +99,7 @@ images are built automatically but deployed only by hand (`deploy/README.md` exp
   earlier id (`content_fingerprint`), so re-uploading a fixed zip posts only the listings that failed.
 - Neo4j queries go through `_timed_query()` so they carry the configured timeout.
 - The price model is retrained inside the backend (`src/services/price_training/`), daily at 02:00 Vietnam time when
-  at least 10% of the training rows are new, or by "Train ngay" (`POST /v1/models/price/train`, signed-in users).
+  at least 10% of the training rows are new, or by "Huấn luyện ngay" (`POST /v1/models/price/train`, signed-in users).
   A run's model is served only when its R² beats the served model on the fixed holdout set
   (`price_training_holdout`); runs, reports and deployed models live in `price_model_runs`, and the image's
   `best_model.joblib` is the fallback. Training and pricing share `price_training/preparation.py` (cleaning,

@@ -2,7 +2,7 @@
 
 import { memo, useState, useRef, useEffect, useCallback } from "react"
 import Link from "next/link"
-import { Send, Loader2, Sparkles, Plus, MessageSquare, ThumbsUp, ThumbsDown, SlidersHorizontal, Lightbulb, Scale, KeyRound } from "lucide-react"
+import { Send, Loader2, Sparkles, Plus, MessageSquare, ThumbsUp, ThumbsDown, SlidersHorizontal, Lightbulb, Scale, KeyRound, TriangleAlert } from "lucide-react"
 import ReactMarkdown, { type Components } from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Button } from "@/components/ui/button"
@@ -296,19 +296,24 @@ const ChatMessageRow = memo(function ChatMessageRow({ message, isPending, thumbs
   return (
     <div className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}>
       {message.role === "ai" && (
-        <div className="mt-0.5 w-8 h-8 rounded-full bg-secondary flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-4 h-4 text-primary" />
+        <div className={cn("mt-0.5 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
+          message.isError ? "bg-destructive text-white" : "bg-secondary")}>
+          {message.isError
+            ? <TriangleAlert className="w-4 h-4" aria-hidden />
+            : <Sparkles className="w-4 h-4 text-primary" aria-hidden />}
         </div>
       )}
 
       <div className={cn("min-w-0", message.role === "user" ? "max-w-[85%] sm:max-w-[75%]" : "flex-1")}>
         <div
+          role={message.isError ? "alert" : undefined}
           className={cn(
             "rounded-2xl px-4 py-3",
             message.role === "user"
               ? "ml-auto w-fit bg-primary text-primary-foreground rounded-tr-sm"
               : "w-fit max-w-full bg-card border border-border text-foreground rounded-tl-sm",
-            message.isError && "border-destructive/30 bg-destructive/5",
+            // Errors stand out: a failing model or provider must be noticed and fixed, not read past.
+            message.isError && "border-2 border-destructive bg-destructive/10 text-destructive [&_*]:text-destructive",
           )}
         >
           {isPending ? (

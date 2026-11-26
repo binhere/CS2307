@@ -1,7 +1,7 @@
 "use client"
 
 // The "Lịch sử huấn luyện" tab of the data dashboard: every training run of the price model,
-// newest first, with what decided its outcome, and the "Train ngay" button for signed-in users.
+// newest first, with what decided its outcome, and the "Huấn luyện ngay" button for signed-in users.
 // The server runs one training at a time: pressing the button meanwhile says the server is busy.
 // While a run is going the list refreshes every few seconds; when a run deploys a model, the
 // dashboard's other tab is told to reload its numbers.
@@ -106,12 +106,12 @@ export function TrainingHistory({ onModelChanged }: { onModelChanged?: () => voi
     setNotice(null)
     try {
       await fetchJson<ApiEnvelope<{ run_id: number }>>("/api/models/price/train", { method: "POST", headers: authHeaders() },
-        "Chưa bắt đầu train được.")
-      setNotice({ text: "Đã bắt đầu train. Kết quả sẽ hiện trong bảng bên dưới.", isError: false })
+        "Chưa bắt đầu huấn luyện được.")
+      setNotice({ text: "Đã bắt đầu huấn luyện.", isError: false })
     } catch (startError) {
       const text = startError instanceof HttpError
         ? startError.status === 401 ? "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại." : extractError(startError.payload, startError.message)
-        : "Chưa bắt đầu train được."
+        : "Chưa bắt đầu huấn luyện được."
       setNotice({ text, isError: true })
     } finally {
       setIsStarting(false)
@@ -152,17 +152,16 @@ export function TrainingHistory({ onModelChanged }: { onModelChanged?: () => voi
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <p className="max-w-3xl text-sm text-muted-foreground text-pretty">
-          Model định giá được train lại lúc {String(history.schedule_hour).padStart(2, "0")}:00 mỗi ngày khi có ít nhất{" "}
-          {formatNumber(history.new_data_share * 100)}% tin mới. Model mới chỉ được dùng khi chính xác hơn model đang dùng trên cùng một tập
-          kiểm tra.
+          Tự động huấn luyện lúc {String(history.schedule_hour).padStart(2, "0")}:00 hằng ngày khi có từ{" "}
+          {formatNumber(history.new_data_share * 100)}% tin mới. Chỉ triển khai mô hình tốt hơn mô hình hiện tại.
         </p>
         {user ? (
           <Button type="button" onClick={() => void startTraining()} disabled={isStarting}>
             {isStarting ? <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden /> : <Play className="h-4 w-4" aria-hidden />}
-            Train ngay
+            Huấn luyện ngay
           </Button>
         ) : (
-          <Button asChild variant="outline"><Link href="/dang-nhap?next=/du-lieu">Đăng nhập để train</Link></Button>
+          <Button asChild variant="outline"><Link href="/dang-nhap?next=/du-lieu">Đăng nhập để huấn luyện</Link></Button>
         )}
       </div>
       {notice && (
@@ -174,8 +173,8 @@ export function TrainingHistory({ onModelChanged }: { onModelChanged?: () => voi
       <section className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-5" aria-label="Các lần huấn luyện">
         {rows.length === 0 ? <p className="text-sm text-muted-foreground">Chưa có lần huấn luyện nào.</p> : (
           <DataTable table={{
-            columns: ["Bắt đầu", "Nguồn kích hoạt", "Kết quả", "R² (mới / đang dùng)", "MAPE (mới / đang dùng)", "Số tin huấn luyện", "Điền giá trị thiếu",
-              "Thời gian chạy", "RAM dùng tối đa"],
+            columns: ["Bắt đầu", "Kích hoạt bởi", "Kết quả", "R² mới / hiện tại", "MAPE mới / hiện tại", "Số tin", "Điền giá trị thiếu",
+              "Thời gian chạy", "Bộ nhớ tối đa"],
             numericColumns: [3, 4, 5, 8],
             rows,
           }} />

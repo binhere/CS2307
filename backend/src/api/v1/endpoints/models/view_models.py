@@ -1,4 +1,4 @@
-"""Price model training API: the training history and the "Train ngay" button.
+"""Price model training API: the training history and the "Huấn luyện ngay" button.
 
 GET /v1/models/price/runs is public, like the data dashboard it feeds; POST /v1/models/price/train
 needs a signed-in user and starts a run in the background, or answers 409 while one is going.
@@ -36,7 +36,7 @@ def error_response(status_code: int, location: str, code: str, detail: str) -> J
 
 
 def run_and_serve(run_id: int) -> None:
-    """Carry out a "Train ngay" run, then serve its model at once when it was deployed.
+    """Carry out a "Huấn luyện ngay" run, then serve its model at once when it was deployed.
 
     Args:
         run_id: The run started by the request.
@@ -83,6 +83,6 @@ async def view_train_price_model(background_tasks: BackgroundTasks, user: dict =
         logger.exception("Starting a price model training run failed")
         return error_response(503, "postgres", "DATABASE_UNAVAILABLE", "Cơ sở dữ liệu chưa sẵn sàng.")
     if run_id is None:
-        return error_response(409, "training", "TRAINING_IN_PROGRESS", "Server đang train model. Vui lòng thử lại sau.")
+        return error_response(409, "training", "TRAINING_IN_PROGRESS", "Máy chủ đang huấn luyện mô hình. Vui lòng thử lại sau.")
     background_tasks.add_task(run_and_serve, run_id)
     return {"data": {"run_id": run_id}, "errors": [], "status": "success"}

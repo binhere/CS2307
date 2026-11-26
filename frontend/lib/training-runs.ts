@@ -80,38 +80,37 @@ export function runOutcome(run: TrainingRun, newDataShare: number): RunOutcome {
   const summary = run.summary ?? {}
   switch (run.status) {
     case "running":
-      return { level: "neutral", label: "Đang train", detail: null }
+      return { level: "neutral", label: "Đang huấn luyện", detail: null }
     case "deployed":
-      return { level: "good", label: "Đã dùng", detail: summary.model_name ? `Model ${summary.model_name} đã thay thế model trước.` : null }
+      return { level: "good", label: "Đã triển khai", detail: summary.model_name ?? null }
     case "rejected":
       return {
-        level: "warning", label: "Không dùng",
+        level: "warning", label: "Không triển khai",
         detail: summary.challenger && summary.champion
-          ? `R² ${formatFixed(summary.challenger.r2, 3)} không cao hơn ${formatFixed(summary.champion.r2, 3)} của model đang dùng.`
-          : "Model mới không tốt hơn model đang dùng.",
+          ? `R² ${formatFixed(summary.challenger.r2, 3)} ≤ ${formatFixed(summary.champion.r2, 3)}` : null,
       }
     case "skipped": {
       const share = summary.pool_rows ? (summary.new_rows ?? 0) / summary.pool_rows : 0
       return {
-        level: "neutral", label: "Bỏ qua",
-        detail: `Chỉ có ${formatFixed(summary.new_rows ?? 0)}/${formatFixed(summary.pool_rows ?? 0)} tin mới `
-          + `(${formatFixed(share * 100, 1)}%), cần ít nhất ${formatFixed(newDataShare * 100)}%.`,
+        level: "neutral", label: "Đã bỏ qua",
+        detail: `Tin mới ${formatFixed(summary.new_rows ?? 0)}/${formatFixed(summary.pool_rows ?? 0)} `
+          + `(${formatFixed(share * 100, 1)}%) < ${formatFixed(newDataShare * 100)}%`,
       }
     }
     case "failed":
-      if (run.reason === "interrupted") return { level: "serious", label: "Lỗi", detail: "Bị ngắt giữa chừng." }
-      if (run.reason === "too_few_rows") return { level: "serious", label: "Lỗi", detail: "Quá ít tin để train." }
-      return { level: "serious", label: "Lỗi", detail: summary.error ? `Lỗi khi train (${summary.error}).` : "Lỗi khi train." }
+      if (run.reason === "interrupted") return { level: "serious", label: "Lỗi", detail: "Bị ngắt" }
+      if (run.reason === "too_few_rows") return { level: "serious", label: "Lỗi", detail: "Không đủ dữ liệu" }
+      return { level: "serious", label: "Lỗi", detail: summary.error ?? null }
   }
 }
 
 /**
  * Who or what started a run.
  * @param run - the run.
- * @returns "Lịch hằng ngày", or the name of the user who pressed "Train ngay".
+ * @returns "Tự động" for the daily schedule, or the name of the user who pressed "Huấn luyện ngay".
  */
 export function runTrigger(run: TrainingRun): string {
-  return run.trigger === "schedule" ? "Lịch hằng ngày" : run.requested_by_name || "Người dùng"
+  return run.trigger === "schedule" ? "Tự động" : run.requested_by_name || "Người dùng"
 }
 
 /**

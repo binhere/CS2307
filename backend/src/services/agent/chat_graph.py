@@ -3,6 +3,11 @@
 The graph deliberately separates normal conversation from the property consultant:
 only the consultant node is bound to business tools.  This is the enforcement
 point that prevents greetings and general Q&A from triggering hybrid search.
+
+When an LLM step fails or answers nothing, the turn fails with an error naming the step and
+the cause (ChatModelError, or LlmCredentialError for a key problem), which the chat shows in red.
+No step falls back to a canned reply: those hid every provider problem behind answers that
+looked like the assistant had lost the conversation.
 """
 
 from __future__ import annotations
@@ -200,19 +205,86 @@ def _has_meaningful_filters(filters: dict[str, Any] | None) -> bool:
     return False
 
 
-def _fallback_route(message: str) -> RouteDecision:
-    normalized = message.lower().strip()
-    if re.fullmatch(r"(xin )?chào+|hello+|hi+|cảm ơn+|thanks?", normalized):
-        return RouteDecision(mode="chat")
-    if any(token in normalized for token in ("thủ tục", "sổ hồng", "pháp lý", "lãi suất", "đặt cọc")):
-        return RouteDecision(mode="real_estate_qa")
-    if any(token in normalized for token in ("tìm", "gợi ý", "đề xuất", "tư vấn", "mua nhà", "thuê nhà", "căn thứ", "căn số")):
-        return RouteDecision(
-            mode="consult",
-            context_reference=any(token in normalized for token in ("căn thứ", "căn số", "căn này", "căn kia")),
-            needs_clarification=not any(token in normalized for token in ("quận", "phường", "tỷ", "triệu", "m2", "phòng", "căn hộ", "nhà phố", "biệt thự")),
-        )
-    return RouteDecision(mode="chat")
+class ChatModelError(Exception):
+    """An LLM step of a chat turn failed; the user sees detail in red in the chat, so it names the
+    step and the cause instead of a canned answer that hides the problem.
+
+    Attributes:
+        code: Stable code for the API envelope: "LLM_PROVIDER_ERROR" (the provider answered an
+            error), "LLM_EMPTY_RESPONSE" (the model answered nothing) or "CHAT_STEP_FAILED".
+        detail: Vietnamese message for the user.
+    """
+
+    def __init__(self, code: str, detail: str):
+        super().__init__(detail)
+        self.code = code
+        self.detail = detail
+
+
+_STEP_LABELS = {
+    "supervisor": "phân loại câu hỏi",
+    "chat": "trò chuyện",
+    "consultant": "tư vấn",
+    "finalizer": "tổng hợp câu trả lời",
+}
+# Provider messages are shown to the user; never let a key that an error echoes reach the page.
+_SECRET_PATTERN = re.compile(r"(sk-[A-Za-z0-9_\-]{6,}|AIza[0-9A-Za-z_\-]{10,}|gsk_[A-Za-z0-9]{10,}|xai-[A-Za-z0-9]{10,})")
+_DETAIL_LIMIT = 300
+
+
+def _step_failure(step: str, error: Exception) -> Exception:
+    """The error a failed LLM step raises: a credential error the user can fix in the AI settings,
+    or a ChatModelError naming the step and the cause.
+
+    Only LLM-side messages (the provider's answer, a model output that does not parse) are shown;
+    any other exception shows its class name only, since its text may name hosts or database users.
+
+    Args:
+        step: "supervisor", "chat", "consultant" or "finalizer".
+        error: What the step raised.
+
+    Returns:
+        Exception: LlmCredentialError or ChatModelError, to raise from error.
+    """
+    credential_error = credential_error_from_exception(error)
+    if credential_error is not None:
+        return credential_error
+    import openai
+    from langchain_core.exceptions import OutputParserException
+    from pydantic import ValidationError
+
+    label = _STEP_LABELS[step]
+    if isinstance(error, openai.APIStatusError):
+        message = _clean_detail(_provider_message(error))
+        return ChatModelError("LLM_PROVIDER_ERROR", f"Nhà cung cấp AI báo lỗi ở bước {label} (HTTP {error.status_code}): {message}")
+    if isinstance(error, (OutputParserException, ValidationError, json.JSONDecodeError)):
+        # LangChain appends a troubleshooting link; the user needs only what the model got wrong.
+        message = _clean_detail(str(error).split("For troubleshooting")[0])
+        return ChatModelError("CHAT_STEP_FAILED", f"Mô hình trả lời sai định dạng ở bước {label}: {message or 'không có nội dung'}")
+    return ChatModelError("CHAT_STEP_FAILED", f"Lỗi ở bước {label} ({type(error).__name__}).")
+
+
+def _provider_message(error: Exception) -> str:
+    """The provider's own error message: body["error"]["message"] or body["message"], else the SDK's text.
+
+    The SDK's text wraps it as "Error code: 400 - {'error': {...}}", which is noise in the chat.
+    """
+    body = getattr(error, "body", None)
+    if isinstance(body, dict):
+        inner = body.get("error") if isinstance(body.get("error"), dict) else body
+        if isinstance(inner.get("message"), str) and inner["message"].strip():
+            return inner["message"]
+    return str(getattr(error, "message", "") or error)
+
+
+def _clean_detail(text: str) -> str:
+    """One line, keys masked, at most _DETAIL_LIMIT characters, without trailing separators."""
+    return _SECRET_PATTERN.sub("***", " ".join(text.split()))[:_DETAIL_LIMIT].strip(" :.-")
+
+
+def _empty_answer(step: str) -> ChatModelError:
+    """The error for a model that answered nothing (no text and no tool call) at a step."""
+    return ChatModelError("LLM_EMPTY_RESPONSE", f"Mô hình không trả về nội dung ở bước {_STEP_LABELS[step]}.")
 
 
 def _assistant_fallback(mode: str) -> str:
@@ -330,16 +402,9 @@ class ChatAgentService:
             if isinstance(decision, RouteDecision):
                 return decision
             return RouteDecision.model_validate(decision)
-        except Exception as exc:  # noqa: BLE001
-            # The supervisor is the first LLM call of a turn: a rejected key, exhausted
-            # quota or unknown model surfaces here as an error the user can act on,
-            # instead of silently degrading to canned answers.
-            credential_error = credential_error_from_exception(exc)
-            if credential_error is not None:
-                raise credential_error from exc
-            logger.warning("Chat supervisor failed; using safe fallback: {}", type(exc).__name__)
-            latest = _text(messages[-1]) if messages else ""
-            return _fallback_route(latest)
+        except Exception as exc:  # noqa: BLE001 - every failure is reported to the user, none is hidden
+            logger.exception("Chat supervisor failed")
+            raise _step_failure("supervisor", exc) from exc
 
     async def _supervisor(self, state: AgentState) -> dict[str, Any]:
         decision = await self._route(state)
@@ -363,10 +428,12 @@ class ChatAgentService:
             response = await self._model(0.45).ainvoke(
                 [SystemMessage(_CHAT_PROMPT), *_message_window(state.get("messages", []))]
             )
-            answer = _text(response) or _assistant_fallback(state.get("mode", "chat"))
-        except Exception as exc:  # noqa: BLE001
-            logger.warning("Chat agent failed: {}", exc)
-            answer = _assistant_fallback(state.get("mode", "chat"))
+        except Exception as exc:  # noqa: BLE001 - every failure is reported to the user, none is hidden
+            logger.exception("Chat agent failed")
+            raise _step_failure("chat", exc) from exc
+        answer = _text(response)
+        if not answer:
+            raise _empty_answer("chat")
         return {"messages": [AIMessage(content=answer)], "assistant_answer": answer}
 
     async def _consultant(self, state: AgentState) -> dict[str, Any]:
@@ -381,13 +448,12 @@ class ChatAgentService:
             response = await self._model(0.15, with_tools=True).ainvoke(
                 [SystemMessage(prompt), *_message_window(state.get("messages", []))]
             )
-            if not _text(response) and not getattr(response, "tool_calls", None):
-                raise ValueError("Consultant returned neither content nor tool call")
-            return {"messages": [response]}
-        except Exception as exc:  # noqa: BLE001
-            logger.warning("Consultant agent failed: {}", exc)
-            answer = _assistant_fallback("consult")
-            return {"messages": [AIMessage(content=answer)], "assistant_answer": answer, "needs_clarification": True}
+        except Exception as exc:  # noqa: BLE001 - every failure is reported to the user, none is hidden
+            logger.exception("Consultant agent failed")
+            raise _step_failure("consultant", exc) from exc
+        if not _text(response) and not getattr(response, "tool_calls", None):
+            raise _empty_answer("consultant")
+        return {"messages": [response]}
 
     @staticmethod
     def _route_after_consultant(state: AgentState) -> str:
@@ -415,17 +481,12 @@ class ChatAgentService:
             response = await self._model(0.15).ainvoke(
                 [SystemMessage(_FINALIZER_PROMPT), *_message_window(state.get("messages", []))]
             )
-            answer = _text(response)
-            if not answer:
-                raise ValueError("Finalizer returned empty content")
-        except Exception as exc:  # noqa: BLE001
-            logger.warning("Advisor finalizer failed: {}", exc)
-            answer = (
-                "Tôi đã cập nhật các kết quả phù hợp bên dưới. Bạn có thể cho tôi biết "
-                "căn nào bạn muốn so sánh kỹ hơn không?"
-                if state.get("search_performed")
-                else "Tôi chưa có đủ dữ liệu để kết luận. Bạn cho tôi thêm thông tin cần ưu tiên nhé."
-            )
+        except Exception as exc:  # noqa: BLE001 - every failure is reported to the user, none is hidden
+            logger.exception("Advisor finalizer failed")
+            raise _step_failure("finalizer", exc) from exc
+        answer = _text(response)
+        if not answer:
+            raise _empty_answer("finalizer")
         return {"messages": [AIMessage(content=answer)], "assistant_answer": answer}
 
     @staticmethod

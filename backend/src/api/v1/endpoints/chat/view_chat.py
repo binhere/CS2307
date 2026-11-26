@@ -6,6 +6,7 @@ import json
 from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 from loguru import logger
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from starlette.concurrency import run_in_threadpool
@@ -13,6 +14,7 @@ from starlette.concurrency import run_in_threadpool
 from src.api.base.http_exception import credential_error_response
 from src.search.schemas import validate_explicit_filters
 from src.services.agent import chat_agent_service
+from src.services.agent.chat_graph import ChatModelError
 from src.services.auth.dependencies import get_current_user, get_current_user_optional
 from src.services.chat import repository
 from src.services.llm.credentials import LlmCredentialError, resolve_credentials, use_credentials
@@ -156,11 +158,18 @@ async def chat(
             )
     except LlmCredentialError as error:
         return credential_error_response(error)
-    except Exception as exc:  # noqa: BLE001 - hide infrastructure details from clients
+    except ChatModelError as error:
+        # The step and the provider's own answer are shown in red in the chat, so a broken model
+        # or provider is visible at once instead of hiding behind a canned reply.
+        return JSONResponse(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            content={"data": None, "status": "error", "errors": [{"loc": "llm", "msg": error.code, "detail": error.detail}]},
+        )
+    except Exception as exc:  # noqa: BLE001 - only the class name reaches the client: the text may name hosts
         logger.exception("LangGraph chat failed for conversation {}", conversation_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Đã xảy ra lỗi khi xử lý cuộc trò chuyện. Vui lòng thử lại sau.",
+            detail=f"Lỗi hệ thống khi xử lý cuộc trò chuyện ({type(exc).__name__}). Vui lòng thử lại sau.",
         ) from exc
 
     if conversation_id is not None:

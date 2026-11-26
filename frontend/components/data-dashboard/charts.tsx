@@ -170,7 +170,7 @@ export function ChartCard({ title, note, table, children, className }: {
           onClick={() => setIsTableShown((current) => !current)}
           className="shrink-0 rounded-md border border-border px-2 py-1 text-xs text-muted-foreground hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
-          {isTableShown ? "Biểu đồ" : "Bảng số liệu"}
+          {isTableShown ? "Biểu đồ" : "Bảng"}
         </button>
       </div>
       {isTableShown ? <DataTable table={table} /> : children}
@@ -432,9 +432,9 @@ export function PriceScatter({ series, domain, ariaLabel }: {
       <ResponsiveContainer width="100%" height={300}>
         <ScatterChart margin={{ top: 8, right: 12, bottom: 24, left: 4 }}>
           <CartesianGrid stroke={VIZ.grid} />
-          <XAxis type="number" dataKey="actual" name="Giá thật" scale="log" domain={domain} ticks={ticks}
+          <XAxis type="number" dataKey="actual" name="Giá rao" scale="log" domain={domain} ticks={ticks}
             tick={AXIS_TICK} stroke={VIZ.axis} allowDataOverflow
-            label={{ value: "Giá thật (tỷ, thang log)", position: "insideBottom", offset: -14, fontSize: 12, fill: VIZ.ink }} />
+            label={{ value: "Giá rao (tỷ, thang log)", position: "insideBottom", offset: -14, fontSize: 12, fill: VIZ.ink }} />
           <YAxis type="number" dataKey="predicted" name="Giá dự đoán" scale="log" domain={domain} ticks={ticks}
             tick={AXIS_TICK} stroke={VIZ.axis} width={44} allowDataOverflow
             label={{ value: "Dự đoán", angle: -90, position: "insideLeft", fontSize: 12, fill: VIZ.ink }} />

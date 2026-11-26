@@ -20,10 +20,7 @@ export default function DataPage() {
       </header>
 
       <main className="flex-1 container mx-auto px-4 py-10">
-        <h1 className="text-2xl font-bold text-foreground">Dữ liệu và chất lượng AI</h1>
-        <p className="mt-1 mb-6 max-w-3xl text-sm text-muted-foreground text-pretty">
-          Số liệu tổng hợp về catalog đang hiển thị, dữ liệu huấn luyện và model định giá.
-        </p>
+        <h1 className="mb-6 text-2xl font-bold text-foreground">Dữ liệu</h1>
         <DataDashboard />
       </main>
 

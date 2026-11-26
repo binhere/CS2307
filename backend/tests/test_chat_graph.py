@@ -3,33 +3,44 @@ import unittest
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
+import httpx
+import openai
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
 from src.services.agent.chat_graph import (
     ChatAgentService,
-    _fallback_route,
+    ChatModelError,
+    RouteDecision,
     _has_meaningful_filters,
     _message_window,
 )
+from src.services.llm.credentials import LlmCredentialError
+
+
+def provider_error(error_class, status_code, message):
+    """An openai SDK error as a provider answer of the given status raises it."""
+    response = httpx.Response(status_code, request=httpx.Request("POST", "https://provider.test/v1/chat/completions"))
+    return error_class(message, response=response, body=None)
+
+
+class FailingModel:
+    """A chat model whose every call raises the given error, or answers the given message."""
+
+    def __init__(self, error=None, answer=None):
+        self.error, self.answer = error, answer
+
+    def with_structured_output(self, *_args, **_kwargs):
+        return self
+
+    async def ainvoke(self, _messages):
+        if self.error is not None:
+            raise self.error
+        return self.answer
 
 
 class ChatGraphRoutingTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.service = ChatAgentService()
-
-    def test_greeting_never_routes_to_consultant(self):
-        decision = _fallback_route("Xin chào")
-        self.assertEqual(decision.mode, "chat")
-        self.assertFalse(decision.context_reference)
-
-    def test_general_real_estate_question_never_routes_to_search(self):
-        decision = _fallback_route("Thủ tục sang tên sổ hồng gồm những gì?")
-        self.assertEqual(decision.mode, "real_estate_qa")
-
-    def test_ambiguous_consultation_requires_clarification(self):
-        decision = _fallback_route("Tư vấn giúp tôi mua nhà")
-        self.assertEqual(decision.mode, "consult")
-        self.assertTrue(decision.needs_clarification)
 
     def test_meaningful_ui_filters_ignore_empty_default_values(self):
         self.assertFalse(_has_meaningful_filters({"min_price": 0, "district": "", "pool": False}))
@@ -39,7 +50,7 @@ class ChatGraphRoutingTests(unittest.IsolatedAsyncioTestCase):
         with patch.object(
             self.service,
             "_route",
-            new=AsyncMock(return_value=_fallback_route("Tư vấn giúp tôi mua nhà")),
+            new=AsyncMock(return_value=RouteDecision(mode="consult", needs_clarification=True)),
         ):
             update = await self.service._supervisor(
                 {"messages": [HumanMessage(content="Tư vấn giúp tôi mua nhà")], "filters": {"district": "Quận 7"}}
@@ -187,6 +198,55 @@ def _search_turn(index):
         ToolMessage(content="{}", tool_call_id=f"call{index}"),
         AIMessage(content=f"kết quả {index}"),
     ]
+
+
+class StepFailureTests(unittest.IsolatedAsyncioTestCase):
+    """A failing LLM step fails the turn with an error naming the step, never a canned reply."""
+
+    def setUp(self):
+        self.service = ChatAgentService()
+        self.state = {"messages": [HumanMessage(content="tìm căn hộ dưới 8 tỉ gần trường học quận 11")], "filters": {}}
+
+    async def test_a_provider_error_names_the_step_status_and_message_without_keys(self):
+        error = provider_error(openai.BadRequestError, 400, "Function calling is not enabled for sk-abcdefghijklmnop")
+        self.service._model = lambda *_args, **_kwargs: FailingModel(error=error)
+        with self.assertRaises(ChatModelError) as raised:
+            await self.service._consultant(self.state)
+        self.assertEqual(raised.exception.code, "LLM_PROVIDER_ERROR")
+        self.assertIn("bước tư vấn (HTTP 400)", raised.exception.detail)
+        self.assertIn("Function calling is not enabled", raised.exception.detail)
+        self.assertNotIn("sk-abcdefghijklmnop", raised.exception.detail)
+
+    async def test_a_supervisor_failure_is_reported_instead_of_guessing_a_route(self):
+        self.service._model = lambda *_args, **_kwargs: FailingModel(error=RuntimeError("postgres://app:secret@db"))
+        with self.assertRaises(ChatModelError) as raised:
+            await self.service._route(self.state)
+        self.assertEqual(raised.exception.detail, "Lỗi ở bước phân loại câu hỏi (RuntimeError).")  # no exception text
+
+    async def test_an_empty_answer_is_an_error(self):
+        self.service._model = lambda *_args, **_kwargs: FailingModel(answer=AIMessage(content=""))
+        for step in (self.service._chat, self.service._consultant, self.service._advisor_finalizer):
+            with self.subTest(step=step.__name__), self.assertRaises(ChatModelError) as raised:
+                await step(self.state)
+            self.assertEqual(raised.exception.code, "LLM_EMPTY_RESPONSE")
+
+    async def test_a_rejected_key_still_sends_the_user_to_the_ai_settings(self):
+        self.service._model = lambda *_args, **_kwargs: FailingModel(error=provider_error(openai.AuthenticationError, 401, "bad key"))
+        with self.assertRaises(LlmCredentialError) as raised:
+            await self.service._chat(self.state)
+        self.assertEqual(raised.exception.code, "LLM_KEY_INVALID")
+
+    async def test_the_endpoint_answers_a_step_error_in_the_envelope(self):
+        from src.main import app
+
+        error = ChatModelError("LLM_EMPTY_RESPONSE", "Mô hình không trả về nội dung ở bước tư vấn.")
+        with patch("src.api.v1.endpoints.chat.view_chat.chat_agent_service.run", AsyncMock(side_effect=error)):
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+                response = await client.post("/v1/chat", json={"message": "căn hộ quận 7"},
+                                             headers={"X-LLM-Provider": "openai", "X-LLM-Api-Key": "test-key-1234567890"})
+        self.assertEqual(response.status_code, 502)
+        self.assertEqual(response.json()["errors"][0], {"loc": "llm", "msg": "LLM_EMPTY_RESPONSE",
+                                                         "detail": "Mô hình không trả về nội dung ở bước tư vấn."})
 
 
 class InspectPriceEstimateTests(unittest.IsolatedAsyncioTestCase):

@@ -54,7 +54,7 @@ def start_run(trigger: str, user_id: Optional[int], user_name: Optional[str]) ->
 
     Args:
         trigger: "schedule" or "manual".
-        user_id: The user who pressed "Train ngay", None for the schedule.
+        user_id: The user who pressed "Huấn luyện ngay", None for the schedule.
         user_name: That user's name as shown in the history.
 
     Returns:
