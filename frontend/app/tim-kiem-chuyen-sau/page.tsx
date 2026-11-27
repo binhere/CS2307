@@ -107,7 +107,6 @@ export default function AdvancedSearchPage() {
             <SidebarFilter
               onApplyFilters={handleApplyFilters}
               onClose={() => setFiltersOpen(false)}
-              showSupportCard={false}
               title="Tiêu chí tư vấn"
               applyLabel="Áp dụng cho trợ lý"
             />
