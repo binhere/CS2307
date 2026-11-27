@@ -45,7 +45,9 @@ interface PropertyListingsProps {
   onOpenFilters?: () => void
 }
 
-const SKELETON_COUNT = 5
+const SKELETON_COUNT = 6
+// Divisible by 1, 2 and 3 columns so the last row of the responsive grid stays full.
+const PAGE_SIZE = 12
 
 const SORT_PARAMS: Record<string, { sort_by: string; sort_order: string }> = {
   newest: { sort_by: "newest", sort_order: "desc" },
@@ -57,14 +59,13 @@ const SORT_PARAMS: Record<string, { sort_by: string; sort_order: string }> = {
 function PropertyCardSkeleton() {
   return (
     <div className="bg-card border border-border rounded-xl overflow-hidden animate-pulse">
-      <div className="flex flex-col md:flex-row">
-        <div className="w-full md:w-[260px] lg:w-[300px] h-[200px] md:h-[210px] bg-muted flex-shrink-0" />
+      <div className="flex flex-col">
+        <div className="aspect-[4/3] w-full bg-muted" />
         <div className="flex-1 p-4 flex flex-col space-y-3">
-          <div className="h-5 bg-muted rounded w-3/4" />
-          <div className="h-6 bg-muted rounded w-1/3" />
-          <div className="h-4 bg-muted rounded w-2/3" />
-          <div className="h-4 bg-muted rounded w-full" />
-          <div className="mt-auto h-4 bg-muted rounded w-1/4" />
+          <div className="h-5 bg-muted rounded w-4/5" />
+          <div className="h-6 bg-muted rounded w-2/5" />
+          <div className="h-4 bg-muted rounded w-3/4" />
+          <div className="mt-auto h-4 bg-muted rounded w-1/3" />
         </div>
       </div>
     </div>
@@ -126,6 +127,7 @@ export function PropertyListings({
 
         const searchParams = new URLSearchParams()
         searchParams.append("page", currentPage.toString())
+        searchParams.append("limit", String(PAGE_SIZE))
         const sort = SORT_PARAMS[sortOption]
         if (sort) {
           searchParams.append("sort_by", sort.sort_by)
@@ -228,7 +230,7 @@ export function PropertyListings({
       )}
 
       {loading && (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
             <PropertyCardSkeleton key={i} />
           ))}
@@ -251,9 +253,9 @@ export function PropertyListings({
       )}
 
       {!loading && properties.length > 0 && (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {properties.map((property) => (
-            <PropertyCard key={property.id} property={property} />
+            <PropertyCard key={property.id} property={property} variant="compact" />
           ))}
         </div>
       )}
