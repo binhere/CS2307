@@ -68,14 +68,14 @@ export default function RealEstatePage() {
           className="pointer-events-none absolute inset-0 opacity-[0.08] [background-image:radial-gradient(circle_at_1px_1px,currentColor_1px,transparent_0)] [background-size:22px_22px]"
         />
         <div className="container relative mx-auto px-4 py-8 md:py-10">
-          <div className="max-w-3xl">
+          <div className="mx-auto max-w-3xl text-center">
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-balance">
               Tìm ngôi nhà phù hợp tại TP. Hồ Chí Minh
             </h1>
             <p className="mt-2 text-sm md:text-base text-primary-foreground/80">
               Lọc theo ngân sách, khu vực và tiện ích — hoặc để trợ lý AI tư vấn theo nhu cầu của bạn.
             </p>
-            <div className="mt-5">
+            <div className="mt-5 text-left">
               <SearchBar query={query} onSearch={handleSearch} />
             </div>
             <Link

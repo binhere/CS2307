@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Search, SlidersHorizontal, X } from "lucide-react"
+import { Minus, Plus, Search, SlidersHorizontal, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -29,15 +29,13 @@ const DIRECTIONS = [
 
 const PROPERTY_TYPES = ["Tất cả", "Căn hộ", "Nhà đất"]
 
-// The listing API compares bedrooms/bathrooms with ">=", so each chip means "at least N".
-const BEDROOM_OPTIONS = ["1", "2", "3", "4", "5"]
-const BATHROOM_OPTIONS = ["1", "2", "3", "4"]
+// The listing API compares bedrooms/bathrooms with ">=", so each step means "at least N".
+const MAX_ROOM_COUNT = 10
 
 // Prices are stored in tỷ VNĐ.
 const PRICE_PRESETS = [
-  { label: "Dưới 3 tỷ", min: "", max: "3" },
-  { label: "3 – 5 tỷ", min: "3", max: "5" },
-  { label: "5 – 10 tỷ", min: "5", max: "10" },
+  { label: "Dưới 5 tỷ", min: "", max: "5" },
+  { label: "5–10 tỷ", min: "5", max: "10" },
   { label: "Trên 10 tỷ", min: "10", max: "" },
 ]
 
@@ -99,6 +97,64 @@ function Chip({
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return <p className="mb-2 text-sm font-semibold text-foreground">{children}</p>
+}
+
+/**
+ * Airbnb-style numeric stepper for minimum room counts ("Bất kỳ", "1+", "2+", ...).
+ * @param props.label - Visible Vietnamese label (e.g. "Phòng ngủ").
+ * @param props.value - Current minimum count as a decimal string, or "" for "Bất kỳ".
+ * @param props.onChange - Called with the next count string (or "" when decremented to 0).
+ * @param props.max - Upper bound for the counter.
+ * @returns One compact horizontal row with decrement/increment buttons.
+ */
+function RoomStepper({
+  label,
+  value,
+  onChange,
+  max = MAX_ROOM_COUNT,
+}: {
+  label: string
+  value: string
+  onChange: (nextValue: string) => void
+  max?: number
+}) {
+  const count = value ? parseInt(value, 10) : 0
+  const canDecrease = count > 0
+  const canIncrease = count < max
+
+  return (
+    <div className="flex items-center justify-between py-1">
+      <span className="text-sm font-semibold text-foreground">{label}</span>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          disabled={!canDecrease}
+          onClick={() => onChange(count <= 1 ? "" : String(count - 1))}
+          aria-label={`Giảm ${label.toLowerCase()}`}
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-foreground transition-colors hover:border-primary/50 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card"
+        >
+          <Minus className="h-3.5 w-3.5" />
+        </button>
+        <span
+          className={cn(
+            "min-w-[3.75rem] text-center text-sm tabular-nums",
+            count > 0 ? "font-semibold text-primary" : "text-muted-foreground",
+          )}
+        >
+          {count > 0 ? `${count}+` : "Bất kỳ"}
+        </span>
+        <button
+          type="button"
+          disabled={!canIncrease}
+          onClick={() => onChange(String(count + 1))}
+          aria-label={`Tăng ${label.toLowerCase()}`}
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-foreground transition-colors hover:border-primary/50 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-border disabled:hover:bg-card"
+        >
+          <Plus className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    </div>
+  )
 }
 
 function toggleItem(list: string[], item: string) {
@@ -257,20 +313,27 @@ export function AdvancedFilter({
 
         <div>
           <FieldLabel>Khoảng giá (tỷ VNĐ)</FieldLabel>
-          <div className="mb-2 flex flex-wrap gap-2">
+          <div className="mb-2 grid grid-cols-3 gap-1.5">
             {PRICE_PRESETS.map((preset) => {
               const active = minPrice === preset.min && maxPrice === preset.max
               return (
-                <Chip
+                <button
                   key={preset.label}
-                  active={active}
+                  type="button"
+                  aria-pressed={active}
                   onClick={() => {
                     setMinPrice(active ? "" : preset.min)
                     setMaxPrice(active ? "" : preset.max)
                   }}
+                  className={cn(
+                    "whitespace-nowrap rounded-full border px-2 py-1.5 text-center text-xs font-medium transition-colors",
+                    active
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card text-foreground hover:border-primary/50 hover:bg-accent",
+                  )}
                 >
                   {preset.label}
-                </Chip>
+                </button>
               )
             })}
           </div>
@@ -288,24 +351,9 @@ export function AdvancedFilter({
           </div>
         </div>
 
-        <div>
-          <FieldLabel>Phòng ngủ</FieldLabel>
-          <div className="flex flex-wrap gap-2">
-            <Chip active={!selectedBedrooms} onClick={() => setSelectedBedrooms("")}>Bất kỳ</Chip>
-            {BEDROOM_OPTIONS.map((n) => (
-              <Chip key={n} active={selectedBedrooms === n} onClick={() => setSelectedBedrooms(n)}>{n}+</Chip>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <FieldLabel>Phòng tắm</FieldLabel>
-          <div className="flex flex-wrap gap-2">
-            <Chip active={!selectedBathrooms} onClick={() => setSelectedBathrooms("")}>Bất kỳ</Chip>
-            {BATHROOM_OPTIONS.map((n) => (
-              <Chip key={n} active={selectedBathrooms === n} onClick={() => setSelectedBathrooms(n)}>{n}+</Chip>
-            ))}
-          </div>
+        <div className="space-y-2">
+          <RoomStepper label="Phòng ngủ" value={selectedBedrooms} onChange={setSelectedBedrooms} />
+          <RoomStepper label="Phòng tắm" value={selectedBathrooms} onChange={setSelectedBathrooms} />
         </div>
 
         <div>
