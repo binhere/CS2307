@@ -1,4 +1,4 @@
-# Purpose: production image of the FastAPI backend, used by Docker Compose and the homelab cluster.
+# Purpose: production image of the FastAPI backend, used by Docker Compose and the deployment.
 # Input: the backend/ directory as build context.
 # Output: gunicorn + uvicorn on port 8000, running as the unprivileged user 10001. It writes only to
 #   /tmp (gunicorn heartbeat files), so it runs with a read-only root filesystem. Logs go to stderr;

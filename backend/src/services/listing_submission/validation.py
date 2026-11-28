@@ -350,6 +350,11 @@ def _resolve_location(report: ListingReport, found: Dict[str, Tuple[str, Any]],
                 report.add_conversion("ward", "value", ward_value, match.ward.name,
                                       f"{match.former_ward.ward} ({match.former_ward.district}) thuộc {match.ward.name} "
                                       "từ 1/7/2025.")
+            elif match.former_district is not None:
+                how = ("phường/xã lấy từ tọa độ" if point_ward is not None and match.ward.code == point_ward.code
+                       else "toàn bộ địa bàn nay thuộc một phường/xã")
+                report.add_conversion("ward", "derived", ward_value, match.ward.name,
+                                      f"«{ward_value}» là quận/huyện cũ; {how}.")
             elif match.ward.name != ward_value:
                 report.add_conversion("ward", "value", ward_value, match.ward.name)
     elif point_ward is not None:
@@ -361,7 +366,12 @@ def _resolve_location(report: ListingReport, found: Dict[str, Tuple[str, Any]],
 
     ward = match.ward if match else None
     if ward is not None and _is_blank(former_value):
-        candidates = [match.former_ward.district] if match.former_ward else list(ward.former_districts)
+        if match.former_ward:
+            candidates = [match.former_ward.district]
+        elif match.former_district:
+            candidates = [match.former_district]
+        else:
+            candidates = list(ward.former_districts)
         if len(candidates) == 1:
             former_district = candidates[0]
             report.add_conversion("former_district", "derived", None, former_district,

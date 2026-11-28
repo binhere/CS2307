@@ -19,7 +19,7 @@ deployment and inference pipelines fit together.
 | `data/v3/` | Dataset the backend imports today (6,703 listings) and its build inputs |
 | `databases/` | Local Neo4j, PostgreSQL and MinIO loaders for `data/gold` (PowerShell) |
 | `price_prediction/` | Offline price model experiments on `data/v3` (output git-ignored). The backend ships no model: it trains its own from posted listings in `backend/src/services/price_training/` |
-| `deploy/` | Embedding and seed images for the homelab deployment; see `deploy/README.md` |
+| `deploy/` | Embedding and seed images and the runtime contract of all images; see `deploy/README.md` |
 | `.github/workflows/` | Image builds on push to `main` (`main-build`, `embedding-build`, `seed-build`) |
 | `docs/` | Standalone documentation (Vietnamese) |
 
@@ -27,6 +27,11 @@ deployment and inference pipelines fit together.
   after renaming a folder, check `git ls-files` shows the new spelling.
 - Pipeline scripts resolve paths from their own location; they run from any directory.
 - Never commit images, `.env`, `node_modules/`, `.next/` or local DB volumes.
+- **This repository is shared with the team and read by their coding agents.** Tracked files describe
+  this codebase and the images' runtime contract (`deploy/README.md`: ports, probes, environment,
+  writable paths, tag format) only. The deployment's internals stay out: its configuration repository,
+  cluster tools, node and namespace names, and who operates it; write "the deployment". Notes only the
+  operator needs live in git-ignored files.
 
 ## Commands
 
@@ -42,7 +47,7 @@ python -m pytest deploy/seed/tests         # seed build/load tests
 ```
 
 A push to `main` that touches `backend/` or `frontend/` **deploys**: `main-build.yml` runs the backend
-tests, starts both images read-only, pushes them, and Flux rolls them out. The embedding and seed
+tests, starts both images read-only, pushes them, and the deployment rolls them out. The embedding and seed
 images are built automatically but deployed only by hand (`deploy/README.md` explains why).
 
 ## Code conventions (all languages)

@@ -61,3 +61,10 @@ databases/object_storage/data/
 
 # Offline price model experiments (the backend trains its own model from posted listings)
 price_prediction/artifacts/
+
+# The photo archive and the upload parts built from it (pipeline/build_upload_archives.py)
+/images.zip
+data/upload/
+
+# Deployment operator's notes: kept local, out of the shared repository
+.claude/skills/catalog-update/

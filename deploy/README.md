@@ -1,14 +1,15 @@
 # Deployment images
 
-The homelab cluster (tenant `cs2307`, https://cs2307.reais.codes) runs four images built by GitHub
-Actions on pushes to `main`. The Kubernetes manifests live in the iac-homelab repository, not here.
+The live site (https://cs2307.reais.codes) runs four images built by GitHub Actions on pushes to
+`main`. The deployment's own configuration lives outside this repository; this file is the contract
+it relies on.
 
 | Image | Built from | Workflow (paths that trigger it) | Deployed |
 |---|---|---|---|
-| `ghcr.io/binhere/cs2307-backend` | `backend/Dockerfile` | `main-build.yml` (`backend/**`, `frontend/**`) | automatically (Flux image automation) |
-| `ghcr.io/binhere/cs2307-frontend` | `frontend/Dockerfile` | `main-build.yml` (same run, same tag) | automatically (Flux image automation) |
-| `ghcr.io/binhere/cs2307-embedding` | `deploy/embedding/Dockerfile` | `embedding-build.yml` (`deploy/embedding/**`) | by hand: tag pinned in iac-homelab |
-| `ghcr.io/binhere/cs2307-seed` | `deploy/seed/build_seed.sh` | `seed-build.yml` (dataset, photo manifest, committed vectors, `deploy/seed/**`, import code) | by hand: tag pinned in iac-homelab |
+| `ghcr.io/binhere/cs2307-backend` | `backend/Dockerfile` | `main-build.yml` (`backend/**`, `frontend/**`) | automatically (newest tag) |
+| `ghcr.io/binhere/cs2307-frontend` | `frontend/Dockerfile` | `main-build.yml` (same run, same tag) | automatically (newest tag) |
+| `ghcr.io/binhere/cs2307-embedding` | `deploy/embedding/Dockerfile` | `embedding-build.yml` (`deploy/embedding/**`) | by hand: the deployment pins the tag |
+| `ghcr.io/binhere/cs2307-seed` | `deploy/seed/build_seed.sh` | `seed-build.yml` (dataset, photo manifest, committed vectors, `deploy/seed/**`, import code) | by hand: the deployment pins the tag |
 
 Every tag is `main-<commit date, UTC, YYYYMMDDHHMMSS>-<sha7>`, built for `linux/amd64` only (the
 server is x86_64). There is no `latest`. A push to `main` that touches `backend/` or `frontend/` is a
@@ -61,7 +62,7 @@ git add data/gold/listing_embeddings.csv.gz data/gold/listing_embeddings.json
 `data/gold/images_manifest.csv`, imports them with the backend image, attaches the committed vectors,
 and exports the catalog tables to CSV. `seed.py` makes a deployment hold that catalog. It compares each
 store with the image by a content digest (the SHA-256 of the store's files) and does nothing when they
-match, so the cluster runs it every hour:
+match, so it can run on a schedule:
 
 - PostgreSQL: `properties` (vectors included) and `listing_amenity_distances`. The digest of
   `catalog/*.csv` is kept in the table `catalog_imports`. When it differs, both tables are replaced in
@@ -97,8 +98,8 @@ python -m pytest deploy/seed/tests      # needs deploy/seed/requirements.txt
 
 Listings, and so their photos, come only from users: the posting form and zip uploads. The browser
 shrinks every photo to a gallery copy (longest side 1,280 px) and a thumbnail (480 px), and the
-backend stores both in the photo store (Garage in the cluster, MinIO locally) under
+backend stores both in the photo store (an S3-compatible bucket; MinIO locally) under
 `images/user-listings/<listing id>/{gallery,thumbnails}/`. Nothing else uploads photos: the earlier
-catalog archive on Google Drive and its photos CronJob are gone. The seed still writes catalog image
+catalog photo upload from Google Drive is gone. The seed still writes catalog image
 keys from `data/gold/images_manifest.csv`, but no photo is uploaded for them, so a reseeded catalog
 shows the illustration instead of its photos.

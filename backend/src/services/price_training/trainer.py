@@ -28,7 +28,7 @@ from src.services.price_training.preparation import feature_frame, feature_names
 
 RANDOM_STATE = 42
 VALIDATION_SIZE = 0.2
-# The node is shared with the live site and other tenants: two threads keep training from starving
+# The server is shared with the live site and other services: two threads keep training from starving
 # requests. OpenMP (HistGradientBoosting) and BLAS default to one thread per core, and on a busy
 # machine those threads wait on each other: measured 11.5 s with 8 threads against 1.4 s with 2.
 TRAINING_JOBS = 2
