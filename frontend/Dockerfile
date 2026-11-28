@@ -1,4 +1,4 @@
-# Purpose: production image of the Next.js frontend for the homelab cluster.
+# Purpose: production image of the Next.js frontend.
 # Input: the frontend/ directory as build context. NEXT_PUBLIC_* values are inlined at build time, so
 #   none are set here: the image carries no domain and no key. BACKEND_URL is read at runtime.
 # Output: a Next.js standalone server on port 3000 that runs as the unprivileged user 10001 and needs

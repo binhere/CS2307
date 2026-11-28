@@ -1,5 +1,5 @@
 # Purpose: publish the backend and frontend images on every push to main that changes them. The
-#   homelab's Flux image automation deploys the newest pair, so a push to main is a deploy.
+#   deployment rolls out the newest pair automatically, so a push to main is a deploy.
 # Input: a push to main that touches backend/**, frontend/** or this file.
 # Output: ghcr.io/binhere/cs2307-backend and ghcr.io/binhere/cs2307-frontend, both tagged
 #   main-<committer date, UTC, YYYYMMDDHHMMSS>-<first 7 characters of the commit sha>, linux/amd64 only
@@ -56,7 +56,7 @@ jobs:
           commit_time=$(TZ=UTC git show --no-patch --format=%cd --date=format-local:%Y%m%d%H%M%S "$GITHUB_SHA")
           image_tag="main-${commit_time}-${GITHUB_SHA:0:7}"
           if ! [[ "$image_tag" =~ ^main-[0-9]{14}-[0-9a-f]{7}$ ]]; then
-            echo "::error::The tag $image_tag does not match the pattern the homelab's image policy reads."
+            echo "::error::The tag $image_tag does not match the pattern the deployment selects tags by."
             exit 1
           fi
           echo "tag=$image_tag" >> "$GITHUB_OUTPUT"

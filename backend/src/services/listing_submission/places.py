@@ -22,6 +22,8 @@ from src.services.listing_submission.coercion import CoercionError, describe, pl
 from src.services.listing_submission.geography import AddressReference, FormerWard, Ward, address_reference
 
 # Administrative words that can open a place name, each mapped to its accent-free keyword.
+# Keywords of former districts: typed in a ward field, they name a district, not an old ward.
+DISTRICT_KEYWORDS = {"quan", "huyen", "thi xa", "thanh pho"}
 _PLACE_KEYWORDS = (
     (r"dac khu|dk", "dac khu"),
     (r"thanh pho|tp", "thanh pho"),
@@ -174,10 +176,13 @@ class WardMatch:
     Attributes:
         ward: The official ward.
         former_ward: The old ward the typed name meant, when an old name was typed.
+        former_district: The former district typed in the ward field ("Quận 3"), when the ward was
+            then taken from the coordinates; it is also the listing's former district.
     """
 
     ward: Ward
     former_ward: Optional[FormerWard] = None
+    former_district: Optional[str] = None
 
 
 class LocationDirectory:
@@ -241,6 +246,8 @@ class LocationDirectory:
                 raise
             unknown = error
         typed = parse_place(value)
+        if typed.keyword in DISTRICT_KEYWORDS:
+            return self._match_district_as_ward(value, point_ward, unknown)
         entries = self.old_wards.get(typed.bare_name, [])
         if typed.keyword:
             entries = [entry for entry in entries if entry[0].keyword == typed.keyword] or entries
@@ -257,11 +264,46 @@ class LocationDirectory:
             return WardMatch(ward, former)
         if new_wards:
             names = ", ".join(sorted(ward.name for ward in new_wards.values())[:6])
-            more = "…" if len(new_wards) > 6 else ""
+            # An ellipsis already ends the sentence: no full stop after it.
+            ending = "…" if len(new_wards) > 6 else "."
             raise CoercionError("AMBIGUOUS_PLACE",
-                                f"«{describe(value)}» là tên cũ, nay thuộc một trong các phường/xã: {names}{more}.",
+                                f"«{describe(value)}» là tên cũ, nay thuộc một trong các phường/xã: {names}{ending}",
                                 "Vui lòng ghi phường/xã mới, hoặc kèm quận/huyện cũ hay tọa độ.")
         raise unknown
+
+    def _match_district_as_ward(self, value: Any, point_ward: Optional[Ward], unknown: CoercionError) -> WardMatch:
+        """Resolve a former district typed where a ward belongs ("Quận 3" in the ward field).
+
+        Its bare name ("3") must not be read as an old numbered ward: "Phường 3" existed in many
+        districts, and even in Vũng Tàu. The ward is the coordinates' ward when it lies in that
+        district; otherwise the wards made from the district are listed.
+
+        Args:
+            value: The typed ward field.
+            point_ward: The ward containing the listing's coordinates, if any.
+            unknown: The error to raise when the value is no former district either.
+
+        Returns:
+            WardMatch: The coordinates' ward, with the typed district as former_district.
+
+        Raises:
+            CoercionError: AMBIGUOUS_PLACE without usable coordinates; the given unknown error
+                when the value names no former district.
+        """
+        try:
+            district = self.match_former_district(value)
+        except CoercionError:
+            raise unknown from None
+        if point_ward is not None and self.was_in(point_ward, district):
+            return WardMatch(point_ward, former_district=district)
+        candidates = sorted(ward.name for ward in self.reference.wards if self.was_in(ward, district))
+        if len(candidates) == 1:
+            return WardMatch(self.reference.ward_by_name[candidates[0]], former_district=district)
+        # The list ends the sentence: an ellipsis when cut, a full stop otherwise.
+        names = ", ".join(candidates[:6]) + ("…" if len(candidates) > 6 else ".")
+        raise CoercionError("AMBIGUOUS_PLACE",
+                            f"«{describe(value)}» là quận/huyện cũ, nay gồm các phường/xã: {names}",
+                            "Vui lòng ghi phường/xã mới, hoặc kèm tọa độ.")
 
 
 @lru_cache(maxsize=1)

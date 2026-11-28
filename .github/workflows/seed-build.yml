@@ -130,5 +130,5 @@ jobs:
           {
             echo "Published \`$IMAGE_NAME:$SEED_TAG\` (\`$SEED_REFERENCE\`, linux/amd64)"
             echo
-            echo "Not deployed automatically: pin this tag in iac-homelab; the next seed run replaces the catalog where it differs."
+            echo "Not deployed automatically: the deployment pins seed tags by hand; the next seed run replaces the catalog where it differs."
           } >> "$GITHUB_STEP_SUMMARY"

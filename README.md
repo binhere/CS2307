@@ -219,7 +219,7 @@ uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
 ## Deployment
 
 `main` is deployed to https://cs2307.reais.codes: a push that changes `backend/` or
-`frontend/` builds, tests and publishes both images, and the homelab cluster rolls them out.
+`frontend/` builds, tests and publishes both images, and the deployment rolls them out.
 Images, runtime requirements, the seed and the photo archive are described in
 [deploy/README.md](deploy/README.md).
 
@@ -248,7 +248,7 @@ CS2307/
 │   ├── silver/            Cleaned and enriched listings, nearest POIs, driving routes
 │   ├── gold/              SQL tables and Neo4j node/edge CSVs built by pipeline/; photo list and catalog vectors
 │   └── v3/                Dataset the backend imports today (6,703 listings) and its build inputs
-├── deploy/                Embedding and seed images for the homelab deployment
+├── deploy/                Embedding and seed images; the images' runtime contract
 ├── .github/workflows/     Image builds on push to main
 ├── databases/             Local Neo4j, PostgreSQL and MinIO loaders for data/gold and images (PowerShell)
 ├── price_prediction/      Price model training (writes the model the backend serves)

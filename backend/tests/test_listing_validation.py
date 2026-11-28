@@ -297,6 +297,25 @@ class LocationTests(unittest.TestCase):
         self.assertTrue(report.is_valid, report.errors)
         self.assertEqual(report.listing["ward"], "Phường Diên Hồng")
 
+    def test_a_former_district_typed_as_the_ward_is_settled_by_coordinates(self):
+        # A crawl wrote "Quận 3" in the ward column; its number must not match every old "Phường 3".
+        typed = plan_listing(ward="Quận 3", former_district=None, metadata={})
+        report = validate_listing(typed, 0, TODAY)
+        self.assertEqual([item["code"] for item in report.errors], ["AMBIGUOUS_PLACE", "MISSING_REQUIRED"])
+        suggested = report.errors[0]["message"]
+        self.assertIn("quận/huyện cũ", suggested)
+        self.assertNotIn("Vũng Tàu", suggested)
+        suggested_wards = suggested.split("gồm các phường/xã: ")[1].rstrip(".…").split(", ")
+        directory = location_directory()
+        self.assertTrue(all(directory.was_in(directory.reference.ward_by_name[name], "Quận 3") for name in suggested_wards))
+        typed["metadata"] = {"latitude": 10.7842582, "longitude": 106.6775973}  # in old District 3
+        report = validate_listing(typed, 0, TODAY)
+        self.assertTrue(report.is_valid, report.errors)
+        self.assertEqual(report.listing["former_district"], "Quận 3")
+        self.assertTrue(directory.was_in(directory.reference.ward_by_name[report.listing["ward"]], "Quận 3"))
+        note = next(item for item in report.conversions if item["field"] == "ward")["note"]
+        self.assertIn("lấy từ tọa độ", note)
+
     def test_the_former_district_must_agree_with_the_ward(self):
         report = validate_listing(plan_listing(former_district="Quận 7"), 0, TODAY)
         self.assertEqual([item["code"] for item in report.errors], ["MISMATCHED_FORMER_DISTRICT"])
