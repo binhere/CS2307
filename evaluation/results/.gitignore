@@ -1,0 +1,3 @@
+# Keep generated evaluation runs out of git; commit only code and query specs.
+*
+!.gitignore
