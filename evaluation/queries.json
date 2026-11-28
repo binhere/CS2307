@@ -1,0 +1,1573 @@
+[
+  {
+    "id": "Q001",
+    "category": "budget_apartment",
+    "query": "căn hộ chung cư 2 phòng ngủ dưới 4 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "max_price": 4.0
+    }
+  },
+  {
+    "id": "Q002",
+    "category": "budget_apartment",
+    "query": "chung cư 3 phòng ngủ từ 4 đến 7 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 3,
+      "min_price": 4.0,
+      "max_price": 7.0
+    }
+  },
+  {
+    "id": "Q003",
+    "category": "budget_apartment",
+    "query": "căn hộ diện tích trên 70m2 dưới 5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_area": 70.0,
+      "max_price": 5.0
+    }
+  },
+  {
+    "id": "Q004",
+    "category": "budget_apartment",
+    "query": "tìm căn hộ 1 phòng ngủ tài chính dưới 3 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 1,
+      "max_price": 3.0
+    }
+  },
+  {
+    "id": "Q005",
+    "category": "budget_apartment",
+    "query": "chung cư giá mềm dưới 2.5 tỷ cho người độc thân",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 2.5
+    }
+  },
+  {
+    "id": "Q006",
+    "category": "budget_apartment",
+    "query": "căn hộ 2PN 2WC ngân sách tối đa 4.5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "min_bathrooms": 2,
+      "max_price": 4.5
+    }
+  },
+  {
+    "id": "Q007",
+    "category": "budget_apartment",
+    "query": "chung cư tầm 3 đến 5 tỷ rộng ít nhất 65m2",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 3.0,
+      "max_price": 5.0,
+      "min_area": 65.0
+    }
+  },
+  {
+    "id": "Q008",
+    "category": "budget_apartment",
+    "query": "căn hộ chung cư từ 2 đến 3.5 tỷ có ít nhất 2 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 2.0,
+      "max_price": 3.5,
+      "min_bedrooms": 2
+    }
+  },
+  {
+    "id": "Q009",
+    "category": "budget_apartment",
+    "query": "mua căn hộ diện tích từ 55m2 đến 75m2 giá dưới 4 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_area": 55.0,
+      "max_area": 75.0,
+      "max_price": 4.0
+    }
+  },
+  {
+    "id": "Q010",
+    "category": "budget_apartment",
+    "query": "chung cư 3 phòng ngủ 2 nhà vệ sinh rộng từ 85m2",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 3,
+      "min_bathrooms": 2,
+      "min_area": 85.0
+    }
+  },
+  {
+    "id": "Q011",
+    "category": "budget_apartment",
+    "query": "căn hộ phân khúc trung cấp từ 5 đến 8 tỷ diện tích từ 70m2",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 5.0,
+      "max_price": 8.0,
+      "min_area": 70.0
+    }
+  },
+  {
+    "id": "Q012",
+    "category": "budget_apartment",
+    "query": "chung cư cao cấp trên 8 tỷ diện tích trên 90m2",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 8.0,
+      "min_area": 90.0
+    }
+  },
+  {
+    "id": "Q013",
+    "category": "budget_apartment",
+    "query": "căn hộ hạng sang trên 12 tỷ có ít nhất 3 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 12.0,
+      "min_bedrooms": 3
+    }
+  },
+  {
+    "id": "Q014",
+    "category": "budget_apartment",
+    "query": "căn hộ dưới 3.5 tỷ có 2 phòng tắm",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 3.5,
+      "min_bathrooms": 2
+    }
+  },
+  {
+    "id": "Q015",
+    "category": "budget_apartment",
+    "query": "tìm chung cư diện tích trên 100m2 dưới 10 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_area": 100.0,
+      "max_price": 10.0
+    }
+  },
+  {
+    "id": "Q016",
+    "category": "budget_apartment",
+    "query": "căn hộ 2 phòng ngủ diện tích từ 60 đến 80m2 giá không quá 5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "min_area": 60.0,
+      "max_area": 80.0,
+      "max_price": 5.0
+    }
+  },
+  {
+    "id": "Q017",
+    "category": "budget_apartment",
+    "query": "chung cư từ 6 đến 10 tỷ có ít nhất 2 phòng ngủ và 2 WC",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 6.0,
+      "max_price": 10.0,
+      "min_bedrooms": 2,
+      "min_bathrooms": 2
+    }
+  },
+  {
+    "id": "Q018",
+    "category": "budget_apartment",
+    "query": "căn hộ diện tích từ 45m2 đến 60m2 tài chính dưới 3.5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_area": 45.0,
+      "max_area": 60.0,
+      "max_price": 3.5
+    }
+  },
+  {
+    "id": "Q019",
+    "category": "budget_apartment",
+    "query": "chung cư rộng trên 80m2 tối đa 6 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_area": 80.0,
+      "max_price": 6.0
+    }
+  },
+  {
+    "id": "Q020",
+    "category": "budget_apartment",
+    "query": "căn hộ 3PN giá dưới 5.5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 3,
+      "max_price": 5.5
+    }
+  },
+  {
+    "id": "Q021",
+    "category": "budget_house",
+    "query": "nhà riêng dưới 5 tỷ có ít nhất 2 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 5.0,
+      "min_bedrooms": 2
+    }
+  },
+  {
+    "id": "Q022",
+    "category": "budget_house",
+    "query": "nhà phố từ 6 đến 10 tỷ diện tích từ 50m2",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 6.0,
+      "max_price": 10.0,
+      "min_area": 50.0
+    }
+  },
+  {
+    "id": "Q023",
+    "category": "budget_house",
+    "query": "biệt thự trên 15 tỷ có ít nhất 4 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 15.0,
+      "min_bedrooms": 4
+    }
+  },
+  {
+    "id": "Q024",
+    "category": "budget_house",
+    "query": "nhà đất giá rẻ dưới 4 tỷ diện tích từ 40m2",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 4.0,
+      "min_area": 40.0
+    }
+  },
+  {
+    "id": "Q025",
+    "category": "budget_house",
+    "query": "tìm nhà riêng tầm 4 đến 6 tỷ có 3 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 4.0,
+      "max_price": 6.0,
+      "min_bedrooms": 3
+    }
+  },
+  {
+    "id": "Q026",
+    "category": "budget_house",
+    "query": "nhà đất từ 5 đến 8 tỷ có ít nhất 3 phòng ngủ và 3 phòng tắm",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 5.0,
+      "max_price": 8.0,
+      "min_bedrooms": 3,
+      "min_bathrooms": 3
+    }
+  },
+  {
+    "id": "Q027",
+    "category": "budget_house",
+    "query": "nhà riêng diện tích trên 80m2 ngân sách dưới 10 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 80.0,
+      "max_price": 10.0
+    }
+  },
+  {
+    "id": "Q028",
+    "category": "budget_house",
+    "query": "nhà phố rộng từ 60m2 đến 100m2 giá từ 7 đến 12 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 60.0,
+      "max_area": 100.0,
+      "min_price": 7.0,
+      "max_price": 12.0
+    }
+  },
+  {
+    "id": "Q029",
+    "category": "budget_house",
+    "query": "nhà đất 4 phòng ngủ dưới 9 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_bedrooms": 4,
+      "max_price": 9.0
+    }
+  },
+  {
+    "id": "Q030",
+    "category": "budget_house",
+    "query": "nhà mặt phố từ 10 đến 18 tỷ rộng ít nhất 70m2",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 10.0,
+      "max_price": 18.0,
+      "min_area": 70.0
+    }
+  },
+  {
+    "id": "Q031",
+    "category": "budget_house",
+    "query": "nhà nhiều phòng cho gia đình đông người có ít nhất 5 phòng ngủ và 4 WC",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_bedrooms": 5,
+      "min_bathrooms": 4
+    }
+  },
+  {
+    "id": "Q032",
+    "category": "budget_house",
+    "query": "biệt thự diện tích trên 150m2 giá trên 20 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 150.0,
+      "min_price": 20.0
+    }
+  },
+  {
+    "id": "Q033",
+    "category": "budget_house",
+    "query": "nhà đất trên 100m2 giá không quá 15 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 100.0,
+      "max_price": 15.0
+    }
+  },
+  {
+    "id": "Q034",
+    "category": "budget_house",
+    "query": "mua nhà riêng dưới 6.5 tỷ có ít nhất 2 phòng ngủ và 2 phòng tắm",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 6.5,
+      "min_bedrooms": 2,
+      "min_bathrooms": 2
+    }
+  },
+  {
+    "id": "Q035",
+    "category": "budget_house",
+    "query": "nhà đất phân khúc 8 đến 14 tỷ có ít nhất 4 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 8.0,
+      "max_price": 14.0,
+      "min_bedrooms": 4
+    }
+  },
+  {
+    "id": "Q036",
+    "category": "budget_house",
+    "query": "nhà mặt tiền trên 25 tỷ diện tích trên 120m2",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 25.0,
+      "min_area": 120.0
+    }
+  },
+  {
+    "id": "Q037",
+    "category": "budget_house",
+    "query": "nhà nhỏ gọn diện tích từ 40 đến 65m2 dưới 7 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 40.0,
+      "max_area": 65.0,
+      "max_price": 7.0
+    }
+  },
+  {
+    "id": "Q038",
+    "category": "budget_house",
+    "query": "nhà đất từ 12 đến 20 tỷ có ít nhất 4 phòng tắm",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 12.0,
+      "max_price": 20.0,
+      "min_bathrooms": 4
+    }
+  },
+  {
+    "id": "Q039",
+    "category": "budget_house",
+    "query": "nhà phố 5 phòng ngủ giá dưới 16 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_bedrooms": 5,
+      "max_price": 16.0
+    }
+  },
+  {
+    "id": "Q040",
+    "category": "budget_house",
+    "query": "nhà đất diện tích từ 75m2 trở lên giá từ 5 đến 9 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 75.0,
+      "min_price": 5.0,
+      "max_price": 9.0
+    }
+  },
+  {
+    "id": "Q041",
+    "category": "location_price",
+    "query": "căn hộ 2 phòng ngủ ở Thủ Đức dưới 5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "max_price": 5.0,
+      "locations": ["Thủ Đức", "An Khánh", "Hiệp Bình", "Long Trường", "Long Bình", "Phước Long", "Linh Xuân", "Tăng Nhơn Phú", "Tam Bình", "Cát Lái", "Bình Trưng"]
+    }
+  },
+  {
+    "id": "Q042",
+    "category": "location_price",
+    "query": "nhà riêng ở Bình Thạnh dưới 8 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 8.0,
+      "locations": ["Bình Thạnh", "Gia Định", "Bình Quới", "Thạnh Mỹ Tây", "Bình Lợi Trung"]
+    }
+  },
+  {
+    "id": "Q043",
+    "category": "location_price",
+    "query": "căn hộ ở Phường An Khánh từ 5 đến 10 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 5.0,
+      "max_price": 10.0,
+      "locations": ["An Khánh"]
+    }
+  },
+  {
+    "id": "Q044",
+    "category": "location_price",
+    "query": "nhà đất ở Gò Vấp dưới 7 tỷ có 3 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 7.0,
+      "min_bedrooms": 3,
+      "locations": ["Gò Vấp", "An Nhơn", "An Hội Đông", "An Hội Tây", "Hạnh Thông", "Thông Tây Hội"]
+    }
+  },
+  {
+    "id": "Q045",
+    "category": "location_price",
+    "query": "nhà riêng Tân Bình dưới 9 tỷ diện tích từ 45m2",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 9.0,
+      "min_area": 45.0,
+      "locations": ["Tân Bình", "Tân Sơn", "Tân Sơn Hòa", "Tân Sơn Nhất", "Bảy Hiền", "Tân Hòa"]
+    }
+  },
+  {
+    "id": "Q046",
+    "category": "location_price",
+    "query": "căn hộ ở Phú Nhuận dưới 6 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 6.0,
+      "locations": ["Phú Nhuận", "Đức Nhuận", "Cầu Kiệu"]
+    }
+  },
+  {
+    "id": "Q047",
+    "category": "location_price",
+    "query": "nhà đất Phường Tân Sơn Nhì dưới 7 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 7.0,
+      "locations": ["Tân Sơn Nhì"]
+    }
+  },
+  {
+    "id": "Q048",
+    "category": "location_price",
+    "query": "căn hộ 2 phòng ngủ Phường Tân Mỹ dưới 6 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "max_price": 6.0,
+      "locations": ["Tân Mỹ"]
+    }
+  },
+  {
+    "id": "Q049",
+    "category": "location_price",
+    "query": "nhà riêng ở Quận 12 dưới 6 tỷ có ít nhất 3 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 6.0,
+      "min_bedrooms": 3,
+      "locations": ["Quận 12", "Thới An", "An Phú Đông", "Tân Thới Hiệp", "Trung Mỹ Tây", "Đông Hưng Thuận"]
+    }
+  },
+  {
+    "id": "Q050",
+    "category": "location_price",
+    "query": "nhà đất Quận 12 diện tích từ 60m2 giá dưới 7 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 60.0,
+      "max_price": 7.0,
+      "locations": ["Quận 12", "Thới An", "An Phú Đông", "Tân Thới Hiệp", "Trung Mỹ Tây", "Đông Hưng Thuận"]
+    }
+  },
+  {
+    "id": "Q051",
+    "category": "location_price",
+    "query": "căn hộ Quận 9 dưới 4 tỷ có 2 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 4.0,
+      "min_bedrooms": 2,
+      "locations": ["Quận 9", "Long Bình", "Long Trường", "Long Phước", "Phước Long", "Tăng Nhơn Phú"]
+    }
+  },
+  {
+    "id": "Q052",
+    "category": "location_price",
+    "query": "nhà đất ở Quận 9 từ 5 đến 10 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 5.0,
+      "max_price": 10.0,
+      "locations": ["Quận 9", "Long Bình", "Long Trường", "Long Phước", "Phước Long", "Tăng Nhơn Phú"]
+    }
+  },
+  {
+    "id": "Q053",
+    "category": "location_price",
+    "query": "căn hộ Quận 2 từ 4 đến 8 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 4.0,
+      "max_price": 8.0,
+      "locations": ["Quận 2", "An Khánh", "Bình Trưng", "Cát Lái"]
+    }
+  },
+  {
+    "id": "Q054",
+    "category": "location_price",
+    "query": "nhà phố Quận 2 trên 10 tỷ diện tích từ 80m2",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 10.0,
+      "min_area": 80.0,
+      "locations": ["Quận 2", "An Khánh", "Bình Trưng", "Cát Lái"]
+    }
+  },
+  {
+    "id": "Q055",
+    "category": "location_price",
+    "query": "căn hộ ở Quận 7 giá dưới 6 tỷ rộng từ 65m2",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 6.0,
+      "min_area": 65.0,
+      "locations": ["Quận 7", "Tân Mỹ", "Tân Hưng", "Tân Thuận", "Phú Thuận"]
+    }
+  },
+  {
+    "id": "Q056",
+    "category": "location_price",
+    "query": "nhà đất Quận 7 từ 7 đến 15 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 7.0,
+      "max_price": 15.0,
+      "locations": ["Quận 7", "Tân Mỹ", "Tân Hưng", "Tân Thuận", "Phú Thuận"]
+    }
+  },
+  {
+    "id": "Q057",
+    "category": "location_price",
+    "query": "nhà riêng Bình Tân dưới 6 tỷ có ít nhất 2 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 6.0,
+      "min_bedrooms": 2,
+      "locations": ["Bình Tân", "An Lạc", "Bình Trị Đông", "Bình Hưng Hòa", "Tân Tạo"]
+    }
+  },
+  {
+    "id": "Q058",
+    "category": "location_price",
+    "query": "căn hộ Bình Tân dưới 3.5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 3.5,
+      "locations": ["Bình Tân", "An Lạc", "Bình Trị Đông", "Bình Hưng Hòa", "Tân Tạo"]
+    }
+  },
+  {
+    "id": "Q059",
+    "category": "location_price",
+    "query": "nhà đất Tân Phú từ 5 đến 9 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 5.0,
+      "max_price": 9.0,
+      "locations": ["Tân Phú", "Tân Sơn Nhì", "Phú Thọ Hòa", "Phú Thạnh", "Tây Thạnh"]
+    }
+  },
+  {
+    "id": "Q060",
+    "category": "location_price",
+    "query": "căn hộ khu vực Nhà Bè dưới 4.5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 4.5,
+      "locations": ["Nhà Bè", "Hiệp Phước"]
+    }
+  },
+  {
+    "id": "Q061",
+    "category": "location_price",
+    "query": "nhà đất Xã Nhà Bè dưới 8 tỷ có ít nhất 3 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 8.0,
+      "min_bedrooms": 3,
+      "locations": ["Nhà Bè"]
+    }
+  },
+  {
+    "id": "Q062",
+    "category": "location_price",
+    "query": "căn hộ Bình Chánh dưới 3.5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 3.5,
+      "locations": ["Bình Chánh", "Tân Nhựt", "Bình Hưng", "Bình Lợi", "Vĩnh Lộc", "Hưng Long"]
+    }
+  },
+  {
+    "id": "Q063",
+    "category": "location_price",
+    "query": "căn hộ ở Bình Thạnh từ 4 đến 8 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 4.0,
+      "max_price": 8.0,
+      "locations": ["Bình Thạnh", "Gia Định", "Bình Quới", "Thạnh Mỹ Tây", "Bình Lợi Trung"]
+    }
+  },
+  {
+    "id": "Q064",
+    "category": "location_price",
+    "query": "nhà riêng Phú Nhuận từ 6 đến 12 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 6.0,
+      "max_price": 12.0,
+      "locations": ["Phú Nhuận", "Đức Nhuận", "Cầu Kiệu"]
+    }
+  },
+  {
+    "id": "Q065",
+    "category": "location_price",
+    "query": "nhà đất Quận 10 từ 7 đến 15 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 7.0,
+      "max_price": 15.0,
+      "locations": ["Quận 10", "Diên Hồng", "Hòa Hưng", "Vườn Lài"]
+    }
+  },
+  {
+    "id": "Q066",
+    "category": "location_price",
+    "query": "căn hộ ở Quận 4 từ 3.5 đến 7 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 3.5,
+      "max_price": 7.0,
+      "locations": ["Quận 4", "Khánh Hội", "Vĩnh Hội", "Xóm Chiếu"]
+    }
+  },
+  {
+    "id": "Q067",
+    "category": "location_price",
+    "query": "nhà đất Quận 1 trên 12 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 12.0,
+      "locations": ["Quận 1", "Bến Thành", "Sài Gòn", "Tân Định", "Cầu Ông Lãnh"]
+    }
+  },
+  {
+    "id": "Q068",
+    "category": "location_price",
+    "query": "căn hộ Phường Long Bình dưới 4 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 4.0,
+      "locations": ["Long Bình"]
+    }
+  },
+  {
+    "id": "Q069",
+    "category": "location_price",
+    "query": "nhà đất Phường Thới An dưới 6.5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 6.5,
+      "locations": ["Thới An"]
+    }
+  },
+  {
+    "id": "Q070",
+    "category": "location_price",
+    "query": "căn hộ Phường Bình Trưng dưới 6 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 6.0,
+      "locations": ["Bình Trưng"]
+    }
+  },
+  {
+    "id": "Q071",
+    "category": "location_price",
+    "query": "căn hộ Phường Thạnh Mỹ Tây từ 4 đến 9 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 4.0,
+      "max_price": 9.0,
+      "locations": ["Thạnh Mỹ Tây"]
+    }
+  },
+  {
+    "id": "Q072",
+    "category": "location_price",
+    "query": "nhà riêng Phường An Phú Đông dưới 7 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 7.0,
+      "locations": ["An Phú Đông"]
+    }
+  },
+  {
+    "id": "Q073",
+    "category": "location_price",
+    "query": "căn hộ Phường Cát Lái từ 5 đến 12 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 5.0,
+      "max_price": 12.0,
+      "locations": ["Cát Lái"]
+    }
+  },
+  {
+    "id": "Q074",
+    "category": "location_price",
+    "query": "căn hộ Phường Hiệp Bình dưới 5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 5.0,
+      "locations": ["Hiệp Bình"]
+    }
+  },
+  {
+    "id": "Q075",
+    "category": "amenity_graph",
+    "query": "căn hộ gần trường học dưới 5 tỷ có 2 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 5.0,
+      "min_bedrooms": 2,
+      "required_features": ["near_school"]
+    }
+  },
+  {
+    "id": "Q076",
+    "category": "amenity_graph",
+    "query": "nhà riêng gần bệnh viện dưới 8 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 8.0,
+      "required_features": ["near_hospital"]
+    }
+  },
+  {
+    "id": "Q077",
+    "category": "amenity_graph",
+    "query": "căn hộ gần metro có hồ bơi",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "required_features": ["near_metro", "pool"]
+    }
+  },
+  {
+    "id": "Q078",
+    "category": "amenity_graph",
+    "query": "nhà gần chợ và trường học dưới 6 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 6.0,
+      "required_features": ["near_market", "near_school"]
+    }
+  },
+  {
+    "id": "Q079",
+    "category": "amenity_graph",
+    "query": "căn hộ gần trung tâm thương mại có phòng gym",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "required_features": ["near_mall", "gym"]
+    }
+  },
+  {
+    "id": "Q080",
+    "category": "amenity_graph",
+    "query": "nhà gần công viên diện tích trên 60m2",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 60.0,
+      "required_features": ["near_park"]
+    }
+  },
+  {
+    "id": "Q081",
+    "category": "amenity_graph",
+    "query": "nhà riêng gần trường học dưới 7 tỷ có ít nhất 3 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 7.0,
+      "min_bedrooms": 3,
+      "required_features": ["near_school"]
+    }
+  },
+  {
+    "id": "Q082",
+    "category": "amenity_graph",
+    "query": "căn hộ gần bệnh viện dưới 6 tỷ diện tích từ 60m2",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 6.0,
+      "min_area": 60.0,
+      "required_features": ["near_hospital"]
+    }
+  },
+  {
+    "id": "Q083",
+    "category": "amenity_graph",
+    "query": "căn hộ gần ga metro dưới 6 tỷ có 2 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 6.0,
+      "min_bedrooms": 2,
+      "required_features": ["near_metro"]
+    }
+  },
+  {
+    "id": "Q084",
+    "category": "amenity_graph",
+    "query": "nhà đất gần tuyến metro diện tích từ 50m2",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 50.0,
+      "required_features": ["near_metro"]
+    }
+  },
+  {
+    "id": "Q085",
+    "category": "amenity_graph",
+    "query": "nhà riêng gần chợ dân sinh dưới 7 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 7.0,
+      "required_features": ["near_market"]
+    }
+  },
+  {
+    "id": "Q086",
+    "category": "amenity_graph",
+    "query": "căn hộ gần chợ và siêu thị dưới 5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 5.0,
+      "required_features": ["near_market"]
+    }
+  },
+  {
+    "id": "Q087",
+    "category": "amenity_graph",
+    "query": "căn hộ gần trung tâm thương mại dưới 5.5 tỷ có 2 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 5.5,
+      "min_bedrooms": 2,
+      "required_features": ["near_mall"]
+    }
+  },
+  {
+    "id": "Q088",
+    "category": "amenity_graph",
+    "query": "nhà đất gần siêu thị trung tâm thương mại dưới 10 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 10.0,
+      "required_features": ["near_mall"]
+    }
+  },
+  {
+    "id": "Q089",
+    "category": "amenity_graph",
+    "query": "căn hộ gần công viên dưới 6 tỷ có 2 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 6.0,
+      "min_bedrooms": 2,
+      "required_features": ["near_park"]
+    }
+  },
+  {
+    "id": "Q090",
+    "category": "amenity_graph",
+    "query": "nhà đất gần đường cao tốc thuận tiện đi tỉnh",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "required_features": ["near_highway"]
+    }
+  },
+  {
+    "id": "Q091",
+    "category": "amenity_graph",
+    "query": "căn hộ gần cao tốc dưới 5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 5.0,
+      "required_features": ["near_highway"]
+    }
+  },
+  {
+    "id": "Q092",
+    "category": "amenity_graph",
+    "query": "nhà riêng gần trường học và bệnh viện dưới 9 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 9.0,
+      "required_features": ["near_school", "near_hospital"]
+    }
+  },
+  {
+    "id": "Q093",
+    "category": "amenity_graph",
+    "query": "căn hộ gần trường học và trung tâm thương mại dưới 6 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 6.0,
+      "required_features": ["near_school", "near_mall"]
+    }
+  },
+  {
+    "id": "Q094",
+    "category": "amenity_graph",
+    "query": "nhà riêng gần chợ và bệnh viện dưới 8 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 8.0,
+      "required_features": ["near_market", "near_hospital"]
+    }
+  },
+  {
+    "id": "Q095",
+    "category": "amenity_graph",
+    "query": "nhà đất gần trường học và công viên dưới 12 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 12.0,
+      "required_features": ["near_school", "near_park"]
+    }
+  },
+  {
+    "id": "Q096",
+    "category": "amenity_graph",
+    "query": "căn hộ gần trường học và bệnh viện có ít nhất 2 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "required_features": ["near_school", "near_hospital"]
+    }
+  },
+  {
+    "id": "Q097",
+    "category": "amenity_graph",
+    "query": "nhà đất gần trường học diện tích trên 70m2 từ 6 đến 12 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 70.0,
+      "min_price": 6.0,
+      "max_price": 12.0,
+      "required_features": ["near_school"]
+    }
+  },
+  {
+    "id": "Q098",
+    "category": "amenity_graph",
+    "query": "căn hộ gần siêu thị TTTM diện tích từ 70m2 trở lên",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_area": 70.0,
+      "required_features": ["near_mall"]
+    }
+  },
+  {
+    "id": "Q099",
+    "category": "feature_specific",
+    "query": "căn hộ có hồ bơi và bảo vệ 24/7 dưới 6 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 6.0,
+      "required_features": ["pool", "security_24h"]
+    }
+  },
+  {
+    "id": "Q100",
+    "category": "feature_specific",
+    "query": "căn hộ view sông có ban công diện tích trên 75m2",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_area": 75.0,
+      "required_features": ["river_view", "balcony"]
+    }
+  },
+  {
+    "id": "Q101",
+    "category": "feature_specific",
+    "query": "nhà có sân vườn và gara ô tô trên 10 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 10.0,
+      "required_features": ["garden", "garage"]
+    }
+  },
+  {
+    "id": "Q102",
+    "category": "feature_specific",
+    "query": "nhà có sân thượng ít nhất 3 phòng ngủ và 3 phòng tắm",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_bedrooms": 3,
+      "min_bathrooms": 3,
+      "required_features": ["terrace"]
+    }
+  },
+  {
+    "id": "Q103",
+    "category": "feature_specific",
+    "query": "căn hộ có hồ bơi và phòng gym dưới 5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 5.0,
+      "required_features": ["pool", "gym"]
+    }
+  },
+  {
+    "id": "Q104",
+    "category": "feature_specific",
+    "query": "chung cư có hồ bơi và khu vui chơi trẻ em cho gia đình",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "required_features": ["pool", "kids_playground"]
+    }
+  },
+  {
+    "id": "Q105",
+    "category": "feature_specific",
+    "query": "căn hộ có khu BBQ và công viên nội khu dưới 5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 5.0,
+      "required_features": ["bbq", "park"]
+    }
+  },
+  {
+    "id": "Q106",
+    "category": "feature_specific",
+    "query": "căn hộ có sân thể thao và hồ bơi",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "required_features": ["sports_court", "pool"]
+    }
+  },
+  {
+    "id": "Q107",
+    "category": "feature_specific",
+    "query": "nhà phố có thang máy diện tích từ 60m2",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 60.0,
+      "required_features": ["elevator"]
+    }
+  },
+  {
+    "id": "Q108",
+    "category": "feature_specific",
+    "query": "nhà riêng có thang máy trên 12 tỷ có ít nhất 4 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 12.0,
+      "min_bedrooms": 4,
+      "required_features": ["elevator"]
+    }
+  },
+  {
+    "id": "Q109",
+    "category": "feature_specific",
+    "query": "căn hộ có ban công và bãi đỗ xe dưới 5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 5.0,
+      "required_features": ["balcony", "parking"]
+    }
+  },
+  {
+    "id": "Q110",
+    "category": "feature_specific",
+    "query": "nhà riêng có gara để ô tô dưới 12 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 12.0,
+      "required_features": ["garage"]
+    }
+  },
+  {
+    "id": "Q111",
+    "category": "feature_specific",
+    "query": "nhà đất có sân vườn rộng trên 90m2",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 90.0,
+      "required_features": ["garden"]
+    }
+  },
+  {
+    "id": "Q112",
+    "category": "feature_specific",
+    "query": "nhà riêng có sân thượng và ban công dưới 10 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "max_price": 10.0,
+      "required_features": ["terrace", "balcony"]
+    }
+  },
+  {
+    "id": "Q113",
+    "category": "feature_specific",
+    "query": "căn hộ view sông có hồ bơi diện tích từ 70m2",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_area": 70.0,
+      "required_features": ["river_view", "pool"]
+    }
+  },
+  {
+    "id": "Q114",
+    "category": "feature_specific",
+    "query": "căn hộ có phòng gym và công viên nội khu dưới 6 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "max_price": 6.0,
+      "required_features": ["gym", "park"]
+    }
+  },
+  {
+    "id": "Q115",
+    "category": "feature_specific",
+    "query": "nhà đất có bảo vệ 24/7 và công viên nội khu",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "required_features": ["security_24h", "park"]
+    }
+  },
+  {
+    "id": "Q116",
+    "category": "feature_specific",
+    "query": "căn hộ có ban công 2 phòng ngủ dưới 4.5 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "max_price": 4.5,
+      "required_features": ["balcony"]
+    }
+  },
+  {
+    "id": "Q117",
+    "category": "feature_specific",
+    "query": "nhà đất có sân thượng và bãi đỗ xe từ 6 đến 12 tỷ",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_price": 6.0,
+      "max_price": 12.0,
+      "required_features": ["terrace", "parking"]
+    }
+  },
+  {
+    "id": "Q118",
+    "category": "feature_specific",
+    "query": "căn hộ có hồ bơi và khu nướng BBQ có ít nhất 2 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "required_features": ["pool", "bbq"]
+    }
+  },
+  {
+    "id": "Q119",
+    "category": "semantic_intent",
+    "query": "căn hộ phù hợp gia đình trẻ có con nhỏ, đầy đủ tiện ích nội khu, ngân sách khoảng 4 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"]
+    }
+  },
+  {
+    "id": "Q120",
+    "category": "semantic_intent",
+    "query": "nhà hẻm xe hơi yên tĩnh để ở lâu dài, sổ hồng riêng",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"]
+    }
+  },
+  {
+    "id": "Q121",
+    "category": "semantic_intent",
+    "query": "nhà mặt tiền kinh doanh tốt hoặc cho thuê dòng tiền ổn định",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"]
+    }
+  },
+  {
+    "id": "Q122",
+    "category": "semantic_intent",
+    "query": "căn hộ cao cấp view đẹp vào ở ngay, đầy đủ nội thất",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"]
+    }
+  },
+  {
+    "id": "Q123",
+    "category": "semantic_intent",
+    "query": "căn hộ mới bàn giao, pháp lý rõ ràng, dễ cho chuyên gia nước ngoài thuê",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"]
+    }
+  },
+  {
+    "id": "Q124",
+    "category": "semantic_intent",
+    "query": "nhà phố xây mới thiết kế hiện đại, chỉ cần xách vali vào ở",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"]
+    }
+  },
+  {
+    "id": "Q125",
+    "category": "semantic_intent",
+    "query": "nhà phù hợp cho gia đình nhiều thế hệ sống chung, không gian thoáng đãng",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"]
+    }
+  },
+  {
+    "id": "Q126",
+    "category": "semantic_intent",
+    "query": "căn hộ thoáng mát nhiều ánh sáng tự nhiên, môi trường xanh cho người lớn tuổi",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"]
+    }
+  },
+  {
+    "id": "Q127",
+    "category": "semantic_intent",
+    "query": "nhà khu dân cư an ninh đồng bộ, đường rộng xe hơi tránh nhau",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"]
+    }
+  },
+  {
+    "id": "Q128",
+    "category": "semantic_intent",
+    "query": "biệt thự không gian nghỉ dưỡng riêng tư, có mảng xanh rộng rãi",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"]
+    }
+  },
+  {
+    "id": "Q129",
+    "category": "semantic_intent",
+    "query": "căn hộ đầu tư giữ tài sản, thanh khoản tốt gần trung tâm thành phố",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"]
+    }
+  },
+  {
+    "id": "Q130",
+    "category": "semantic_intent",
+    "query": "nhà vừa ở vừa mở văn phòng công ty hoặc spa, vị trí dễ tìm",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"]
+    }
+  },
+  {
+    "id": "Q131",
+    "category": "semantic_intent",
+    "query": "chung cư giá tốt cho vợ chồng mới cưới mua căn nhà đầu tiên",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"]
+    }
+  },
+  {
+    "id": "Q132",
+    "category": "semantic_intent",
+    "query": "nhà nở hậu phong thủy tốt, kết cấu kiên cố không bị quy hoạch",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"]
+    }
+  },
+  {
+    "id": "Q133",
+    "category": "semantic_intent",
+    "query": "căn hộ góc 2 mặt thoáng, tầm nhìn rộng không bị che chắn",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"]
+    }
+  },
+  {
+    "id": "Q134",
+    "category": "semantic_intent",
+    "query": "nhà đất có thu nhập cho thuê sẵn, khu đông sinh viên và nhân viên văn phòng",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"]
+    }
+  },
+  {
+    "id": "Q135",
+    "category": "complex_multi_constraint",
+    "query": "căn hộ 2 phòng ngủ 2 phòng tắm ở Phường Long Bình dưới 4 tỷ có hồ bơi",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "min_bathrooms": 2,
+      "max_price": 4.0,
+      "locations": ["Long Bình"],
+      "required_features": ["pool"]
+    }
+  },
+  {
+    "id": "Q136",
+    "category": "complex_multi_constraint",
+    "query": "nhà riêng từ 50m2 đến 100m2 có 3 phòng ngủ dưới 8 tỷ gần trường học",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 50.0,
+      "max_area": 100.0,
+      "min_bedrooms": 3,
+      "max_price": 8.0,
+      "required_features": ["near_school"]
+    }
+  },
+  {
+    "id": "Q137",
+    "category": "complex_multi_constraint",
+    "query": "căn hộ ở Quận 9 từ 2 đến 4.5 tỷ có 2 phòng ngủ và công viên nội khu",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_price": 2.0,
+      "max_price": 4.5,
+      "min_bedrooms": 2,
+      "locations": ["Quận 9", "Long Bình", "Long Trường", "Long Phước", "Phước Long", "Tăng Nhơn Phú"],
+      "required_features": ["park"]
+    }
+  },
+  {
+    "id": "Q138",
+    "category": "complex_multi_constraint",
+    "query": "căn hộ ở Quận 2 diện tích từ 65m2 dưới 8 tỷ có hồ bơi và 2 phòng ngủ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_area": 65.0,
+      "max_price": 8.0,
+      "min_bedrooms": 2,
+      "locations": ["Quận 2", "An Khánh", "Bình Trưng", "Cát Lái"],
+      "required_features": ["pool"]
+    }
+  },
+  {
+    "id": "Q139",
+    "category": "complex_multi_constraint",
+    "query": "nhà đất ở Quận 12 diện tích trên 55m2 có 3 phòng ngủ dưới 7 tỷ gần trường học",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 55.0,
+      "min_bedrooms": 3,
+      "max_price": 7.0,
+      "locations": ["Quận 12", "Thới An", "An Phú Đông", "Tân Thới Hiệp", "Trung Mỹ Tây", "Đông Hưng Thuận"],
+      "required_features": ["near_school"]
+    }
+  },
+  {
+    "id": "Q140",
+    "category": "complex_multi_constraint",
+    "query": "nhà riêng ở Bình Thạnh có ít nhất 3 phòng ngủ 3 phòng tắm dưới 12 tỷ gần trường học",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_bedrooms": 3,
+      "min_bathrooms": 3,
+      "max_price": 12.0,
+      "locations": ["Bình Thạnh", "Gia Định", "Bình Quới", "Thạnh Mỹ Tây", "Bình Lợi Trung"],
+      "required_features": ["near_school"]
+    }
+  },
+  {
+    "id": "Q141",
+    "category": "complex_multi_constraint",
+    "query": "căn hộ ở Quận 7 có 2 phòng ngủ 2 WC diện tích từ 65m2 dưới 7 tỷ có hồ bơi",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "min_bathrooms": 2,
+      "min_area": 65.0,
+      "max_price": 7.0,
+      "locations": ["Quận 7", "Tân Mỹ", "Tân Hưng", "Tân Thuận", "Phú Thuận"],
+      "required_features": ["pool"]
+    }
+  },
+  {
+    "id": "Q142",
+    "category": "complex_multi_constraint",
+    "query": "nhà đất ở Gò Vấp diện tích từ 50m2 có 4 phòng ngủ dưới 10 tỷ có sân thượng",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 50.0,
+      "min_bedrooms": 4,
+      "max_price": 10.0,
+      "locations": ["Gò Vấp", "An Nhơn", "An Hội Đông", "An Hội Tây", "Hạnh Thông", "Thông Tây Hội"],
+      "required_features": ["terrace"]
+    }
+  },
+  {
+    "id": "Q143",
+    "category": "complex_multi_constraint",
+    "query": "căn hộ ở Bình Thạnh 2 phòng ngủ 2 phòng tắm diện tích từ 65m2 dưới 9 tỷ có hồ bơi",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "min_bathrooms": 2,
+      "min_area": 65.0,
+      "max_price": 9.0,
+      "locations": ["Bình Thạnh", "Gia Định", "Bình Quới", "Thạnh Mỹ Tây", "Bình Lợi Trung"],
+      "required_features": ["pool"]
+    }
+  },
+  {
+    "id": "Q144",
+    "category": "complex_multi_constraint",
+    "query": "nhà đất ở Quận 7 diện tích trên 70m2 có ít nhất 4 phòng ngủ từ 8 đến 18 tỷ có sân thượng",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 70.0,
+      "min_bedrooms": 4,
+      "min_price": 8.0,
+      "max_price": 18.0,
+      "locations": ["Quận 7", "Tân Mỹ", "Tân Hưng", "Tân Thuận", "Phú Thuận"],
+      "required_features": ["terrace"]
+    }
+  },
+  {
+    "id": "Q145",
+    "category": "complex_multi_constraint",
+    "query": "nhà riêng ở Tân Phú có 3 phòng ngủ diện tích từ 50m2 dưới 9 tỷ gần trường học",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_bedrooms": 3,
+      "min_area": 50.0,
+      "max_price": 9.0,
+      "locations": ["Tân Phú", "Tân Sơn Nhì", "Phú Thọ Hòa", "Phú Thạnh", "Tây Thạnh"],
+      "required_features": ["near_school"]
+    }
+  },
+  {
+    "id": "Q146",
+    "category": "complex_multi_constraint",
+    "query": "căn hộ ở Nhà Bè 2 phòng ngủ 2 phòng tắm diện tích từ 65m2 dưới 6.5 tỷ có hồ bơi",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "min_bathrooms": 2,
+      "min_area": 65.0,
+      "max_price": 6.5,
+      "locations": ["Nhà Bè", "Hiệp Phước"],
+      "required_features": ["pool"]
+    }
+  },
+  {
+    "id": "Q147",
+    "category": "complex_multi_constraint",
+    "query": "nhà đất ở Bình Tân diện tích từ 55m2 có 3 phòng ngủ dưới 8 tỷ gần trường học",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 55.0,
+      "min_bedrooms": 3,
+      "max_price": 8.0,
+      "locations": ["Bình Tân", "An Lạc", "Bình Trị Đông", "Bình Hưng Hòa", "Tân Tạo"],
+      "required_features": ["near_school"]
+    }
+  },
+  {
+    "id": "Q148",
+    "category": "complex_multi_constraint",
+    "query": "căn hộ ở Phường Bình Trưng 2 phòng ngủ 2 phòng tắm diện tích từ 60m2 dưới 7 tỷ",
+    "expected_constraints": {
+      "property_types": ["Căn hộ"],
+      "min_bedrooms": 2,
+      "min_bathrooms": 2,
+      "min_area": 60.0,
+      "max_price": 7.0,
+      "locations": ["Bình Trưng"]
+    }
+  },
+  {
+    "id": "Q149",
+    "category": "complex_multi_constraint",
+    "query": "nhà riêng ở Quận 9 diện tích trên 65m2 có 3 phòng ngủ dưới 10 tỷ gần trường học",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 65.0,
+      "min_bedrooms": 3,
+      "max_price": 10.0,
+      "locations": ["Quận 9", "Long Bình", "Long Trường", "Long Phước", "Phước Long", "Tăng Nhơn Phú"],
+      "required_features": ["near_school"]
+    }
+  },
+  {
+    "id": "Q150",
+    "category": "complex_multi_constraint",
+    "query": "nhà phố ở Tân Bình diện tích từ 50m2 có 4 phòng ngủ dưới 14 tỷ có sân thượng",
+    "expected_constraints": {
+      "property_types": ["Nhà đất"],
+      "min_area": 50.0,
+      "min_bedrooms": 4,
+      "max_price": 14.0,
+      "locations": ["Tân Bình", "Tân Sơn", "Tân Sơn Hòa", "Tân Sơn Nhất", "Bảy Hiền", "Tân Hòa"],
+      "required_features": ["terrace"]
+    }
+  }
+]

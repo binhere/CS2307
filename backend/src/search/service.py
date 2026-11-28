@@ -14,12 +14,12 @@ from src.search.embedding import (
     embedding_model,
 )
 from src.search.explanation import attach_explanation
-from src.search.graph_repository import graph_repository
+from src.search.graph_repository import GraphSearchResponse, graph_repository
 from src.search.llm_answer import LLMSearchAnswerGenerator
 from src.search.query_parser import LLMQueryParser, RuleBasedQueryParser
 from src.search.ranker import diversify, rank_candidates
 from src.search.repository import search_repository
-from src.search.schemas import ParsedSearchQuery, SearchRequest
+from src.search.schemas import ParsedSearchQuery, RetrievalMode, SearchRequest
 from src.settings.config import config_value
 from src.settings.event import llm_model
 from src.services.llm.credentials import active_llm_client
@@ -38,6 +38,30 @@ def _stage_timeout(name: str, default: float) -> float:
     except (TypeError, ValueError):
         return default
     return value if value > 0 else default
+
+
+def _rank_vector_only(candidates: list[dict]) -> list[dict]:
+    """Order retrieved candidates purely by pgvector cosine similarity.
+
+    Used by ``RetrievalMode.VECTOR`` ablation runs so vector-only retrieval is
+    measured without FTS, structured-criteria or Neo4j graph weighting.
+
+    Args:
+        candidates: Listing dictionaries carrying ``semantic_score``.
+
+    Returns:
+        Copies of ``candidates`` sorted descending by ``semantic_score``, each
+        annotated with ``final_score`` and ``score_breakdown``.
+    """
+    ranked: list[dict] = []
+    for candidate in candidates:
+        semantic_score = float(candidate.get("semantic_score") or 0.0)
+        scored = dict(candidate)
+        scored["final_score"] = round(semantic_score, 4)
+        scored["score_breakdown"] = {"semantic": round(semantic_score, 4)}
+        ranked.append(scored)
+    ranked.sort(key=lambda item: item["final_score"], reverse=True)
+    return ranked
 
 
 class HybridSearchService:
@@ -72,11 +96,14 @@ class HybridSearchService:
         conversation_id: int | None = None,
     ) -> dict:
         started = time.perf_counter()
+        mode = request.retrieval_mode
+        should_use_vector = mode != RetrievalMode.FTS
+        should_use_graph = mode == RetrievalMode.HYBRID_GRAPH
         parsed = await self.parse(request.query, request.top_k, request.filters)
         embedded_count, property_count = await run_in_threadpool(search_repository.embedding_coverage)
         vector = None
         # Listings without a vector yet (just posted) are still found by text and filters.
-        if embedded_count > 0:
+        if should_use_vector and embedded_count > 0:
             try:
                 vector = await asyncio.wait_for(
                     run_in_threadpool(embedding_model.encode_query, parsed.semantic_query),
@@ -89,8 +116,12 @@ class HybridSearchService:
         query_embedding = None if vector is None else vector.tolist()
         candidate_limit = max(500, request.top_k * request.page * 5)
         postgres_task = run_in_threadpool(search_repository.search, parsed, query_embedding, candidate_limit)
-        graph_task = run_in_threadpool(graph_repository.search, parsed, candidate_limit)
-        candidates, graph_response = await asyncio.gather(postgres_task, graph_task)
+        if should_use_graph:
+            graph_task = run_in_threadpool(graph_repository.search, parsed, candidate_limit)
+            candidates, graph_response = await asyncio.gather(postgres_task, graph_task)
+        else:
+            candidates = await postgres_task
+            graph_response = GraphSearchResponse(available=False)
 
         graph_by_listing = {}
         for candidate in graph_response.candidates:
@@ -133,7 +164,10 @@ class HybridSearchService:
             from src.search.personalization import build_user_profile
 
             user_profile = await run_in_threadpool(build_user_profile, user_id)
-        ranked = rank_candidates(candidates, applied, user_profile)
+        if mode == RetrievalMode.VECTOR:
+            ranked = _rank_vector_only(candidates)
+        else:
+            ranked = rank_candidates(candidates, applied, user_profile)
         start = (request.page - 1) * request.top_k
         selected = diversify(ranked, start + request.top_k)[start:start + request.top_k]
         results = [attach_explanation(item, applied) for item in selected]
@@ -161,6 +195,7 @@ class HybridSearchService:
             )
         response = {
             "query": request.query,
+            "retrieval_mode": mode.value,
             "parsed_query": parsed.model_dump(mode="json"),
             "total_candidates": total_candidates,
             "page": request.page,

@@ -69,6 +69,21 @@ class RankingProfile(str, Enum):
     FAMILY = "FAMILY"
 
 
+class RetrievalMode(str, Enum):
+    """Selectable retrieval strategies for ablation and evaluation runs.
+
+    - ``fts``: PostgreSQL Full-Text Search (ts_rank_cd) + structured SQL ranking; no vector, no graph.
+    - ``vector``: pgvector cosine similarity only; no FTS/criteria ranking, no graph.
+    - ``hybrid``: PostgreSQL FTS + structured + pgvector; no Neo4j graph.
+    - ``hybrid_graph``: Full production pipeline (PostgreSQL + pgvector + Neo4j graph).
+    """
+
+    FTS = "fts"
+    VECTOR = "vector"
+    HYBRID = "hybrid"
+    HYBRID_GRAPH = "hybrid_graph"
+
+
 class HardFilters(BaseModel):
     price: NumericRange = Field(default_factory=NumericRange)
     area: NumericRange = Field(default_factory=NumericRange)
@@ -149,6 +164,7 @@ class SearchRequest(BaseModel):
     page: int = Field(default=1, ge=1)
     debug: bool = False
     filters: Dict[str, Any] = Field(default_factory=dict)
+    retrieval_mode: RetrievalMode = RetrievalMode.HYBRID_GRAPH
 
     @field_validator("filters")
     @classmethod
