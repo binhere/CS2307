@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from src.api.v1.endpoints.auth import view_auth
 from src.api.v1.endpoints.chat import view_chat
+from src.api.v1.endpoints.evaluation import view_evaluation
 from src.api.v1.endpoints.feedback import view_feedback
 from src.api.v1.endpoints.listings import view_listings
 from src.api.v1.endpoints.llm import view_llm
@@ -14,6 +15,7 @@ router = APIRouter()
 
 router.include_router(router=view_auth.router, prefix="/auth", tags=["Auth"])
 router.include_router(router=view_chat.router, prefix="/chat", tags=["Chat"])
+router.include_router(router=view_evaluation.router, prefix="/evaluation", tags=["Evaluation"])
 router.include_router(router=view_feedback.router, prefix="/feedback", tags=["Feedback"])
 router.include_router(router=view_listings.router, prefix="/listings", tags=["Listings"])
 router.include_router(router=view_llm.router, prefix="/llm", tags=["LLM"])

@@ -39,6 +39,7 @@ import {
   formatNumber,
   formatShare,
 } from "./format"
+import { RetrievalEvaluation } from "./retrieval-evaluation"
 import { TrainingHistory } from "./training-history"
 import type { MonitoringSnapshot, VerdictGroup } from "./types"
 
@@ -98,6 +99,7 @@ export function DataDashboard() {
       { key: "data", label: "Dữ liệu và mô hình", panel: <DataOverview reloadCount={reloadCount} /> },
       { key: "training", label: "Lịch sử huấn luyện",
         panel: <TrainingHistory onModelChanged={() => setReloadCount((count) => count + 1)} /> },
+      { key: "evaluation", label: "Đánh giá tìm kiếm", panel: <RetrievalEvaluation /> },
     ]} />
   )
 }
